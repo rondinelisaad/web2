@@ -1,6 +1,6 @@
 <?php
-$_REQUEST = (isset($_REQUEST) ? $_REQUEST : array_merge($HTTP_GET_VARS, $HTTP_POST_VARS, $HTTP_COOKIE_VARS));
-$_SERVER  = (isset($_SERVER) ? $_SERVER : $HTTP_SERVER_VARS);
+$_REQUEST = isset($_REQUEST) ? $_REQUEST : array();
+$_SERVER  = isset($_SERVER) ? $_SERVER : array();
 
 $server = "http://" . $_SERVER["HTTP_HOST"];
 $endPoint = $server . str_replace("client.php","server.php",$_SERVER["PHP_SELF"]);
@@ -29,7 +29,13 @@ $wsdl  =  $endPoint . "?wsdl";
 <ul><li>Get Title Indicators: http://<? echo $_SERVER["HTTP_HOST"]?><? echo htmlspecialchars("/webservices/client.php?service=get_title_indicators&issn=0102-8650");?></li></ul>
 <h3>Result</h3>
 <?
-$service = $_REQUEST['service'];
+$service = isset($_REQUEST['service']) && preg_match('/^[A-Za-z0-9_-]*$/', $_REQUEST['service']) ? $_REQUEST['service'] : '';
+$count = isset($_REQUEST['count']) && preg_match('/^[0-9]+$/', $_REQUEST['count']) ? $_REQUEST['count'] : '10';
+$from = isset($_REQUEST['from']) && preg_match('/^[0-9]+$/', $_REQUEST['from']) ? $_REQUEST['from'] : '1';
+$lang = isset($_REQUEST['lang']) && preg_match('/^[a-z]$/', $_REQUEST['lang']) ? $_REQUEST['lang'] : 'p';
+$rep = isset($_REQUEST['rep']) && preg_match('/^[A-Za-z0-9_-]*$/', $_REQUEST['rep']) ? $_REQUEST['rep'] : '';
+$type = isset($_REQUEST['type']) && preg_match('/^[A-Za-z0-9_-]*$/', $_REQUEST['type']) ? $_REQUEST['type'] : '';
+$issn = isset($_REQUEST['issn']) && preg_match('/^[0-9Xx,-]+$/', $_REQUEST['issn']) ? $_REQUEST['issn'] : '';
 
 $client = new SoapClient('wsdl/scielo.wsdl', array('encoding'=>'ISO-8859-1'));
 
@@ -47,35 +53,29 @@ switch($service){
         if(!isset($_REQUEST['lang'])){
                 die("missing parameter <i>lang</i>");
         }
-        $param = array('expression' => $_REQUEST['expression'],'from' => $_REQUEST['from'],'count' => $_REQUEST['count'],'lang' => $_REQUEST['lang']);
+        $expression = preg_replace('/[^\p{L}\p{N}\s._-]/u', '', $_REQUEST['expression']);
+        $param = array('expression' => $expression,'from' => $from,'count' => $count,'lang' => $lang);
         $resultado = $client->__call('search',$param);
         break;
     case "new_titles":
-        $param = array('count' => $_REQUEST["count"], 'rep' => $_REQUEST["rep"]);
+        $param = array('count' => $count, 'rep' => $rep);
         $resultado = $client->__call('new_titles',$param);
         break;
     case "new_issues":
-        $param = array('count' => $_REQUEST["count"], 'rep' => $_REQUEST["rep"]);
+        $param = array('count' => $count, 'rep' => $rep);
         $resultado = $client->__call('new_issues',$param);
         break;
     case "get_titles":
-        if(isset($_REQUEST['issn'])){
-            if(is_string($_REQUEST['issn'])){
-                $issn = explode(',',$_REQUEST['issn']);
-            }else if(is_array($_REQUEST['issn'])){
-                $issn = $_REQUEST['issn'];
-            }else{
-                break;
-            }
-            $param = array('issn' => $_REQUEST["issn"]);
+        if($issn !== ''){
+            $param = array('issn' => $issn);
             $resultado = $client->__call('getDetachedTitles', $param);
         }else{
-            $param = array('issn' => $_REQUEST["type"], 'rep' => $_REQUEST["rep"]);
+            $param = array('issn' => $type, 'rep' => $rep);
             $resultado = $client->__call('get_titles',$param);
         }
         break;
     case "get_title_indicators":
-         $param = array('type' => $_REQUEST["type"], 'rep' => $_REQUEST["rep"], 'issn' => $_REQUEST["issn"]);
+         $param = array('type' => $type, 'rep' => $rep, 'issn' => $issn);
          $resultado = $client->__call('get_title_indicators', $param);
         break;
     case "":

@@ -20,6 +20,14 @@ $opts = getopt('', [
 
 $baseUrl = rtrim((string)($opts['base-url'] ?? getenv('SCIELO_MVP_BASE_URL') ?: 'http://127.0.0.1:8090'), '/');
 $lang = (string)($opts['lang'] ?? 'en');
+$baseHost = parse_url($baseUrl, PHP_URL_HOST);
+if (!in_array($baseHost, ['127.0.0.1', 'localhost'], true)) {
+    fwrite(STDERR, "base-url must point to localhost.\n");
+    exit(1);
+}
+if (!in_array($lang, ['pt', 'en', 'es'], true)) {
+    $lang = 'en';
+}
 $maxSerials = max(1, (int)($opts['max-serials'] ?? 50));
 $maxIssues = max(1, (int)($opts['max-issues'] ?? 50));
 $maxArticles = max(1, (int)($opts['max-articles'] ?? 5000));

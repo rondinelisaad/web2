@@ -7,6 +7,7 @@ require_once(dirname(__FILE__)."/../../../../php/include.php");
 
 $cgi = array_merge($_GET,$_POST);
 $lang = isset($cgi["lang"]) ? $cgi["lang"] : "pt";
+$lang = preg_match('/^[a-z]{2}$/', $lang) ? $lang : "pt";
 require_once(dirname(__FILE__)."/../../users/langs.php");	
 
 $bvsSiteIni = parse_ini_file(dirname(__FILE__)."/../../../../bvs-site-conf.php",true);
@@ -28,6 +29,9 @@ $mailcredentials = $mainscielodef['MAIL_CREDENTIALS'];
 $acao = isset($cgi["acao"]) ? $cgi["acao"] : "";
 $pid = isset($cgi["pid"]) ? $cgi["pid"] : "";
 $caller = isset($cgi["caller"]) ? $cgi["caller"] : "";
+$acao = preg_match('/^[A-Za-z0-9_-]*$/', $acao) ? $acao : "";
+$pid = preg_match('/^[A-Za-z0-9._-]*$/', $pid) ? $pid : "";
+$caller = preg_match('/^https?:\/\/[A-Za-z0-9._:-]+\/?$/', $caller) ? $caller : "";
 $serviceCaller = preg_replace('/:8080$/', '', $caller);
 if (!$serviceCaller) {
 	$serviceCaller = $caller;

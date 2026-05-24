@@ -12,18 +12,24 @@
     }
     $DEF = parse_ini_file("scielo.def.php", true);
 
-    if ($_GET['lang'] != 'en' && $_GET['lang'] != 'es' && $_GET['lang'] != 'pt') $_GET['lang'] = $DEF['SITE_INFO']['STANDARD_LANG']; 
+    $lang = isset($_GET['lang']) ? $_GET['lang'] : $DEF['SITE_INFO']['STANDARD_LANG'];
+    if ($lang != 'en' && $lang != 'es' && $lang != 'pt') $lang = $DEF['SITE_INFO']['STANDARD_LANG'];
+    $issn = isset($_GET['issn']) && preg_match('/^[0-9Xx-]{4,9}$/', $_GET['issn']) ? $_GET['issn'] : '';
+    if ($issn == '') {
+        header("HTTP/1.1 400 Bad Request");
+        die("Invalid issn");
+    }
 
     if ( strpos($DEF['SCIELO']['STAT_SERVER'],$DEF['SCIELO']['SERVER_SCIELO'])>0) {
         $xml = 'xml='.$DEF['SCIELO']['STAT_SERVER'].'/stat_biblio/xml/';
     } else {
         $xml = 'no=';
     }
-    $journalInfo = file_get_contents('http://'.$DEF['SCIELO']['SERVER_SCIELO'].'/scielo.php?script=sci_serial&pid='.$_GET['issn'].'&debug=xml');
+    $journalInfo = file_get_contents('http://'.$DEF['SCIELO']['SERVER_SCIELO'].'/scielo.php?script=sci_serial&pid='.rawurlencode($issn).'&debug=xml');
     $error = x($journalInfo,'CODE');
 
     if ($error){
-        header("Location: ".'http://'.$DEF['SCIELO']['SERVER_SCIELO'].'/scielo.php?script=sci_serial&pid='.$_GET['issn']);
+        header("Location: ".'http://'.$DEF['SCIELO']['SERVER_SCIELO'].'/scielo.php?script=sci_serial&pid='.rawurlencode($issn));
     } 
 
     $journalInfo = x($journalInfo,'TITLEGROUP');
@@ -37,14 +43,14 @@
         $g = str_replace('*','',$g);
         $g = str_replace('.','',$g);
     }
-    switch ($_GET['lang']){
+    switch ($lang){
         case "en":
                 $LABELS = array('LANG_1'=> 'i',
-                            'LANG'=>$_GET['lang'],
+                            'LANG'=>$lang,
                             'ACRON'=>$j['acron'],
                             'PAGE_TITLE'=>'Journal reports',
                             'JOURNAL_TITLE' => $j['title'],
-                            'JOURNAL_ISSN' => $_GET['issn'],
+                            'JOURNAL_ISSN' => $issn,
                             'REPORTS_SITE_USAGE_GROUP_LABEL' => 'Site usage reports',
                             'REPORT_JOURNALS_REQUESTS' => 'Journals requests',
                             'REPORT_JOURNAL_REQUESTS' => 'Journal requests',

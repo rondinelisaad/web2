@@ -15,10 +15,15 @@ class RequestVars
     {
         global $HTTP_GET_VARS, $HTTP_POST_VARS, $REQUEST_URI, $SCRIPT_NAME;
 
-        if (strpos($REQUEST_URI, "?") === false)
+        $getVars = isset($_GET) ? $_GET : (isset($HTTP_GET_VARS) ? $HTTP_GET_VARS : array());
+        $postVars = isset($_POST) ? $_POST : (isset($HTTP_POST_VARS) ? $HTTP_POST_VARS : array());
+        $requestUri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : $REQUEST_URI;
+        $scriptName = isset($_SERVER['SCRIPT_NAME']) ? $_SERVER['SCRIPT_NAME'] : $SCRIPT_NAME;
+
+        if (strpos($requestUri, "?") === false)
         {
-            $QSCnav = $REQUEST_URI;
-            $QSCscript = $SCRIPT_NAME;
+            $QSCnav = $requestUri;
+            $QSCscript = $scriptName;
             $QSCnav = preg_replace('/^' . preg_quote($QSCscript, '/') . '/', '', $QSCnav);
             $QSCvars = explode("/", $QSCnav);
             $QSCArray = array();
@@ -38,11 +43,11 @@ class RequestVars
                 }
             }
 
-            $this->_request = array_merge($HTTP_GET_VARS, $HTTP_POST_VARS, $QSCArray);
+            $this->_request = array_merge($getVars, $postVars, $QSCArray);
         }
         else
         {
-            $this->_request = array_merge($HTTP_GET_VARS, $HTTP_POST_VARS);
+            $this->_request = array_merge($getVars, $postVars);
         }
 
         if (!isset($this->_request['lng']) || strpos("|en|pt|es|", $this->_request['lng']) == 0) {
@@ -68,16 +73,16 @@ class RequestVars
         {
             if (is_array($value))
             {
-                $query .= $key . "[]=" . $value[0];
+                $query .= rawurlencode($key) . "[]=" . rawurlencode($value[0]);
 
                 for ($i = 1; $i < sizeof($value); $i++)
                 {
-                    $query .= "&" . $key . "[]=" . $value[$i];
+                    $query .= "&" . rawurlencode($key) . "[]=" . rawurlencode($value[$i]);
                 }
             }
             else
             {
-                $query .= "$key=$value";
+                $query .= rawurlencode($key) . "=" . rawurlencode($value);
             }
 
             if (--$count > 0) $query .= "&";

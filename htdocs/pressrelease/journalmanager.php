@@ -108,6 +108,9 @@ function load_issue_meta($issue_meta){
 }
 
 function quering_api($url='fixture_prs.json', $ttl=600){
+    if (strpos($url, JM_API_URL) !== 0 && !preg_match('/^[A-Za-z0-9._-]+\.json$/', $url)) {
+        return '{}';
+    }
     $m = new Memcache();
     $memcache_url = explode(":", JM_MEMCACHED_HOST);
     $memcache_domain = $memcache_url[0];
@@ -154,6 +157,8 @@ function issue_label($meta){
 }
 
 function get_press_releases_by_pid($pid, $lng){
+    $pid = preg_match('/^[A-Za-z0-9._-]+$/', (string)$pid) ? $pid : '';
+    $lng = preg_match('/^[a-z]{2}$/', (string)$lng) ? $lng : 'pt';
     #$json = json_decode(file_get_contents('fixture_prs.json'), true);
     #$json = json_decode(quering_api('fixture_prs.json'), true);
 
@@ -196,6 +201,12 @@ function get_press_releases_by_pid($pid, $lng){
 }
 
 function get_press_release($id, $pid, $lng){
+    $id = preg_match('/^[0-9]+$/', (string)$id) ? $id : '';
+    $pid = preg_match('/^[A-Za-z0-9._,-]+$/', (string)$pid) ? $pid : '';
+    $lng = preg_match('/^[a-z]{2}$/', (string)$lng) ? $lng : 'pt';
+    if ($id == '') {
+        return array('prs'=>array(), 'meta'=>array());
+    }
     #$json = json_decode(file_get_contents('fixture_pr_id.json'), true);
     #$json = json_decode(quering_api('fixture_pr_id.json'), true);
     $request_url = JM_API_URL.'pressreleases/'.$id.'/?format=json&username='.JM_API_USER.'&api_key='.JM_API_TOKEN;
@@ -226,7 +237,11 @@ function get_press_release($id, $pid, $lng){
     if ($result['prs']['type'] === 'article'){
         $result['meta'] = array();
         foreach (explode(',', $pid) as $article_pid){
-            $xml_url = 'http://'.$_SERVER['SERVER_NAME'].'/scielo.php?debug=xml&pid='.$article_pid.'&script=sci_arttext';
+            $article_pid = trim($article_pid);
+            if (!preg_match('/^[A-Za-z0-9._-]+$/', $article_pid)) {
+                continue;
+            }
+            $xml_url = 'http://'.$_SERVER['SERVER_NAME'].'/scielo.php?debug=xml&pid='.rawurlencode($article_pid).'&script=sci_arttext';
             $meta = load_article_meta($xml_url);
             $meta['citation'] = citation_display($meta);
             array_push($result['meta'], $meta);
