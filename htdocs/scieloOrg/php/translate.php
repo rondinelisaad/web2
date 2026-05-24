@@ -1,5 +1,5 @@
 <?php
-	ini_set("display_errors","1");
+	ini_set("display_errors","0");
 	error_reporting(E_ALL ^E_NOTICE);
 	$tlang = isset($_REQUEST['tlang'])?($_REQUEST['tlang']):"";
 	$lang = isset($_REQUEST['lang'])?($_REQUEST['lang']):"";

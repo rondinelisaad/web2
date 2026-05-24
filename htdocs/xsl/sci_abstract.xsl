@@ -13,7 +13,7 @@
 		<xsl:if test=".//mml:math">
 			<xsl:processing-instruction name="xml-stylesheet"> type="text/xsl" href="/xsl/mathml.xsl"</xsl:processing-instruction>
 		</xsl:if>
-			<html xmlns="http://www.w3.org/1999/xhtml" >
+			<html xmlns="http://www.w3.org/1999/xhtml" lang="{normalize-space(CONTROLINFO/LANGUAGE)}" >
 			<head>
 				<title>
 					<xsl:value-of select="ARTICLE/citation_title" />
@@ -54,6 +54,7 @@
 	            </xsl:if>
 			</head>
 			<body class="arttext-page">
+				<xsl:call-template name="ACCESS_SKIP_LINK"/>
 				<div class="container">
 					<div class="top">
 						<div id="issues"/>
@@ -68,7 +69,10 @@
 							<xsl:with-param name="scope" select="TITLEGROUP/SIGLUM"/>
 						</xsl:call-template>
 					</div>
-					<div class="content">
+					<main id="main-content" tabindex="-1" class="content">
+						<h1 class="visually-hidden">
+							<xsl:value-of select="ARTICLE/citation_title" disable-output-escaping="yes"/>
+						</h1>
 						<div class="issues-journal-logo">
 							<img src="{//CONTROLINFO/SCIELO_INFO/PATH_SERIMG}{//TITLEGROUP/SIGLUM}/glogo.gif" alt="{//TITLEGROUP/TITLE}"/>
 						</div>
@@ -94,7 +98,7 @@
 						<div class="contentRight"-->
 						<!--/div-->
 						<div class="spacer">&#160;</div>
-					</div>
+					</main>
 					<xsl:apply-templates select="." mode="footer-journal"/>
 				</div>
 			</body>

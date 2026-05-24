@@ -23,7 +23,7 @@
 						</div>
 						<div class="top">
 							<div id="parent">
-								<img src="{concat('/img/',$lang,'/scielobre.gif')}" alt="SciELO - Scientific Electronic Library Online"/>
+																	<img src="/img/pt/scielobre.gif" alt="Educ@"/>
 							</div>
 							<div id="identification">
 								<h1>

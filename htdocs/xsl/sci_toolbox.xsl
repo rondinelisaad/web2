@@ -79,7 +79,7 @@
                     <a href="javascript:void(0);"
                       onclick='window.open("","mensagem","toolbar=0,location=0,directories=0,status=0,menubar=0,scrollbars=1,resizable=0,width=320,height=240"); document.forms.addToShelf.submit();{$services//service[name="minhaColecao"]/call}'
                       rel="nofollow">
-                      <img src="/img/en/iconSend2MyLibrary.gif"/>
+                      <img src="/img/en/iconSend2MyLibrary.gif" alt=""/>
                       <xsl:value-of
                         select="$translations/xslid[@id='sci_toolbox']/text[@find='add_to_my_collection']"
                       />
@@ -89,7 +89,7 @@
                     <a href="javascript:void(0);"
                       onclick='window.open("","mensagem","toolbar=0,location=0,directories=0,status=0,menubar=0,scrollbars=1,resizable=0,width=320,height=240");document.forms.citedAlert.submit();{$services//service[name="aviseMeCitado"]/call}'
                       rel="nofollow">
-                      <img src="/img/en/iconAlert.gif"/>
+                      <img src="/img/en/iconAlert.gif" alt=""/>
                       <xsl:value-of
                         select="$translations/xslid[@id='sci_toolbox']/text[@find='alert_me_when_cited']"
                       />
@@ -99,7 +99,7 @@
                     <a href="javascript:void(0);"
                       onclick='window.open("","mensagem","toolbar=0,location=0,directories=0,status=0,menubar=0,scrollbars=1,resizable=0,width=320,height=240");document.forms.accessAlert.submit();{$services//service[name="envieMeEstatisticaAcesso"]/call}'
                       rel="nofollow">
-                      <img src="/img/es/iconStatistics.gif"/>
+                      <img src="/img/es/iconStatistics.gif" alt=""/>
                       <xsl:value-of
                         select="$translations/xslid[@id='sci_toolbox']/text[@find='send_me_access_statistics']"
                       />
@@ -112,7 +112,7 @@
                       href="http://{$SCIELO_REGIONAL_DOMAIN}/apps/servicesplatform/client/controller/authentication/origin/{$url_login}"
                       onClick="{$services//service[name='servicosCustomizados']/call}"
                       rel="nofollow">
-                      <img src="/img/{$LANGUAGE}/iconLogin.gif"/>
+                      <img src="/img/{$LANGUAGE}/iconLogin.gif" alt=""/>
                       <xsl:value-of
                         select="$translations/xslid[@id='sci_toolbox']/text[@find='custom_services']"
                       />
@@ -142,11 +142,11 @@
           <div class="box">
             <ul>
               <li>
-                <img src="/img/{$LANGUAGE}/iconStatistics.gif"/>
+                <img src="/img/{$LANGUAGE}/iconStatistics.gif" alt=""/>
                 <a href="http://analytics.scielo.org/?journal={$current_issn}&amp;collection={//ANALYTICS_CODE}" target="_blank">SciELO Analytics</a>
               </li>
               <li id="google_metrics_link_li" style="display: none;">
-                <img src="/img/{$LANGUAGE}/iconStatistics.gif"/>
+                <img src="/img/{$LANGUAGE}/iconStatistics.gif" alt=""/>
                 <a id="google_metrics_link" target="_blank">Google Scholar H5M5 (<span id="google_metrics_year"></span>)</a>
               </li>
             </ul>
@@ -182,7 +182,7 @@
               <xsl:if test="//CONTROLINFO/PAGE_NAME='sci_arttext'">
                 <xsl:if test="//LANGUAGES/ART_TEXT_LANGS//LANG">
                   <li>
-                      <img src="/img/fulltxt.gif"/>
+                      <img src="/img/fulltxt.gif" alt=""/>
                       <xsl:value-of select="$translations/xslid[@id='sci_issuetoc']/text[@find='full']"/>
                       <xsl:if test="$tlng!=//ARTICLE/@ORIGINALLANG">
                         <xsl:apply-templates select="//ARTICLE/@ORIGINALLANG"
@@ -267,7 +267,7 @@
                     <xsl:attribute name="onClick"
                       >callUpdateArticleLog('artigo_em_formato_xml');</xsl:attribute>
                   </xsl:if>
-                  <img src="/img/{$LANGUAGE}/iconXMLDocument.gif"/>
+                  <img src="/img/{$LANGUAGE}/iconXMLDocument.gif" alt=""/>
                   <xsl:value-of
                     select="$translations/xslid[@id='sci_toolbox']/text[@find='article_in_xml_format']"
                   />
@@ -287,7 +287,7 @@
                         <xsl:value-of select="$services//service[name='referenciasArtigo']/call"
                       /></xsl:attribute>
                     <xsl:attribute name="rel">nofollow</xsl:attribute>
-                    <img src="/img/{$LANGUAGE}/iconReferences.gif"/>
+                    <img src="/img/{$LANGUAGE}/iconReferences.gif" alt=""/>
                     <xsl:value-of
                       select="$translations/xslid[@id='sci_toolbox']/text[@find='article_references']"
                     />
@@ -303,7 +303,7 @@
               <!-- HOW TO CITE THIS ARTICLE FIM-->
               <!-- ANALYTICS INICIO-->
               <li>
-                <img src="/img/{$LANGUAGE}/iconStatistics.gif"/>
+                <img src="/img/{$LANGUAGE}/iconStatistics.gif" alt=""/>
                 <a href="http://analytics.scielo.org/?document={//ARTICLE/@PID}&amp;collection={//ANALYTICS_CODE}" target="_blank">SciELO Analytics</a>
               </li>
               <!-- ANALYTICS FIM-->
@@ -328,7 +328,7 @@
                           <xsl:value-of select="$services//service[name='comentarios']/call"
                         /></xsl:attribute>
                       <xsl:attribute name="rel">nofollow</xsl:attribute>
-                      <img src="/img/{$LANGUAGE}/iconComment.gif"/>
+                      <img src="/img/{$LANGUAGE}/iconComment.gif" alt=""/>
                       <xsl:value-of
                         select="$translations/xslid[@id='sci_toolbox']/text[@find='comments']"/>
                         (<xsl:value-of select="$commentCount"/>) </a>
@@ -358,7 +358,7 @@
                         <xsl:value-of select="$services//service[name='referenciasArtigo']/call"
                       /></xsl:attribute>
                     <xsl:attribute name="rel">nofollow</xsl:attribute>
-                    <img src="/img/{$LANGUAGE}/iconTranslation.gif"/>
+                    <img src="/img/{$LANGUAGE}/iconTranslation.gif" alt=""/>
                     <xsl:value-of
                       select="$translations/xslid[@id='sci_toolbox']/text[@find='automatic_translation']"
                     />
@@ -402,7 +402,7 @@
                         <xsl:value-of select="$services//service[name='indicadoresSaude']/call"
                       /></xsl:attribute>
                     <xsl:attribute name="rel">nofollow</xsl:attribute>
-                    <img src="/img/{$LANGUAGE}/iconDATASUS.gif"/>
+                    <img src="/img/{$LANGUAGE}/iconDATASUS.gif" alt=""/>
                     <xsl:value-of
                       select="$translations/xslid[@id='sci_toolbox']/text[@find='health_indicators']"
                     />
@@ -423,7 +423,7 @@
               <!-- REQUESTS GRAFICS INICIO-->
               <xsl:if test="$show_requests = 1">
                 <li>
-                    <img src="/img/{$LANGUAGE}/iconStatistics.gif"/>
+                    <img src="/img/{$LANGUAGE}/iconStatistics.gif" alt=""/>
                     <a href="http://analytics.scielo.org/w/accesses?document={//ARTICLE/@PID}&amp;collection={//ANALYTICS_CODE}" target="_blank">
                       <xsl:value-of select="$translations/xslid[@id='sci_toolbox']/text[@find='access']"/>
                     </a>
@@ -451,7 +451,7 @@
                       <xsl:attribute name="target">_blank</xsl:attribute>
                     </xsl:when>
                   </xsl:choose>
-                  <img src="/img/{$LANGUAGE}/iconClinicalTrials.gif"/>
+                  <img src="/img/{$LANGUAGE}/iconClinicalTrials.gif" alt=""/>
                   <xsl:value-of
                     select="$translations/xslid[@id='sci_toolbox']/text[@find='clinical_trial']"/>
                 </a>
@@ -535,7 +535,7 @@
                         <xsl:attribute name="target">_blank</xsl:attribute>
                       </xsl:when>
                     </xsl:choose>
-                    <img src="/img/{$LANGUAGE}/iconProjFapesp.gif"/>
+                    <img src="/img/{$LANGUAGE}/iconProjFapesp.gif" alt=""/>
                     <xsl:value-of
                       select="$translations/xslid[@id='sci_toolbox']/text[@find='fapesp_projects']"
                     />
@@ -551,7 +551,7 @@
                     <a href="javascript:void(0);">
                       <xsl:attribute name="onclick"> window.open('<xsl:value-of
                           select="concat(//fulltext-service[@id='ubio']/url,$refferer)"/>') </xsl:attribute>
-                      <img src="/img/btubio.png" border="0" width="21px" heigth="21px"/> uBio </a>
+                      <img src="/img/btubio.png" border="0" width="21px" heigth="21px" alt=""/> uBio </a>
                   </li>
                 </xsl:if>
               </xsl:if>
@@ -589,7 +589,7 @@
                       <xsl:when test="$LANGUAGE='es'">Mendeley</xsl:when>
                       <xsl:when test="$LANGUAGE='en'">Mendeley</xsl:when>
                     </xsl:choose></xsl:attribute>
-                    <img src="http://www.mendeley.com/graphics/mendeley.png"/></a>
+                    <img src="http://www.mendeley.com/graphics/mendeley.png" alt=""/></a>
                   
                   <a
                     href="http://www.addthis.com/bookmark.php?v=250&amp;username=xa-4c347ee4422c56df"
@@ -618,15 +618,14 @@
         <hr/>
         <ul>
           <li>
-            <a id="permalink" href="javascript:void(0);"><img src="/img/common/iconPermalink.gif"
-              />Permalink</a>
+            <a id="permalink" href="javascript:void(0);"><img src="/img/common/iconPermalink.gif" alt=""/>Permalink</a>
           </li>
         </ul>
       </div>
       <div id="permalink_box"
         style="margin-left:20px;background-color:#F2F2F2;border: 1px solid #CCC;display:none;position:absolute;z-index:1;padding:2px 10px 10px 10px;">
         <div style="text-align:right;">
-          <img src="/img/common/icon-close.png" onClick="$('#permalink_box').toggle();"/>
+          <img src="/img/common/icon-close.png" onClick="$('#permalink_box').toggle();" alt=""/>
         </div>
         <input type="text" name="short-url" id="short-url"/>
       </div>
@@ -665,7 +664,7 @@
     </xsl:variable>
     <script src="{$serviceUrl}"/>
     <img id="wikifier-conceptweblinker-image" src="/img/btknewco.gif" onclick="WikiProfClick();"
-      align="absmiddle"/>
+      align="absmiddle" alt=""/>
     <a id="wikifier-conceptweblinker-button" href="#" title="Knewco's ConceptWeb Linker Button">
       <xsl:value-of select="$show"/>
     </a>
@@ -743,7 +742,7 @@
   </xsl:template>
 
   <xsl:template match="fulltext-service[@id='access']" mode="label">
-    <img src="/img/{$LANGUAGE}/iconStatistics.gif"/>
+    <img src="/img/{$LANGUAGE}/iconStatistics.gif" alt=""/>
     <xsl:value-of select="$translations/xslid[@id='sci_toolbox']/text[@find='access']"/>
   </xsl:template>
 
@@ -806,7 +805,7 @@
       select="$translations/xslid[@id='sci_toolbox']/text[@find='similars_in']"/> Google </xsl:template>
 
   <xsl:template match="fulltext-service[@id='send_mail']" mode="label">
-    <img src="/img/{$LANGUAGE}/iconEmail.gif"/>
+    <img src="/img/{$LANGUAGE}/iconEmail.gif" alt=""/>
     <xsl:value-of
       select="$translations/xslid[@id='sci_toolbox']/text[@find='send_this_article_by_email']"/>
   </xsl:template>
@@ -826,7 +825,7 @@
       <xsl:choose>
         <xsl:when test="position()=1">
           <xsl:if test="$icon!=''">
-            <img src="{$icon}"/></xsl:if>
+            <img src="{$icon}" alt=""/></xsl:if>
           <xsl:value-of select="$label"/>
         </xsl:when>
         <xsl:otherwise> | </xsl:otherwise>
@@ -852,7 +851,7 @@
       <xsl:choose>
         <xsl:when test="position()=1">
           <xsl:if test="$icon!=''">
-            <img src="{$icon}"/></xsl:if>
+            <img src="{$icon}" alt=""/></xsl:if>
         </xsl:when>
         <xsl:otherwise> | </xsl:otherwise>
       </xsl:choose>
@@ -872,7 +871,7 @@
       <xsl:choose>
         <xsl:when test="position()=1">
           <xsl:if test="$icon!=''">
-            <img src="{$icon}" width="18px"/></xsl:if>
+            <img src="{$icon}" width="18px" alt=""/></xsl:if>
         </xsl:when>
         <xsl:otherwise> | </xsl:otherwise>
       </xsl:choose>
@@ -894,7 +893,7 @@
       <xsl:attribute name="onClick">window.open('<xsl:value-of select="$url"
         />','','width=1000,height=480,resizable=yes,toolbar=0,location=0,directories=0,status=0,menubar=0,scrollbars=1');</xsl:attribute>
       <xsl:attribute name="rel">nofollow</xsl:attribute>
-      <img src="{$icon}"/>
+      <img src="{$icon}" alt=""/>
 
       <xsl:value-of select="$label"/>
     </a>

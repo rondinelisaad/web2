@@ -14,21 +14,24 @@
 	<xsl:template match="/">
 		<xsl:variable name="curr_lang">
 			<xsl:choose>
-				<xsl:when test="normalize-space(//CONTROLINFO/LANGUAGE)!=''">
-					<xsl:value-of select="normalize-space(//CONTROLINFO/LANGUAGE)"/>
+				<xsl:when test="normalize-space(//CONTROLINFO/varScieloOrg/lng)!=''">
+					<xsl:value-of select="normalize-space(//CONTROLINFO/varScieloOrg/lng)"/>
+				</xsl:when>
+				<xsl:when test="contains(normalize-space(//CONTROLINFO/varScieloOrg/refferer),'lng=')">
+					<xsl:choose>
+						<xsl:when test="contains(substring-after(normalize-space(//CONTROLINFO/varScieloOrg/refferer),'lng='),'&amp;')">
+							<xsl:value-of select="substring-before(substring-after(normalize-space(//CONTROLINFO/varScieloOrg/refferer),'lng='),'&amp;')"/>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:value-of select="substring-after(normalize-space(//CONTROLINFO/varScieloOrg/refferer),'lng=')"/>
+						</xsl:otherwise>
+					</xsl:choose>
 				</xsl:when>
 				<xsl:when test="normalize-space(//lng)!=''">
 					<xsl:value-of select="normalize-space(//lng)"/>
 				</xsl:when>
-				<xsl:when test="contains(normalize-space(//refferer),'lng=')">
-					<xsl:choose>
-						<xsl:when test="contains(substring-after(normalize-space(//refferer),'lng='),'&amp;')">
-							<xsl:value-of select="substring-before(substring-after(normalize-space(//refferer),'lng='),'&amp;')"/>
-						</xsl:when>
-						<xsl:otherwise>
-							<xsl:value-of select="substring-after(normalize-space(//refferer),'lng=')"/>
-						</xsl:otherwise>
-					</xsl:choose>
+				<xsl:when test="normalize-space(//CONTROLINFO/LANGUAGE)!=''">
+					<xsl:value-of select="normalize-space(//CONTROLINFO/LANGUAGE)"/>
 				</xsl:when>
 				<xsl:when test="normalize-space(//LANGUAGE)!=''">
 					<xsl:value-of select="normalize-space(//LANGUAGE)"/>
@@ -50,7 +53,7 @@
 				<xsl:otherwise>iso</xsl:otherwise>
 			</xsl:choose>
 		</xsl:variable>
-		<html>
+		<html lang="{$curr_lang}">
 			<head>
 				<title>
                     <xsl:value-of select="$translations/xslid[@id='sci_subject']/text[@find = 'subject_list_of_serials']"/>
@@ -63,12 +66,13 @@
 				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css"/>
 			</head>
 			<body class="serial-page" link="#0000ff" vlink="#800080" bgcolor="#ffffff">
+				<xsl:call-template name="ACCESS_SKIP_LINK"/>
 				<div class="container">
 					<div class="top">
 						<div class="issues-top">
 							<div class="issues-top-logo">
-								<a href="/scielo.php?lng={$curr_lang}">
-									<img src="https://www.scielo.br/static/img/logo-scielo-no-label.svg" alt="SciELO - Scientific Electronic Library Online" border="0" style="max-width:120px;height:auto;display:block;margin:0 auto;"/>
+									<a href="/scielo.php?lng={$curr_lang}">
+										<img src="/img/pt/scielobre.gif" alt="Educ@" border="0" style="max-width:120px;height:auto;display:block;margin:0 auto;"/>
 								</a>
 							</div>
 							<div class="issues-top-nav">
@@ -113,7 +117,7 @@
 											</span>
 										</a>
 										<div class="sci-nav-lang-menu">
-											<button class="sci-nav-lang-btn" type="button">
+											<button class="sci-nav-lang-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Language selector">
 												&#127760;
 												<xsl:text> </xsl:text>
 												<xsl:choose>
@@ -140,6 +144,10 @@
 						</div>
 						<br/>
 					</div>
+					<main id="main-content" tabindex="-1">
+					<h1 class="visually-hidden">
+						<xsl:value-of select="$translations/xslid[@id='sci_subject']/text[@find = 'subject_list_of_serials']"/>
+					</h1>
 					<table cellspacing="0" border="0" cellpadding="7" width="100%">
 						<tr>
 							<td width="26%">&#160;</td>
@@ -154,6 +162,7 @@
 					<br/>
 					<xsl:apply-templates select="//LIST"/>
 					<xsl:apply-templates select="SUBJECTLIST/COPYRIGHT"/>
+				</main>
 				</div>
 			</body>
 		</html>
@@ -179,14 +188,12 @@
 			</tr>
 		</table>
 	</xsl:template>
-	<xsl:template match="SUBJECT">
-		<xsl:param name="status"/>
-		<p class="section">
-			<img>
-				<xsl:attribute name="src"><xsl:value-of select="//PATH_GENIMG"/>lead.gif</xsl:attribute>
-			</img>&#160;&#160;
-		<font size="-1" color="#000080">
-				<a>
+		<xsl:template match="SUBJECT">
+			<xsl:param name="status"/>
+			<p class="section">
+				<img src="{//PATH_GENIMG}lead.gif" alt=""/>&#160;&#160;
+			<font size="-1" color="#000080">
+					<a>
 					<xsl:attribute name="name">subj<xsl:value-of select="position()"/></xsl:attribute>
 					<xsl:value-of select="@NAME"/>
 				</a>

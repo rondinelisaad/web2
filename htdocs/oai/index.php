@@ -102,7 +102,7 @@ function esc(string $v): string
   <div class="shell">
     <div class="card">
       <div class="head">
-        <img src="/img/revistas/scielobrp.gif" alt="SciELO">
+        <img src="/img/pt/scielobre.gif" alt="Educ@">
         <div class="lang">
           <a href="/oai/index.php?lang=pt" class="<?= $lang === 'pt' ? 'active' : '' ?>">Português</a>
           <a href="/oai/index.php?lang=es" class="<?= $lang === 'es' ? 'active' : '' ?>">Español</a>
@@ -180,4 +180,3 @@ function esc(string $v): string
   </div>
 </body>
 </html>
-

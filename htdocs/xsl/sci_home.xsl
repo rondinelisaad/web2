@@ -15,7 +15,7 @@
 	<xsl:output method="html" indent="no"/>
 	<xsl:include href="sci_navegation.xsl"/>
 	<xsl:template match="HOMEPAGE">
-		<html>
+		<html lang="{normalize-space(//CONTROLINFO/LANGUAGE)}">
 			<head>
 				<title><xsl:value-of select="//SCIELOINFOGROUP/SITE_NAME" /></title>
 				<meta http-equiv="Pragma" content="no-cache"/>
@@ -33,6 +33,13 @@
 			</head>
 			<xsl:if test="not(//NEW_HOME)">
 				<body class="home-page" link="#000080" vlink="#800080" bgcolor="#ffffff">
+					<a class="skip-link" href="#main-content">
+						<xsl:choose>
+							<xsl:when test="normalize-space(//CONTROLINFO/LANGUAGE)='en'">Skip to main content</xsl:when>
+							<xsl:when test="normalize-space(//CONTROLINFO/LANGUAGE)='es'">Saltar al contenido principal</xsl:when>
+							<xsl:otherwise>Pular para o conteúdo principal</xsl:otherwise>
+						</xsl:choose>
+					</a>
 					<xsl:apply-templates select="CONTROLINFO"/>
 				</body>
 			</xsl:if>
@@ -55,7 +62,7 @@
 					</xsl:choose>
 				</a>
 				<div class="serials-lang-menu">
-					<button class="serials-ghost-btn serials-lang-btn" type="button">
+					<button class="serials-ghost-btn serials-lang-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Language selector">
 						&#127760;
 						<xsl:text> </xsl:text>
 						<xsl:choose>
@@ -96,11 +103,18 @@
 					</ul>
 				</div>
 			</div>
-			<div class="home-branding">
-				<img alt="SciELO" src="/img/revistas/scielobrp.gif"/>
-				<div class="home-brand-subtitle">Scientific Electronic Library Online</div>
+				<div class="home-branding">
+					<img alt="Educ@" src="/img/pt/scielobre.gif"/>
 			</div>
 		</header>
+		<main id="main-content" tabindex="-1">
+			<h1 class="visually-hidden">
+				<xsl:choose>
+					<xsl:when test="normalize-space(LANGUAGE)='en'">Educ@ Home</xsl:when>
+					<xsl:when test="normalize-space(LANGUAGE)='es'">Inicio Educ@</xsl:when>
+					<xsl:otherwise>Início Educ@</xsl:otherwise>
+				</xsl:choose>
+			</h1>
 		<section class="home-search-wrap">
 			<form class="home-search-form" method="get" action="/search_mvp.php">
 				<input type="hidden" name="lang">
@@ -109,6 +123,13 @@
 				<input type="hidden" name="field" value="all"/>
 				<input type="hidden" name="page" value="1"/>
 				<input class="home-search-input" type="text" name="q">
+					<xsl:attribute name="aria-label">
+						<xsl:choose>
+							<xsl:when test="normalize-space(LANGUAGE)='en'">Search terms</xsl:when>
+							<xsl:when test="normalize-space(LANGUAGE)='es'">Términos de búsqueda</xsl:when>
+							<xsl:otherwise>Termos de busca</xsl:otherwise>
+						</xsl:choose>
+					</xsl:attribute>
 					<xsl:attribute name="placeholder">
 						<xsl:choose>
 							<xsl:when test="normalize-space(LANGUAGE)='en'">Enter one or more words</xsl:when>
@@ -154,6 +175,13 @@
 				</a>
 				<div class="home-journal-search-box">
 					<input id="home-journal-filter" class="home-journal-filter" type="text">
+						<xsl:attribute name="aria-label">
+							<xsl:choose>
+								<xsl:when test="normalize-space(LANGUAGE)='en'">Filter journals</xsl:when>
+								<xsl:when test="normalize-space(LANGUAGE)='es'">Filtrar revistas</xsl:when>
+								<xsl:otherwise>Filtrar periódicos</xsl:otherwise>
+							</xsl:choose>
+						</xsl:attribute>
 						<xsl:attribute name="placeholder">
 							<xsl:choose>
 								<xsl:when test="normalize-space(LANGUAGE)='en'">Search journals</xsl:when>
@@ -166,37 +194,69 @@
 				</div>
 			</div>
 		</section>
-		<section class="home-press-releases">
-			<h2>SciELO Press Releases</h2>
-			<div class="home-pr-carousel">
-				<button id="home-pr-prev" class="home-pr-nav" type="button" aria-label="Anterior">&#8249;</button>
-				<div id="home-pr-grid" class="home-pr-grid">
-					<div class="home-pr-loading">Carregando posts...</div>
+			<section class="home-press-releases">
+				<div class="home-pr-head">
+					<h2>
+						<xsl:choose>
+							<xsl:when test="normalize-space(LANGUAGE)='en'">Fundação Carlos Chagas News</xsl:when>
+							<xsl:when test="normalize-space(LANGUAGE)='es'">Noticias Fundação Carlos Chagas</xsl:when>
+							<xsl:otherwise>Notícias Fundação Carlos Chagas</xsl:otherwise>
+						</xsl:choose>
+					</h2>
+					<a class="home-pr-all-link" href="https://www.fcc.org.br/noticias/todas" target="_blank" rel="noopener noreferrer">
+						<xsl:choose>
+							<xsl:when test="normalize-space(LANGUAGE)='en'">View all news</xsl:when>
+							<xsl:when test="normalize-space(LANGUAGE)='es'">Ver todas las noticias</xsl:when>
+							<xsl:otherwise>Ver todas as notícias</xsl:otherwise>
+						</xsl:choose>
+					</a>
 				</div>
-				<button id="home-pr-next" class="home-pr-nav" type="button" aria-label="Próximo">&#8250;</button>
-			</div>
-			<div id="home-pr-dots" class="home-pr-dots"></div>
-		</section>
-		<section class="home-press-releases home-perspective">
-			<h2>SciELO em perspectiva</h2>
-			<div class="home-pr-carousel">
-				<button id="home-sp-prev" class="home-pr-nav" type="button" aria-label="Anterior">&#8249;</button>
-				<div id="home-sp-grid" class="home-pr-grid">
-					<div class="home-pr-loading">Carregando posts...</div>
+				<div class="home-pr-carousel">
+					<button id="home-pr-prev" class="home-pr-nav" type="button" aria-controls="home-pr-grid">
+						<xsl:attribute name="aria-label">
+							<xsl:choose>
+								<xsl:when test="normalize-space(LANGUAGE)='en'">Previous posts</xsl:when>
+								<xsl:when test="normalize-space(LANGUAGE)='es'">Publicaciones anteriores</xsl:when>
+								<xsl:otherwise>Posts anteriores</xsl:otherwise>
+							</xsl:choose>
+						</xsl:attribute>
+						&#8249;
+					</button>
+					<div id="home-pr-grid" class="home-pr-grid" role="status" aria-live="polite">
+						<div class="home-pr-loading">
+							<xsl:choose>
+								<xsl:when test="normalize-space(LANGUAGE)='en'">Loading posts...</xsl:when>
+								<xsl:when test="normalize-space(LANGUAGE)='es'">Cargando publicaciones...</xsl:when>
+								<xsl:otherwise>Carregando posts...</xsl:otherwise>
+							</xsl:choose>
+						</div>
+					</div>
+					<button id="home-pr-next" class="home-pr-nav" type="button" aria-controls="home-pr-grid">
+						<xsl:attribute name="aria-label">
+							<xsl:choose>
+								<xsl:when test="normalize-space(LANGUAGE)='en'">Next posts</xsl:when>
+								<xsl:when test="normalize-space(LANGUAGE)='es'">Siguientes publicaciones</xsl:when>
+								<xsl:otherwise>Próximos posts</xsl:otherwise>
+							</xsl:choose>
+						</xsl:attribute>
+						&#8250;
+					</button>
 				</div>
-				<button id="home-sp-next" class="home-pr-nav" type="button" aria-label="Próximo">&#8250;</button>
-			</div>
-			<div id="home-sp-dots" class="home-pr-dots"></div>
-		</section>
+				<div id="home-pr-dots" class="home-pr-dots"></div>
+			</section>
+		</main>
 		<footer class="serials-footer">
 			<div class="serials-footer-top">
-				<div class="serials-footer-brand">
-					<img alt="SciELO" src="https://www.scielo.br/static/img/logo-scielo-no-label.svg"/>
+					<div class="serials-footer-brand">
+						<img alt="Educ@" src="/img/pt/scielobre.gif"/>
 				</div>
 				<div class="serials-footer-meta">
-					<div class="name"><strong>SciELO - Scientific Electronic Library Online</strong></div>
-					<div>Rua Dr. Diogo de Faria, 1087 - 9º andar - Vila Clementino 04037-003 São Paulo/SP - Brasil</div>
-					<div>E-mail: scielo@scielo.org</div>
+					<div class="name"><strong>Educ@</strong></div>
+					<div><strong>Funda&#231;&#227;o Carlos Chagas</strong></div>
+					<div>Av. Prof. Francisco Morato, 1565 - Jd. Guedala</div>
+					<div>05513-900 S&#227;o Paulo SP - Brasil</div>
+					<div>Tel: +55 11 3723-3082</div>
+					<div>educ@fcc.org.br</div>
 					<div class="social">
 						<a class="social-link" aria-label="Bluesky" href="https://bsky.app/" target="_blank" rel="noopener noreferrer"><span class="social-icon social-bluesky"></span></a>
 						<a class="social-link" aria-label="LinkedIn" href="https://www.linkedin.com/company/scielo" target="_blank" rel="noopener noreferrer"><span class="social-icon social-linkedin"></span></a>
@@ -227,19 +287,13 @@
 		  var results = document.getElementById('home-journal-results');
 		  var langInput = document.getElementById('home-current-lang');
 		  var currentLang = (langInput && langInput.value) ? langInput.value : 'pt';
-		  var prGrid = document.getElementById('home-pr-grid');
-		  var prPrev = document.getElementById('home-pr-prev');
-		  var prNext = document.getElementById('home-pr-next');
-		  var prDots = document.getElementById('home-pr-dots');
-		  var spGrid = document.getElementById('home-sp-grid');
-		  var spPrev = document.getElementById('home-sp-prev');
-		  var spNext = document.getElementById('home-sp-next');
-		  var spDots = document.getElementById('home-sp-dots');
-		  var prPosts = [];
-		  var prPage = 0;
-		  var spPosts = [];
-		  var spPage = 0;
-		  var prPerPage = 4;
+			  var prGrid = document.getElementById('home-pr-grid');
+			  var prPrev = document.getElementById('home-pr-prev');
+			  var prNext = document.getElementById('home-pr-next');
+			  var prDots = document.getElementById('home-pr-dots');
+			  var prPosts = [];
+			  var prPage = 0;
+			  var prPerPage = 4;
 		  var journals = [];
 		  var loaded = false;
 		  var loading = false;
@@ -336,6 +390,36 @@
 		    return 'Continue lendo';
 		  }
 
+		  function noPostsLabel() {
+		    if (currentLang === 'en') {
+		      return 'No posts found.';
+		    }
+		    if (currentLang === 'es') {
+		      return 'No se encontraron publicaciones.';
+		    }
+		    return 'Nenhum post encontrado.';
+		  }
+
+		  function loadFailLabel() {
+		    if (currentLang === 'en') {
+		      return 'Failed to load posts.';
+		    }
+		    if (currentLang === 'es') {
+		      return 'Error al cargar publicaciones.';
+		    }
+		    return 'Falha ao carregar posts.';
+		  }
+
+		  function pageLabel(n) {
+		    if (currentLang === 'en') {
+		      return 'Page ' + n;
+		    }
+		    if (currentLang === 'es') {
+		      return 'Página ' + n;
+		    }
+		    return 'Página ' + n;
+		  }
+
 		  function formatDate(value) {
 		    if (!value) {
 		      return '';
@@ -357,7 +441,7 @@
 		      return;
 		    }
 		    if (!posts || !posts.length) {
-		      prGrid.innerHTML = '<div class="home-pr-loading">Nenhum post encontrado.</div>';
+		      prGrid.innerHTML = '<div class="home-pr-loading">' + noPostsLabel() + '</div>';
 		      if (prDots) {
 		        prDots.innerHTML = '';
 		      }
@@ -376,21 +460,23 @@
 		    var start = prPage * prPerPage;
 		    var end = start + prPerPage;
 		    var visiblePosts = posts.slice(start, end);
-		    var btn = readMoreLabel();
-		    prGrid.innerHTML = visiblePosts.map(function (post) {
-		      var image = post.image ? post.image : '/design-system/1.0.0/img/list.loading.gif';
-		      return (
-		        '<article class="home-pr-card">' +
-		          '<a class="home-pr-image-link" href="' + post.link + '" target="_blank" rel="noopener noreferrer">' +
-		            '<img src="' + image + '" alt="">' +
-		          '</a>' +
-		          '<div class="home-pr-body">' +
-		            '<div class="home-pr-date">' + escapeHtml(formatDate(post.date)) + '</div>' +
-		            '<a class="home-pr-title" href="' + post.link + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(post.title) + '</a>' +
-		            '<a class="home-pr-readmore" href="' + post.link + '" target="_blank" rel="noopener noreferrer">' + btn + '</a>' +
-		          '</div>' +
-		        '</article>'
-		      );
+			    var btn = readMoreLabel();
+			    prGrid.innerHTML = visiblePosts.map(function (post) {
+			      var image = post.image ? post.image : '/design-system/1.0.0/img/list.loading.gif';
+			      var excerpt = post.excerpt ? ('<div class="home-pr-excerpt">' + escapeHtml(post.excerpt) + '</div>') : '';
+			      return (
+			        '<article class="home-pr-card">' +
+			          '<a class="home-pr-image-link" href="' + post.link + '" target="_blank" rel="noopener noreferrer">' +
+			            '<img src="' + image + '" alt="">' +
+			          '</a>' +
+			          '<div class="home-pr-body">' +
+			            '<div class="home-pr-date">' + escapeHtml(formatDate(post.date)) + '</div>' +
+			            '<a class="home-pr-title" href="' + post.link + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(post.title) + '</a>' +
+			            excerpt +
+			            '<a class="home-pr-readmore" href="' + post.link + '" target="_blank" rel="noopener noreferrer">' + btn + '</a>' +
+			          '</div>' +
+			        '</article>'
+			      );
 		    }).join('');
 		    if (prPrev) {
 		      prPrev.style.visibility = totalPages > 1 ? 'visible' : 'hidden';
@@ -401,66 +487,9 @@
 		    if (prDots) {
 		      var dotsHtml = '';
 		      for (var i = 0; i < totalPages; i++) {
-		        dotsHtml += '<button type="button" class="home-pr-dot' + (i === prPage ? ' active' : '') + '" data-page="' + i + '" aria-label="Página ' + (i + 1) + '"></button>';
+		        dotsHtml += '<button type="button" class="home-pr-dot' + (i === prPage ? ' active' : '') + '" data-page="' + i + '" aria-label="' + pageLabel(i + 1) + '"></button>';
 		      }
 		      prDots.innerHTML = dotsHtml;
-		    }
-		  }
-
-		  function renderPerspective(posts) {
-		    if (!spGrid) {
-		      return;
-		    }
-		    if (!posts || !posts.length) {
-		      spGrid.innerHTML = '<div class="home-pr-loading">Nenhum post encontrado.</div>';
-		      if (spDots) {
-		        spDots.innerHTML = '';
-		      }
-		      if (spPrev) {
-		        spPrev.style.visibility = 'hidden';
-		      }
-		      if (spNext) {
-		        spNext.style.visibility = 'hidden';
-		      }
-		      return;
-		    }
-		    var totalPages = Math.ceil(posts.length / prPerPage);
-		    if (spPage >= totalPages) {
-		      spPage = 0;
-		    }
-		    var start = spPage * prPerPage;
-		    var end = start + prPerPage;
-		    var visiblePosts = posts.slice(start, end);
-		    var btn = readMoreLabel();
-		    spGrid.innerHTML = visiblePosts.map(function (post) {
-		      var image = post.image ? post.image : '/design-system/1.0.0/img/list.loading.gif';
-		      var excerpt = post.excerpt ? escapeHtml(post.excerpt) : '';
-		      return (
-		        '<article class="home-pr-card">' +
-		          '<a class="home-pr-image-link" href="' + post.link + '" target="_blank" rel="noopener noreferrer">' +
-		            '<img src="' + image + '" alt="">' +
-		          '</a>' +
-		          '<div class="home-pr-body">' +
-		            '<div class="home-pr-date">' + escapeHtml(formatDate(post.date)) + '</div>' +
-		            '<a class="home-pr-title" href="' + post.link + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(post.title) + '</a>' +
-		            '<div class="home-pr-excerpt">' + excerpt + '</div>' +
-		            '<a class="home-pr-readmore" href="' + post.link + '" target="_blank" rel="noopener noreferrer">' + btn + '</a>' +
-		          '</div>' +
-		        '</article>'
-		      );
-		    }).join('');
-		    if (spPrev) {
-		      spPrev.style.visibility = totalPages > 1 ? 'visible' : 'hidden';
-		    }
-		    if (spNext) {
-		      spNext.style.visibility = totalPages > 1 ? 'visible' : 'hidden';
-		    }
-		    if (spDots) {
-		      var dotsHtml = '';
-		      for (var i = 0; i < totalPages; i++) {
-		        dotsHtml += '<button type="button" class="home-pr-dot' + (i === spPage ? ' active' : '') + '" data-page="' + i + '" aria-label="Página ' + (i + 1) + '"></button>';
-		      }
-		      spDots.innerHTML = dotsHtml;
 		    }
 		  }
 
@@ -468,7 +497,7 @@
 		    if (!prGrid) {
 		      return;
 		    }
-		    fetch('/pressreleases_proxy.php?lang=' + encodeURIComponent(currentLang) + '&limit=8', { credentials: 'same-origin' })
+		    fetch('/fcc_news_proxy.php?lang=' + encodeURIComponent(currentLang) + '&limit=8', { credentials: 'same-origin' })
 		      .then(function (r) { return r.json(); })
 		      .then(function (data) {
 		        prPosts = data.posts || [];
@@ -476,23 +505,7 @@
 		        renderPressReleases(prPosts);
 		      })
 		      .catch(function () {
-		        prGrid.innerHTML = '<div class="home-pr-loading">Falha ao carregar posts.</div>';
-		      });
-		  }
-
-		  function loadPerspective() {
-		    if (!spGrid) {
-		      return;
-		    }
-		    fetch('/perspectiva_proxy.php?lang=' + encodeURIComponent(currentLang) + '&limit=8', { credentials: 'same-origin' })
-		      .then(function (r) { return r.json(); })
-		      .then(function (data) {
-		        spPosts = data.posts || [];
-		        spPage = 0;
-		        renderPerspective(spPosts);
-		      })
-		      .catch(function () {
-		        spGrid.innerHTML = '<div class="home-pr-loading">Falha ao carregar posts.</div>';
+		        prGrid.innerHTML = '<div class="home-pr-loading">' + loadFailLabel() + '</div>';
 		      });
 		  }
 
@@ -533,45 +546,7 @@
 		    });
 		  }
 
-		  if (spPrev) {
-		    spPrev.addEventListener('click', function () {
-		      if (!spPosts.length) {
-		        return;
-		      }
-		      var total = Math.ceil(spPosts.length / prPerPage);
-		      spPage = (spPage - 1 + total) % total;
-		      renderPerspective(spPosts);
-		    });
-		  }
-
-		  if (spNext) {
-		    spNext.addEventListener('click', function () {
-		      if (!spPosts.length) {
-		        return;
-		      }
-		      var total = Math.ceil(spPosts.length / prPerPage);
-		      spPage = (spPage + 1) % total;
-		      renderPerspective(spPosts);
-		    });
-		  }
-
-		  if (spDots) {
-		    spDots.addEventListener('click', function (event) {
-		      var target = event.target;
-		      if (!target || !target.getAttribute) {
-		        return;
-		      }
-		      var page = target.getAttribute('data-page');
-		      if (page === null) {
-		        return;
-		      }
-		      spPage = parseInt(page, 10) || 0;
-		      renderPerspective(spPosts);
-		    });
-		  }
-
 		  loadPressReleases();
-		  loadPerspective();
 		})();
 		]]></script>
 	</xsl:template>

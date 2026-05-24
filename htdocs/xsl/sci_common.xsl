@@ -274,6 +274,7 @@
         <IMG>
             <xsl:attribute name="src"><xsl:value-of select="$control_info/SCIELO_INFO/PATH_GENIMG"
                     /><xsl:value-of select="$control_info/LANGUAGE"/>/e-mailt.gif</xsl:attribute>
+            <xsl:attribute name="alt">email</xsl:attribute>
             <xsl:attribute name="border">0</xsl:attribute>
         </IMG>
         <br/>

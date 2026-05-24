@@ -40,6 +40,50 @@ a:hover {
   text-decoration: underline;
 }
 
+:focus-visible {
+  outline: 3px solid #1f6fff;
+  outline-offset: 2px;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  box-shadow: 0 0 0 3px rgba(31, 111, 255, 0.25);
+}
+
+.skip-link {
+  position: absolute;
+  left: 12px;
+  top: -48px;
+  z-index: 10000;
+  background: #1f6fff;
+  color: #fff;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  top: 10px;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
 hr {
   border: 0;
   border-top: 1px solid var(--sds-border);
@@ -615,11 +659,31 @@ body.home-page {
   padding: 6px 6% 32px;
 }
 
+.home-pr-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
 .home-press-releases h2 {
-  margin: 0 0 16px;
+  margin: 0;
   color: #083a5a;
   font-size: 18px;
   font-weight: 700;
+}
+
+.home-pr-all-link {
+  font-size: 13px;
+  font-weight: 600;
+  color: #2f5ec4;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.home-pr-all-link:hover {
+  text-decoration: underline;
 }
 
 .home-pr-grid {
@@ -732,6 +796,14 @@ body.home-page {
   font-size: 14px;
 }
 
+@media (max-width: 768px) {
+  .home-pr-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+}
+
 .home-perspective {
   padding-top: 0;
 }
@@ -756,6 +828,145 @@ body.issues-page {
   font-size: 15px;
   line-height: 1.5;
   color: #333;
+}
+
+/* FCC-inspired theme overrides */
+:root {
+  --sds-primary: #1e5b47;
+  --sds-primary-dark: #174437;
+  --sds-bg: #f2f1ee;
+  --sds-surface: #ffffff;
+  --sds-text: #202425;
+  --sds-muted: #5b615f;
+  --sds-border: #d6d1c7;
+  --sds-accent: #b28b4b;
+}
+
+html,
+body,
+body.home-page,
+body.serial-page,
+body.issues-page,
+body.serials-page {
+  background: var(--sds-bg);
+  color: var(--sds-text);
+  font-family: "Lato", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+a {
+  color: var(--sds-primary);
+}
+
+a:hover {
+  color: var(--sds-primary-dark);
+}
+
+.home-top-header,
+.serials-top-header,
+.issues-top {
+  background: linear-gradient(180deg, #f9f8f5 0%, #eeece7 100%);
+  border-color: var(--sds-border);
+}
+
+.home-search-wrap,
+.serials-breadcrumb,
+.home-journal-links-box,
+.journal-list-wrapper {
+  background: #ece8df;
+}
+
+.home-search-btn,
+.sci-nav-btn:hover,
+.serials-ghost-btn:hover {
+  background: var(--sds-primary);
+  border-color: var(--sds-primary);
+  color: #fff;
+}
+
+.home-search-btn {
+  background: var(--sds-primary);
+  border-color: var(--sds-primary);
+}
+
+.home-search-input,
+.home-journal-filter,
+.journal-filter-input,
+.serials-ghost-btn,
+.sci-nav-btn,
+.sci-nav-lang-btn,
+.serials-lang-btn,
+.home-pr-nav {
+  border-color: var(--sds-border);
+}
+
+.sci-nav-btn,
+.sci-nav-lang-btn,
+.serials-lang-btn {
+  color: var(--sds-primary-dark);
+  background: #f7f5f1;
+  font-weight: 500;
+}
+
+.sci-nav-btn-disabled {
+  background: #ece9e2;
+  color: #8a8d89;
+  border-color: var(--sds-border);
+}
+
+.journal-tab.active {
+  color: var(--sds-primary-dark);
+  border-bottom-color: var(--sds-accent);
+}
+
+.journal-status-dot.is-active {
+  background: #2f7a5f;
+}
+
+.journal-status-dot {
+  background: #a87a34;
+}
+
+.journal-title,
+.journal-meta,
+.home-pr-title {
+  color: var(--sds-primary);
+}
+
+.home-journal-links h2,
+.home-press-releases h2,
+.journal-list-page-title,
+.serials-brand-subtitle,
+.home-brand-subtitle {
+  color: var(--sds-primary-dark);
+}
+
+.home-pr-card,
+.issues-main-card,
+.serial-main-card,
+.serial-sidebar-card {
+  border-color: var(--sds-border);
+  background: #fff;
+}
+
+.home-pr-readmore {
+  background: #f7f5f1;
+  border-color: var(--sds-border);
+  color: var(--sds-primary-dark);
+}
+
+.home-pr-readmore:hover {
+  border-color: var(--sds-accent);
+  color: var(--sds-primary-dark);
+  background: #f2ede3;
+}
+
+.serials-footer {
+  background: #efede7;
+  border-top: 1px solid var(--sds-border);
+}
+
+.serials-footer-open-access span {
+  color: var(--sds-primary);
 }
 
 body.issuetoc-page {
@@ -2344,3 +2555,117 @@ body.about-page {
     display: none;
   }
 }
+
+/* FCC-inspired theme overrides (final priority) */
+:root {
+  --sds-primary: #1e5b47;
+  --sds-primary-dark: #174437;
+  --sds-bg: #f2f1ee;
+  --sds-surface: #ffffff;
+  --sds-text: #202425;
+  --sds-muted: #5b615f;
+  --sds-border: #d6d1c7;
+  --sds-accent: #b28b4b;
+}
+
+html,
+body,
+body.home-page,
+body.serial-page,
+body.issues-page,
+body.serials-page {
+  background: var(--sds-bg);
+  color: var(--sds-text);
+  font-family: "Lato", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+a { color: var(--sds-primary); }
+a:hover { color: var(--sds-primary-dark); }
+
+.home-top-header,
+.serials-top-header,
+.issues-top {
+  background: linear-gradient(180deg, #f9f8f5 0%, #eeece7 100%);
+  border-color: var(--sds-border);
+}
+
+.home-search-wrap,
+.serials-breadcrumb,
+.home-journal-links-box,
+.journal-list-wrapper { background: #ece8df; }
+
+.home-search-btn,
+.sci-nav-btn:hover,
+.serials-ghost-btn:hover {
+  background: var(--sds-primary);
+  border-color: var(--sds-primary);
+  color: #fff;
+}
+
+.home-search-input,
+.home-journal-filter,
+.journal-filter-input,
+.serials-ghost-btn,
+.sci-nav-btn,
+.sci-nav-lang-btn,
+.serials-lang-btn,
+.home-pr-nav { border-color: var(--sds-border); }
+
+.sci-nav-btn,
+.sci-nav-lang-btn,
+.serials-lang-btn {
+  color: var(--sds-primary-dark);
+  background: #f7f5f1;
+  font-weight: 500;
+}
+
+.sci-nav-btn-disabled {
+  background: #ece9e2;
+  color: #8a8d89;
+  border-color: var(--sds-border);
+}
+
+.journal-tab.active {
+  color: var(--sds-primary-dark);
+  border-bottom-color: var(--sds-accent);
+}
+
+.journal-status-dot.is-active { background: #2f7a5f; }
+.journal-status-dot { background: #a87a34; }
+
+.journal-title,
+.journal-meta,
+.home-pr-title { color: var(--sds-primary); }
+
+.home-journal-links h2,
+.home-press-releases h2,
+.journal-list-page-title,
+.serials-brand-subtitle,
+.home-brand-subtitle { color: var(--sds-primary-dark); }
+
+.home-pr-card,
+.issues-main-card,
+.serial-main-card,
+.serial-sidebar-card {
+  border-color: var(--sds-border);
+  background: #fff;
+}
+
+.home-pr-readmore {
+  background: #f7f5f1;
+  border-color: var(--sds-border);
+  color: var(--sds-primary-dark);
+}
+
+.home-pr-readmore:hover {
+  border-color: var(--sds-accent);
+  color: var(--sds-primary-dark);
+  background: #f2ede3;
+}
+
+.serials-footer {
+  background: #efede7;
+  border-top: 1px solid var(--sds-border);
+}
+
+.serials-footer-open-access span { color: var(--sds-primary); }

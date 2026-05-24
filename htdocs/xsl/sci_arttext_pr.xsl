@@ -28,7 +28,7 @@
 					<div class="level2">
 						<div class="top">
 							<div id="parent">
-								<img src="/img/en/scielobre.gif" alt="SciELO - Scientific Electronic Library Online"/>
+								<img src="/img/pt/scielobre.gif" alt="Educ@"/>
 							</div>
 							<div id="identification">
 								<h1>

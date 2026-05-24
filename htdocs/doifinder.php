@@ -2,6 +2,10 @@
 error_reporting(1);
 require_once('articlemeta/broker.php');
 
+function h($value) {
+    return htmlspecialchars((string)$value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+}
+
 $collections = array(
     'scl' => 'www.scielo.br',
     'arg' => 'www.scielo.org.ar',
@@ -22,8 +26,11 @@ $collections = array(
     'par' => 'scielo.iics.una.py'
 );
 
-$doi = $_REQUEST['q'];
-$lng = $_REQUEST['lng'];
+$doi = isset($_REQUEST['q']) ? (string)$_REQUEST['q'] : '';
+$lng = isset($_REQUEST['lng']) ? strtolower((string)$_REQUEST['lng']) : '';
+if (!in_array($lng, array('', 'pt', 'en', 'es'), true)) {
+    $lng = '';
+}
 
 $articlemeta = new Broker();
 
@@ -31,7 +38,7 @@ $json = $articlemeta->get_document_by_doi($doi);
 $pid = $json->code;
 $collection = $json->collection;
 
-if ($pid == NULL) {
+if ($pid == NULL || !isset($collections[$collection])) {
       header('HTTP/1.0 404 Not Found');
 ?>
     <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
@@ -39,9 +46,9 @@ if ($pid == NULL) {
     <title>404 Not Found</title>
     </head><body>
     <h1>Not Found</h1>
-    <p>The requested URL <?=$_SERVER['REQUEST_URI']?> was not found on this server.</p>
+    <p>The requested URL <?=h(isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '')?> was not found on this server.</p>
     <hr>
-    <?=$_SERVER['SERVER_SIGNATURE']?>
+    <?=h(isset($_SERVER['SERVER_SIGNATURE']) ? $_SERVER['SERVER_SIGNATURE'] : '')?>
     </body></html>
 <?
       exit();
@@ -49,9 +56,12 @@ if ($pid == NULL) {
 
 if ($lng == '') {
    /// Pegando idioma original
-   $lng = $json->article->v40[0]->_;
+   $lng = strtolower((string)$json->article->v40[0]->_);
+   if (!in_array($lng, array('pt', 'en', 'es'), true)) {
+       $lng = 'en';
+   }
 }
 
-$redirect = "http://".$collections[$collection]."/scielo.php?script=sci_arttext&pid=".$pid."&lng=".$lng;
-header("location:$redirect");
+$redirect = "http://".$collections[$collection]."/scielo.php?script=sci_arttext&pid=".rawurlencode((string)$pid)."&lng=".rawurlencode((string)$lng);
+header("Location: ".$redirect);
 ?>

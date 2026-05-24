@@ -4,7 +4,7 @@
 	<xsl:include href="journalStatus.xsl"/>
 	<xsl:output encoding="utf-8"/>
 	<xsl:template match="/">
-		<html>
+		<html lang="{normalize-space(//CONTROLINFO/LANGUAGE)}">
 			<head>
 				<title>
 					<xsl:value-of select="$translations/xslid[@id='sci_home']/text[@find='alphabetic_list']"/>
@@ -17,12 +17,13 @@
 				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css"/>
 			</head>
 			<body class="serials-page" link="#0000ff" vlink="#800080" bgcolor="#ffffff">
+				<xsl:call-template name="ACCESS_SKIP_LINK"/>
 				<header class="serials-top-header">
 					<div class="serials-topbar">
 						<button class="serials-ghost-btn" type="button">&#9776; Menu</button>
 						<a class="serials-about-link" href="#">&#9432; <xsl:value-of select="$translations/xslid[@id='sci_alphabetic']/text[@find='library_collection']"/></a>
 						<div class="serials-lang-menu">
-							<button class="serials-ghost-btn serials-lang-btn" type="button">
+							<button class="serials-ghost-btn serials-lang-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Language selector">
 								&#127760;
 								<xsl:text> </xsl:text>
 								<xsl:choose>
@@ -64,19 +65,10 @@
 						</div>
 					</div>
 					<div class="serials-branding">
-						<img alt="SciELO">
-							<xsl:attribute name="src">
-								<xsl:choose>
-									<xsl:when test="normalize-space(//CONTROLINFO/LANGUAGE)='pt'">/img/revistas/scielobrp.gif</xsl:when>
-									<xsl:when test="normalize-space(//CONTROLINFO/LANGUAGE)='es'">/img/revistas/scielobre.gif</xsl:when>
-									<xsl:otherwise>/img/revistas/scielobri.gif</xsl:otherwise>
-								</xsl:choose>
-							</xsl:attribute>
-						</img>
-						<div class="serials-brand-subtitle">Scientific Electronic Library Online</div>
+							<img alt="Educ@" src="/img/pt/scielobre.gif"/>
 					</div>
 				</header>
-				<main class="serials-content">
+				<main id="main-content" tabindex="-1" class="serials-content">
 				<xsl:apply-templates select="//LIST"/>
 				<br/>
 				<xsl:call-template name="SERIALS_FOOTER"/>
@@ -212,8 +204,8 @@
 	<xsl:template name="SERIALS_FOOTER">
 		<footer class="serials-footer">
 			<div class="serials-footer-top">
-				<div class="serials-footer-brand">
-					<img alt="SciELO" src="https://www.scielo.br/static/img/logo-scielo-no-label.svg"/>
+					<div class="serials-footer-brand">
+						<img alt="Educ@" src="/img/pt/scielobre.gif"/>
 				</div>
 				<div class="serials-footer-meta">
 					<div class="name"><strong>SciELO - Scientific Electronic Library Online</strong></div>

@@ -24,7 +24,7 @@
 						</A>
 					</div>
 					<div class="issues-top-nav">
-						<div class="serial-nav">
+						<div class="serial-nav" role="navigation" aria-label="Journal navigation">
 							<div class="serial-nav-main">
 								<xsl:choose>
 									<xsl:when test="$bar1='issues'">
@@ -71,7 +71,7 @@
 										<xsl:attribute name="NoWrap"/>
 										<xsl:choose>
 											<xsl:when test="$compact_nav='1'">
-												<div class="serial-nav">
+												<div class="serial-nav" role="navigation" aria-label="Journal navigation">
 													<div class="serial-nav-main">
 														<xsl:choose>
 															<xsl:when test="$bar1='issues'">
@@ -217,6 +217,15 @@
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
+	<xsl:template name="ACCESS_SKIP_LINK">
+		<a class="skip-link" href="#main-content">
+			<xsl:choose>
+				<xsl:when test="normalize-space(//CONTROLINFO/LANGUAGE)='en' or normalize-space(//LANGUAGE)='en' or normalize-space(//lng)='en'">Skip to main content</xsl:when>
+				<xsl:when test="normalize-space(//CONTROLINFO/LANGUAGE)='es' or normalize-space(//LANGUAGE)='es' or normalize-space(//lng)='es'">Saltar al contenido principal</xsl:when>
+				<xsl:otherwise>Pular para o conteúdo principal</xsl:otherwise>
+			</xsl:choose>
+		</a>
+	</xsl:template>
 		<xsl:template name="NAV_LANGUAGE_SWITCHER">
 			<xsl:variable name="curr_lang">
 				<xsl:choose>
@@ -242,7 +251,7 @@
 				</xsl:choose>
 			</xsl:variable>
 		<div class="sci-nav-lang-menu">
-			<button class="sci-nav-lang-btn" type="button">
+			<button class="sci-nav-lang-btn" type="button" aria-haspopup="true" aria-expanded="false">
 				&#127760;
 				<xsl:text> </xsl:text>
 				<xsl:call-template name="LANGUAGE_LABEL">
@@ -580,11 +589,7 @@
 		</TD>
 	</xsl:template>
 	<xsl:template match="*" mode="logoImg">
-		<xsl:choose>
-			<xsl:when test="//PAGINATION[@rep]">repo/<xsl:value-of select="normalize-space(//CONTROLINFO/LANGUAGE)"/>/r<xsl:value-of select="normalize-space(//PAGINATION/@rep)"/>.gif</xsl:when>
-			<xsl:otherwise>
-				<xsl:value-of select="normalize-space(//CONTROLINFO/LANGUAGE)"/>/fbpelogp.gif</xsl:otherwise>
-		</xsl:choose>
+		<xsl:text>pt/scielobre.gif</xsl:text>
 	</xsl:template>
 	<!-- Shows a navigation bar button
       Parameters:
@@ -977,10 +982,8 @@
 					select="CONTROLINFO/SCIELO_INFO/PATH_DATA"/>scielo.php?lng=<xsl:value-of
 					select="CONTROLINFO/LANGUAGE" /></xsl:attribute>
 
-					<img>
-						<xsl:attribute name="src"><xsl:value-of
-							select="CONTROLINFO/SCIELO_INFO/PATH_GENIMG" /><xsl:value-of
-							select="CONTROLINFO/LANGUAGE" />/fbpelogp.gif</xsl:attribute>
+						<img>
+							<xsl:attribute name="src">/img/pt/scielobre.gif</xsl:attribute>
 						<xsl:attribute name="border">0</xsl:attribute>
 						<xsl:attribute name="alt"><xsl:value-of select="$translations/xslid[@id='sci_navegation']/text[@find = 'scientific_electronic_library_online']"/></xsl:attribute>
 					</img><br/>

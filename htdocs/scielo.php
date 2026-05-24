@@ -57,6 +57,41 @@
     $xml = '<ERROR></ERROR>';
   }
 
+  // Keep requested language consistent for sci_subject output (html lang/UI labels).
+  $requestScript = isset($_REQUEST['script']) ? $_REQUEST['script'] : '';
+  $requestLng = isset($_REQUEST['lng']) ? strtolower(trim($_REQUEST['lng'])) : '';
+  if ($requestScript === 'sci_subject'
+      && in_array($requestLng, array('pt', 'en', 'es'), true)
+      && strpos($xml, '<ERROR') === false) {
+      $xml = preg_replace(
+          '/<LANGUAGE>[^<]*<\/LANGUAGE>/',
+          '<LANGUAGE>'.$requestLng.'</LANGUAGE>',
+          $xml,
+          1
+      );
+      $xml = preg_replace(
+          '/(<CONTROLINFO>.*?<LANGUAGE>)[^<]*(<\/LANGUAGE>)/s',
+          '$1'.$requestLng.'$2',
+          $xml,
+          1
+      );
+      if (preg_match('/(<varScieloOrg>.*?<lng>)[^<]*(<\/lng>)/s', $xml)) {
+          $xml = preg_replace(
+              '/(<varScieloOrg>.*?<lng>)[^<]*(<\/lng>)/s',
+              '$1'.$requestLng.'$2',
+              $xml,
+              1
+          );
+      } else {
+          $xml = preg_replace(
+              '/<varScieloOrg>/',
+              '<varScieloOrg><lng>'.$requestLng.'</lng>',
+              $xml,
+              1
+          );
+      }
+  }
+
   $sxml = false;
   $prevUseInternalErrors = libxml_use_internal_errors(true);
   if (strpos($xml, 'WXIS|fatal error|') === false) {
@@ -119,6 +154,11 @@
   $scielo->SetXSLUrl ($xsl);
 
   if ((isset($_REQUEST['diag']) ? $_REQUEST['diag'] : '') == '1') {
+    if (!scielo_is_local_request() || getenv('SCIELO_ENABLE_DIAG') !== '1') {
+      header('HTTP/1.1 403 Forbidden');
+      echo 'Forbidden';
+      exit;
+    }
     $xslExists = file_exists($xsl) ? 'yes' : 'no';
     $xmlPreview = htmlspecialchars(substr($xml, 0, 12000));
     $errorTagCount = preg_match_all('/<ERROR[\\s>]/i', $xml);
@@ -137,6 +177,15 @@
   }
   
   $pageContent = $scielo->getPage();
+
+  // Enforce html lang in final output for sci_subject based on requested language.
+  if ($requestScript === 'sci_subject' && in_array($requestLng, array('pt', 'en', 'es'), true)) {
+    if (preg_match('/<html[^>]*lang="/i', $pageContent)) {
+      $pageContent = preg_replace('/(<html[^>]*lang=")[^"]*(")/i', '$1'.$requestLng.'$2', $pageContent, 1);
+    } else {
+      $pageContent = preg_replace('/<html(\s|>)/i', '<html lang="'.$requestLng.'"$1', $pageContent, 1);
+    }
+  }
   
   $pageContent .= "\n".'<!-- REQUEST URI: '.$REQUEST_URI.'-->';
   $pageContent .= "\n"."<!--SERVER:".$SERVER_ADDR."-->";
@@ -145,7 +194,7 @@
     if (!file_exists($filenamePage)){
             include ("mkdir.php");
             $path = substr($filenamePage, 0, strrpos($filenamePage, '/'));
-    createDirStructure($path, $s_root, $s_err_msg, $i_err_code, 0777);
+    createDirStructure($path, $s_root, $s_err_msg, $i_err_code, 0775);
     }
     $fp = fopen($filenamePage, "rw");
   if ($fp){
@@ -308,6 +357,23 @@ function dateDiff($dateTimeBegin, $dateTimeEnd, $interval = "d") {
 
  }
 
+function scielo_is_local_request() {
+  $remoteAddr = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '';
+  return in_array($remoteAddr, array('127.0.0.1', '::1'), true);
+}
+
+function scielo_build_wxis_command($wxisBinary, $query, $pathHtdocs) {
+  $args = array();
+  foreach (explode('&', (string)$query) as $arg) {
+    $arg = trim($arg);
+    if ($arg !== '') {
+      $args[] = escapeshellarg($arg);
+    }
+  }
+  $args[] = escapeshellarg('PATH_TRANSLATED=' . $pathHtdocs);
+  return escapeshellarg($wxisBinary) . ' ' . implode(' ', $args);
+}
+
 function wxis_exe ($url){
   global $wxisServer;
   global $scielo;
@@ -333,6 +399,11 @@ function wxis_exe ($url){
           require_once('cache.php');
 
           if(strpos($_SERVER['REQUEST_URI'],'deletefromcache')){
+                  if (!scielo_is_local_request() || getenv('SCIELO_ENABLE_CACHE_ADMIN') !== '1') {
+                          header('HTTP/1.1 403 Forbidden');
+                          echo 'Forbidden';
+                          die();
+                  }
                   $key = sha1(substr($_SERVER['REQUEST_URI'],0,strpos($_SERVER['REQUEST_URI'],'deletefromcache')-1));
                   echo 'apagando chave '.$key.'XML resultado :'.deleteFromCache($key.'XML');
                   echo '<hr>';
@@ -341,6 +412,11 @@ function wxis_exe ($url){
           }
 
           if(strpos($_SERVER['REQUEST_URI'],'cachestats')){
+                  if (!scielo_is_local_request() || getenv('SCIELO_ENABLE_CACHE_ADMIN') !== '1') {
+                          header('HTTP/1.1 403 Forbidden');
+                          echo 'Forbidden';
+                          die();
+                  }
                   echo getStatsFromCache($_GET['type'], $_GET['slabs'], 10);
                   die();
           }
@@ -386,10 +462,12 @@ function wxis_exe_ ($url){
   ************************************************************************************/
   $PATH_HTDOCS = $scielo->_def->getKeyValue("PATH_HTDOCS");
 
-  $request = $PATH_HTDOCS."../cgi-bin/wxis.exe " ;
-  $param = substr($url, strpos($url, "?")+1);
-  $param = str_replace("&", " ", $param);
-  $request = $request.$param." PATH_TRANSLATED=".$PATH_HTDOCS;
+  $wxisBinary = $PATH_HTDOCS."../cgi-bin/wxis.exe";
+  $query = parse_url($url, PHP_URL_QUERY);
+  if ($query === false || $query === null) {
+    $query = '';
+  }
+  $request = scielo_build_wxis_command($wxisBinary, $query, $PATH_HTDOCS);
 
   $r = strstr(shell_exec($request), '<');
   return $r;

@@ -29,7 +29,7 @@
 	</xsl:variable>
 	<xsl:output method="html" indent="no" doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"/>
 	<xsl:template match="SERIAL">
-		<html>
+		<html lang="{normalize-space(//CONTROLINFO/LANGUAGE)}">
 			<head>
 				<title>
 					<xsl:value-of select="TITLEGROUP/TITLE" disable-output-escaping="yes"/> - <xsl:value-of select="$translations/xslid[@id='sci_serial']/text[@find='home_page']"/>
@@ -65,6 +65,7 @@
 				<script type="text/javascript" src="/js/jquery-1.9.1.min.js" />
 			</head>
 			<body class="serial-page">
+				<xsl:call-template name="ACCESS_SKIP_LINK"/>
 				<xsl:if test="//NO_SCI_SERIAL!='yes' or not(//NO_SCI_SERIAL)">
 					<div class="container">
 						<div class="top">
@@ -80,6 +81,10 @@
 								<xsl:with-param name="scope" select="TITLEGROUP/SIGLUM"/>
 							</xsl:call-template>
 						</div>
+						<main id="main-content" tabindex="-1">
+						<h1 class="visually-hidden">
+							<xsl:value-of select="TITLEGROUP/TITLE" disable-output-escaping="yes"/>
+						</h1>
 						<div>
 							<xsl:attribute name="class">
 								<xsl:text>middle</xsl:text>
@@ -157,6 +162,7 @@
 							
 						</div>
 						<div class="spacer">&#160;</div>
+						</main>
 						<!--
                             monta a div: footer
                         -->

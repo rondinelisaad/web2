@@ -224,7 +224,7 @@
 		<xsl:if test=".//mml:math">
 			<xsl:processing-instruction name="xml-stylesheet"> type="text/xsl" href="/xsl/mathml.xsl"</xsl:processing-instruction>
 		</xsl:if>
-		<html xmlns="http://www.w3.org/1999/xhtml">
+		<html xmlns="http://www.w3.org/1999/xhtml" lang="{normalize-space(CONTROLINFO/LANGUAGE)}">
 			<head>
 				<title>
 					<xsl:value-of select="ISSUE/ARTICLE/citation_title" />
@@ -242,6 +242,7 @@
     	        </xsl:if>
 			</head>
 			<body class="arttext-page">
+				<xsl:call-template name="ACCESS_SKIP_LINK"/>
 				<a name="top"/>
 				<div class="container">
 					<div class="top">
@@ -257,7 +258,10 @@
 							<xsl:with-param name="scope" select="TITLEGROUP/SIGLUM"/>
 						</xsl:call-template>
 					</div>
-					<div class="content">
+					<main id="main-content" tabindex="-1" class="content">
+						<h1 class="visually-hidden">
+							<xsl:value-of select="ISSUE/ARTICLE/citation_title" disable-output-escaping="yes"/>
+						</h1>
 						<div class="issues-journal-logo">
 							<img src="{//CONTROLINFO/SCIELO_INFO/PATH_SERIMG}{//TITLEGROUP/SIGLUM}/glogo.gif" alt="{//TITLEGROUP/TITLE}"/>
 						</div>
@@ -343,7 +347,7 @@
 						</xsl:if>
 						<div align="left"/>
 						<div class="spacer">&#160;</div>
-					</div>
+					</main>
 					<xsl:apply-templates select="." mode="footer-journal"/>
 				</div>
 
@@ -358,7 +362,7 @@
 		<xsl:if test=".//mml:math">
 			<xsl:processing-instruction name="xml-stylesheet"> type="text/xsl" href="/xsl/mathml.xsl"</xsl:processing-instruction>
 		</xsl:if>
-		<html xmlns="http://www.w3.org/1999/xhtml">
+		<html xmlns="http://www.w3.org/1999/xhtml" lang="{normalize-space(CONTROLINFO/LANGUAGE)}">
 			<head>
 				<title>
 					<xsl:value-of select="ISSUE/ARTICLE/citation_title" />
@@ -372,20 +376,24 @@
 	            </xsl:if>
 				</head>
 			<body class="arttext-page">
+				<xsl:call-template name="ACCESS_SKIP_LINK"/>
 				<a name="top"/>
 				<div class="container">
 					<div class="top">
 						<div id="issues"/>
 						<xsl:apply-templates select="." mode="common-display-nav-bar"/>
 					</div>
-					<div class="content">
+					<main id="main-content" tabindex="-1" class="content">
+						<h1 class="visually-hidden">
+							<xsl:value-of select="ISSUE/ARTICLE/citation_title" disable-output-escaping="yes"/>
+						</h1>
 						<xsl:if test="$show_toolbox = '1'">
 							<xsl:call-template name="tool_box"/>
 						</xsl:if>
 						<xsl:apply-templates select="." mode="text-header"/>
 						<xsl:apply-templates select="." mode="text-disclaimer"/>
 						<xsl:apply-templates select="." mode="text-content"/>
-					</div>
+					</main>
 					<xsl:if test="$version='html'">
 						<xsl:apply-templates select="." mode="footer-journal"/>
 					</xsl:if>

@@ -26,7 +26,7 @@
 		</xsl:choose>
 	</xsl:variable>
 	<xsl:template match="SERIAL">
-		<HTML>
+		<HTML lang="{normalize-space(//CONTROLINFO/LANGUAGE)}">
 			<HEAD>
 				<TITLE>
 					<xsl:value-of select="//TITLEGROUP/SHORTTITLE " disable-output-escaping="yes"/> - <xsl:value-of select="$translations/xslid[@id='sci_issues']/text[@find='available_issues']"/>
@@ -54,6 +54,7 @@
 				<meta name="viewport" content="width=device-width, initial-scale=1"/>
 			</HEAD>
 			<BODY class="issues-page" vLink="#800080" bgColor="#ffffff">
+				<xsl:call-template name="ACCESS_SKIP_LINK"/>
 				<xsl:call-template name="NAVBAR">
 					<xsl:with-param name="bar1">issues</xsl:with-param>
 					<xsl:with-param name="bar2"></xsl:with-param>
@@ -64,6 +65,10 @@
 					<xsl:with-param name="home">1</xsl:with-param>
 					<xsl:with-param name="alpha">0</xsl:with-param>
 				</xsl:call-template>
+				<main id="main-content" tabindex="-1">
+				<h1 class="visually-hidden">
+					<xsl:value-of select="//TITLEGROUP/TITLE" disable-output-escaping="yes"/> - <xsl:value-of select="$translations/xslid[@id='sci_issues']/text[@find='available_issues']"/>
+				</h1>
 				<div class="issues-journal-logo">
 					<img src="{//CONTROLINFO/SCIELO_INFO/PATH_SERIMG}{//TITLEGROUP/SIGLUM}/glogo.gif" alt="{//TITLEGROUP/TITLE}"/>
 				</div>
@@ -109,6 +114,7 @@
 					</TABLE>
 					<br/>
 				</div>
+				</main>
 				<xsl:apply-templates select="." mode="footer-journal"/>
 			</BODY>
 		</HTML>

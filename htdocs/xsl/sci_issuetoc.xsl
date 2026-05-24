@@ -7,7 +7,7 @@
 	<xsl:variable name="num" select="//ISSUE/@NUM"/>
 	<xsl:variable name="issuetoc_controlInfo" select="//CONTROLINFO"/>
 	<xsl:template match="SERIAL">
-		<HTML>
+		<HTML lang="{normalize-space(//CONTROLINFO/LANGUAGE)}">
 			<HEAD>
 				<TITLE>
 					<xsl:value-of select="//TITLEGROUP/SHORTTITLE" disable-output-escaping="yes"/> -
@@ -69,6 +69,7 @@
 	            </xsl:if>
 			</HEAD>
 			<BODY class="issuetoc-page" vLink="#800080" bgColor="#ffffff">
+				<xsl:call-template name="ACCESS_SKIP_LINK"/>
 				<xsl:call-template name="NAVBAR">
 					<xsl:with-param name="bar1">issues</xsl:with-param>
 					<xsl:with-param name="bar2"></xsl:with-param>
@@ -79,6 +80,15 @@
 					<xsl:with-param name="home">0</xsl:with-param>
 					<xsl:with-param name="alpha">0</xsl:with-param>
 				</xsl:call-template>
+				<main id="main-content" tabindex="-1">
+				<h1 class="visually-hidden">
+					<xsl:call-template name="GetStrip">
+						<xsl:with-param name="vol" select="//ISSUE/@VOL"/>
+						<xsl:with-param name="num" select="//ISSUE/@NUM"/>
+						<xsl:with-param name="suppl" select="//ISSUE/@SUPPL"/>
+						<xsl:with-param name="lang" select="//CONTROLINFO/LANGUAGE"/>
+					</xsl:call-template>
+				</h1>
 				<div class="issues-journal-logo">
 					<img src="{//CONTROLINFO/SCIELO_INFO/PATH_SERIMG}{//TITLEGROUP/SIGLUM}/glogo.gif" alt="{//TITLEGROUP/TITLE}"/>
 				</div>
@@ -94,6 +104,7 @@
 				<div class="content">
 					<xsl:apply-templates select="//ISSUE"/>
 				</div>
+				</main>
 				<xsl:apply-templates select="." mode="footer-journal"/>
 			
 			<script type="text/javascript" src="/article.js"/>
@@ -162,13 +173,8 @@
 									<tbody>
 										<tr>
 											<td class="section" colspan="2">
-												<img>
-												<xsl:attribute name="src"><xsl:value-of
-												select="//CONTROLINFO/SCIELO_INFO/PATH_GENIMG"
-												/><xsl:value-of
-												select="normalize-space(//CONTROLINFO/LANGUAGE)"
-												/>/lead.gif</xsl:attribute>
-												</img>&#160;Press Release </td>
+												<img src="{//CONTROLINFO/SCIELO_INFO/PATH_GENIMG}{normalize-space(//CONTROLINFO/LANGUAGE)}/lead.gif" alt=""/>&#160;Press Release
+											</td>
 										</tr>
 										<tr>
 											<td colspan="2">&#160;</td>
@@ -235,18 +241,13 @@
 	</xsl:template>
 	<xsl:template match="SECTION">
 		<xsl:if test="NAME and not($num='AHEAD')">
-			<tr>
-				<td class="section" colspan="2">
-					<IMG>
-						<xsl:attribute name="src"><xsl:value-of
-								select="//CONTROLINFO/SCIELO_INFO/PATH_GENIMG"/><xsl:value-of
-								select="normalize-space(//CONTROLINFO/LANGUAGE)"
-							/>/lead.gif</xsl:attribute>
-					</IMG>
-					<font size="-1">&#160;</font>
-					<xsl:value-of select="NAME" disable-output-escaping="yes"/>
-				</td>
-			</tr>
+				<tr>
+					<td class="section" colspan="2">
+						<img src="{//CONTROLINFO/SCIELO_INFO/PATH_GENIMG}{normalize-space(//CONTROLINFO/LANGUAGE)}/lead.gif" alt=""/>
+						<font size="-1">&#160;</font>
+						<xsl:value-of select="NAME" disable-output-escaping="yes"/>
+					</td>
+				</tr>
 		</xsl:if>
 		<xsl:choose>
 			<xsl:when test="$num='AHEAD'">
