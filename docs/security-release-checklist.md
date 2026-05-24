@@ -46,6 +46,16 @@ Escopo: hardening de segurança do Web SciELO conforme NSI.04, com foco nos cont
   - Como: validar imagem base, PHP/Apache e dependencias antes da promocao.
   - Referencia NSI.04: 4.6
 
+- [ ] Validar permissoes reais de banco por ambiente
+  - Por que: o codigo pode estar endurecido, mas um usuario com privilegios excessivos ainda permite impacto maior em incidente.
+  - Como: executar `SHOW GRANTS` em dev, homologacao e producao conforme `docs/db-and-secret-audit.md`.
+  - Referencia NSI.04: 3.2, 4.6
+
+- [x] Revisar segredos e configuracoes fora do diff
+  - Por que: arquivos reais ignorados pelo Git podem conter credenciais ou configuracoes inseguras.
+  - Como: revisados `scielo.def.php`, templates, `.user.ini`, `.gitignore` e arquivos nao versionados; sem segredo real identificado no workspace local.
+  - Referencia NSI.04: 3.3, 4.6
+
 - [ ] Ativar monitoramento e deteccao
   - Por que: incidentes sem monitoramento sao descobertos tarde.
   - Como: alertas para 4xx/5xx, falha de integracoes WXIS, tentativas de `debug`, acesso a samples/testes e erro PHP.
@@ -67,6 +77,7 @@ Escopo: hardening de segurança do Web SciELO conforme NSI.04, com foco nos cont
 - `httpd -t`: `Syntax OK`.
 - `docker compose build scielo-web`: aprovado.
 - `docker compose up -d scielo-web`: aprovado.
+- `docs/db-and-secret-audit.md`: auditoria local de configuracoes, segredos e checklist de grants por ambiente.
 - Smoke HTTP local:
   - `/phpinfo.php`: 404.
   - `/info.php`: 404.
