@@ -105,7 +105,7 @@ class log
 	function writeLog()
 	{
 		$fp = $this->openFileWriter($this->directory,$this->fileName);
-		
+
 		$logLine = implode(LOG_SEPARATOR, $this->fields);
 
 		$logInfo = date("Y-m-d H:i:s") . LOG_SEPARATOR . $logLine ."\r\n";
@@ -132,7 +132,7 @@ class log
 	 * @desc adiciona log de erro
 	 */
 	function logError($message)
-	{	
+	{
 		$fp = fopen ($this->directory .'/'. "logerror.txt", "a+b");
 		if ( !$fp ){
 			$this->sendMailAdmin("Unable to open log file for update " . $this->directory . "logerror.txt");
@@ -148,7 +148,7 @@ class log
 
 	function sendMailAdmin($message)
 	{
-		
+
 		if ( defined('LOG_ADMIN') and (LOG_ADMIN != 0)) {
 
 			$headers = "MIME-Version: 1.0\n";
@@ -193,11 +193,22 @@ class log
      * @desc log das acoes do usuario no modulo ADM
      * @param string $text o acao executada ou outro texto referente
      */
+    function escapeSqlValue($value)
+    {
+        if (function_exists("mysql_real_escape_string")) {
+            return mysql_real_escape_string((string)$value);
+        }
+        return addslashes((string)$value);
+    }
+
     function adminlog($text)
     {
 	   global $db, $PMF_CONF;
 	   if (isset($PMF_CONF["enableadminlog"])) {
-		  $db->query("INSERT INTO ".SQLPREFIX."tblog (id, time, usr, text, ip) VALUES ('','".time()."','{$_SESSION["idUser"]}','".nl2br(addslashes($text))."','{$_SERVER["REMOTE_ADDR"]}')");
+          $userId = isset($_SESSION["idUser"]) ? (int)$_SESSION["idUser"] : 0;
+          $ip = isset($_SERVER["REMOTE_ADDR"]) ? preg_replace("/[^0-9A-Fa-f:.]/", "", $_SERVER["REMOTE_ADDR"]) : "";
+          $logText = nl2br($this->escapeSqlValue($text));
+          $db->query("INSERT INTO ".SQLPREFIX."tblog (id, time, usr, text, ip) VALUES ('', '" . time() . "', '" . $userId . "', '" . $logText . "', '" . $this->escapeSqlValue($ip) . "')");
 		}
     }
 

@@ -14,7 +14,7 @@ var $_db = null;
 
 
 	function loadSubArea($subArea,$lang=''){
-		$strsql = "SELECT * FROM sub_area WHERE id_sub_area = ".$subArea->getID();
+		$strsql = "SELECT * FROM sub_area WHERE id_sub_area = ".$this->_db->intValue($subArea->getID());
 
 		$row = $this->_db->databaseQuery($strsql);
 

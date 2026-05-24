@@ -18,8 +18,8 @@ function wpBlogDAO(){
 }
 
 function getBlogIdByName($acron){
-	$acron = "/".$acron."/";
-	$strsql = "SELECT blog_id from wp_blogs where path='".$acron."'";
+	$acron = "/" . preg_replace("/[^A-Za-z0-9_-]/", "", (string)$acron) . "/";
+	$strsql = "SELECT blog_id from wp_blogs where path=" . $this->_db->quote($acron) . "";
 
 		$arr = $this->_db->databaseQuery($strsql);
 		$blogId = $arr[0]["blog_id"];
@@ -29,8 +29,8 @@ function getBlogIdByName($acron){
 
 
 function getBlogByName($acron){
-	$acron = "/".$acron."/";
-	$strsql = "SELECT blog_id from wp_blogs where path='".$acron."'";
+	$acron = "/" . preg_replace("/[^A-Za-z0-9_-]/", "", (string)$acron) . "/";
+	$strsql = "SELECT blog_id from wp_blogs where path=" . $this->_db->quote($acron) . "";
 
 		$arr = $this->_db->databaseQuery($strsql);
 
@@ -47,7 +47,7 @@ function getCountCommentByPid($PID,$acron){
 
 	if($reacron!=0){
 
-	$strsql = "SELECT comment_count FROM wp_".$reacron."_posts WHERE post_name='".$PID."'";
+	$strsql = "SELECT comment_count FROM wp_" . $this->_db->intValue($reacron) . "_posts WHERE post_name=" . $this->_db->quote($PID) . "";
 
 		$arr = $this->_db->databaseQuery($strsql);
 

@@ -50,40 +50,26 @@ class ArticleDAO {
 */
 	function AddArticle($article){
 		$strsql = "INSERT INTO scieloorgusers.articles (
-		PID, 
-		url,
-		title, 
-		serial, 
-		volume, 
-		number, 
-		suppl, 
-		year, 
-		authors_xml, 
-		keywords_xml,
-		abstract_xml,
-		process_date,
-		publication_date,
-		wp_post_id,
-		wp_url,
-		wp_post_date
-		) 
-		VALUES ('".$article->getPID()."','"
-		.$article->getURL()."','"
-		.mysql_escape_string(str_replace("'","&apos;",$article->getTitle()))."','"
-		.$article->getSerial()."','"
-		.$article->getVolume()."','"
-		.$article->getNumber()."','"
-		.$article->getSuppl()."','"
-		.$article->getYear()."','"
-		.mysql_escape_string($article->getAuthorXML())."','"
-		.mysql_escape_string(str_replace("'","&apos;",$article->getKeywordXML()))."','"
-		.mysql_escape_string(str_replace("'","&apos;",$article->getAbstractXML()))."','"
-		.date('Y-m-d H:i:s')."','"
-		.formatDate($article->getPublicationDate())."',"
-		.$article->getWpPostID().",'"
-		.$article->getWpURL()."','"
-		.$article->getWpPostDate()."'"
-		.")";
+		PID, url, title, serial, volume, number, suppl, year, authors_xml, keywords_xml,
+		abstract_xml, process_date, publication_date, wp_post_id, wp_url, wp_post_date
+		) VALUES (" .
+			$this->_db->quote($article->getPID()) . "," .
+			$this->_db->quote($article->getURL()) . "," .
+			$this->_db->quote(str_replace("'", "&apos;", $article->getTitle())) . "," .
+			$this->_db->quote($article->getSerial()) . "," .
+			$this->_db->quote($article->getVolume()) . "," .
+			$this->_db->quote($article->getNumber()) . "," .
+			$this->_db->quote($article->getSuppl()) . "," .
+			$this->_db->intValue($article->getYear()) . "," .
+			$this->_db->quote($article->getAuthorXML()) . "," .
+			$this->_db->quote(str_replace("'", "&apos;", $article->getKeywordXML())) . "," .
+			$this->_db->quote(str_replace("'", "&apos;", $article->getAbstractXML())) . "," .
+			$this->_db->quote(date("Y-m-d H:i:s")) . "," .
+			$this->_db->quote(formatDate($article->getPublicationDate())) . "," .
+			$this->_db->intValue($article->getWpPostID()) . "," .
+			$this->_db->quote($article->getWpURL()) . "," .
+			$this->_db->quote($article->getWpPostDate()) .
+			")";
 		$result = $this->_db->databaseExecInsert($strsql);
 		return $result;
 	}
@@ -95,19 +81,18 @@ class ArticleDAO {
 * @returns integer $sucess 1 em caso de sucesso, 0 em caso de erro
 */
 	function UpdateArticle($article){
-	
-		$strsql = "UPDATE scieloorgusers.articles SET
-						title = '".mysql_escape_string(str_replace("'","&apos;",$article->getTitle()))."',
-						serial = '".$article->getSerial()."',
-						volume = '".$article->getVolume()."',
-						number = '".$article->getNumber()."',
-						suppl = '".$article->getSuppl()."',
-						year = '".$article->getYear()."',
-						authors_xml = '".mysql_escape_string(str_replace("'","&apos;",$article->getAuthorXML()))."',
-						keywords_xml = '".mysql_escape_string(str_replace("'","&apos;",$article->getKeywordXML()))."',
-						abstract_xml = '".mysql_escape_string(str_replace("'","&apos;",$article->getAbstractXML()))."',
-						publication_date = '".formatDate($article->getPublicationDate())."'
-					WHERE PID = '".$article->getPID()."'";
+		$strsql = "UPDATE scieloorgusers.articles SET " .
+			"title = " . $this->_db->quote(str_replace("'", "&apos;", $article->getTitle())) . ", " .
+			"serial = " . $this->_db->quote($article->getSerial()) . ", " .
+			"volume = " . $this->_db->quote($article->getVolume()) . ", " .
+			"number = " . $this->_db->quote($article->getNumber()) . ", " .
+			"suppl = " . $this->_db->quote($article->getSuppl()) . ", " .
+			"year = " . $this->_db->intValue($article->getYear()) . ", " .
+			"authors_xml = " . $this->_db->quote(str_replace("'", "&apos;", $article->getAuthorXML())) . ", " .
+			"keywords_xml = " . $this->_db->quote(str_replace("'", "&apos;", $article->getKeywordXML())) . ", " .
+			"abstract_xml = " . $this->_db->quote(str_replace("'", "&apos;", $article->getAbstractXML())) . ", " .
+			"publication_date = " . $this->_db->quote(formatDate($article->getPublicationDate())) . " " .
+			"WHERE PID = " . $this->_db->quote($article->getPID());
 
 		$result = $this->_db->databaseExecUpdate($strsql);
 
@@ -116,15 +101,14 @@ class ArticleDAO {
 
 /**
 * Função que atualiza apenas os campos wp_post_id e o campo wp_url para comentários
-*  
+*
 */
 	function updatePosts($article){
-	
-		$strsql = "UPDATE scieloorgusers.articles SET
-						wp_post_id = ".$article->getWpPostID().",
-						wp_url = '".$article->getWpURL()."',
-						wp_post_date = '".$article->getWpPostDate()."' 
-					WHERE PID = '".$article->getPID()."'";
+		$strsql = "UPDATE scieloorgusers.articles SET " .
+			"wp_post_id = " . $this->_db->intValue($article->getWpPostID()) . ", " .
+			"wp_url = " . $this->_db->quote($article->getWpURL()) . ", " .
+			"wp_post_date = " . $this->_db->quote($article->getWpPostDate()) . " " .
+			"WHERE PID = " . $this->_db->quote($article->getPID());
 
 		$result = $this->_db->databaseExecUpdate($strsql);
 
@@ -135,12 +119,12 @@ class ArticleDAO {
 * Consulta os dados dos perfis de um usuário no Banco de Dados
 *
 * @param $userId id do usuário
-* 
-* @returns array of UserProfile 
+*
+* @returns array of UserProfile
 */
 	function getArticle($PID){
-		$strsql = "SELECT * FROM  scieloorgusers.articles WHERE articles.PID = '".$PID."'";
-		
+		$strsql = "SELECT * FROM  scieloorgusers.articles WHERE articles.PID = " . $this->_db->quote($PID) . "";
+
 		$arr = $this->_db->databaseQuery($strsql);
 		$article = $this->loadArticle($arr[0]);
 		return $article;
@@ -151,11 +135,11 @@ class ArticleDAO {
 * Consulta os dados dos perfis de um usuário no Banco de Dados
 *
 * @param $userId id do usuário
-* 
-* @returns array of UserProfile 
+*
+* @returns array of UserProfile
 */
 	function getPostDate($PID){
-		$strsql = "SELECT wp_post_date FROM  scieloorgusers.articles WHERE articles.PID = '".$PID."'";
+		$strsql = "SELECT wp_post_date FROM  scieloorgusers.articles WHERE articles.PID = " . $this->_db->quote($PID) . "";
 		//die($strsql);
 		$arr = $this->_db->databaseQuery($strsql);
 		$postDate = $arr[0]["wp_post_date"];
@@ -167,10 +151,10 @@ class ArticleDAO {
 /**
 * Consulta os se o PID existe no Banco de Dados
 *
-* @returns array of true/false 
+* @returns array of true/false
 */
 	function getArticleByPID($PID){
-		$strsql = "SELECT PID FROM  scieloorgusers.articles WHERE articles.PID = '".$PID."'";
+		$strsql = "SELECT PID FROM  scieloorgusers.articles WHERE articles.PID = " . $this->_db->quote($PID) . "";
 		$arr = $this->_db->databaseQuery($strsql);
 		if(isset($arr[0])){
 		return true;
@@ -181,10 +165,10 @@ class ArticleDAO {
 	/**
 * Consulta os se o pw_post_id existe no Banco de Dados
 *
-* @returns array of true/false 
+* @returns array of true/false
 */
 	function getWpPostByID($PID){
-		$strsql = "SELECT wp_post_id FROM  scieloorgusers.articles WHERE articles.PID = '".$PID."'";
+		$strsql = "SELECT wp_post_id FROM  scieloorgusers.articles WHERE articles.PID = " . $this->_db->quote($PID) . "";
 		$arr = $this->_db->databaseQuery($strsql);
 		if($arr[0]["wp_post_id"]!= 0){
 		return true;
@@ -194,10 +178,10 @@ class ArticleDAO {
 	/**
 * Consulta os se o pw_post_id existe no Banco de Dados
 *
-* @returns array of value 
+* @returns array of value
 */
 	function getWpPostByIDValue($PID){
-		$strsql = "SELECT wp_post_id FROM  scieloorgusers.articles WHERE articles.PID = '".$PID."'";
+		$strsql = "SELECT wp_post_id FROM  scieloorgusers.articles WHERE articles.PID = " . $this->_db->quote($PID) . "";
 		$arr = $this->_db->databaseQuery($strsql);
 		if($arr[0]["wp_post_id"]!= 0){
 		return $arr[0]["wp_post_id"];
@@ -230,7 +214,7 @@ class ArticleDAO {
 	}
 
 	function getCitedList($article_obj){
-		$strsql = "select pid_cited from scieloorgusers.cited where pid='".$article_obj->getPID()."'";
+		$strsql = "select pid_cited from scieloorgusers.cited where pid=" . $this->_db->quote($article_obj->getPID()) . "";
 		$result = $this->_db->databaseQuery($strsql);
 		$citedList = array();
 		for($i = 0; $i < count($result); $i++)
@@ -242,7 +226,7 @@ class ArticleDAO {
 	}
 
 	function getAccessStatistics($article_obj){
-		$strsql = "select * from scieloorgusers.access_stat where pid='".$article_obj->getPID()."'";
+		$strsql = "select * from scieloorgusers.access_stat where pid=" . $this->_db->quote($article_obj->getPID()) . "";
 		$result = $this->_db->databaseQuery($strsql);
 		$accessStatisticsList = array();
 		//die("total".count($result));

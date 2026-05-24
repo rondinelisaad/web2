@@ -17,7 +17,7 @@ var $_grande_area = null;
 	}
 
 	function getSubAreas(){
-		$strsql = "SELECT * FROM sub_area WHERE id_grande_area = ".$this->_grande_area->getID();
+		$strsql = "SELECT * FROM sub_area WHERE id_grande_area = ".$this->_db->intValue($this->_grande_area->getID());
 
 		$rs = $this->_db->databaseQuery($strsql);
 
@@ -54,12 +54,12 @@ var $_grande_area = null;
 	}
 
 	function loadGrandeArea(){
-		$strsql = "SELECT * FROM grande_area WHERE id_grande_area = ".$this->_grande_area->getID();
+		$strsql = "SELECT * FROM grande_area WHERE id_grande_area = ".$this->_db->intValue($this->_grande_area->getID());
 
 		$row = $this->_db->databaseQuery($strsql);
 
 		$sub = new GrandeArea();
-		
+
 		$sub->setID($row[0]['id_grande_area']);
 
 		if($this->_grande_area->getLang() != '')

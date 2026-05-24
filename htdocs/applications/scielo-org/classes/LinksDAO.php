@@ -18,7 +18,7 @@ class LinksDAO {
 * Construtor da Classe DirectoryDAO
 */
 	function LinksDAO(){
-		
+
 		$this->_db = new DBClass();
 	}
 /**
@@ -34,8 +34,8 @@ class LinksDAO {
 							user_links
 								(user_id, name, url, description, in_home)
 							VALUES (
-								'".$link->getUser_id()."','".$link->getName()."','".$link->getUrl()."',
-								'".$link->getDescription()."',".$link->getInHome().")";
+								" . $this->_db->intValue($link->getUser_id()) . "," . $this->_db->quote($link->getName()) . "," . $this->_db->quote($link->getUrl()) . ",
+								" . $this->_db->quote($link->getDescription()) . ",".$this->_db->intValue($link->getInHome()).")";
 		$result = $this->_db->databaseExecInsert($strsql);
 		return $result;
 	}
@@ -46,19 +46,19 @@ class LinksDAO {
 * @returns integer $sucess 1 em caso de sucesso, 0 em caso de erro
 */
 	function removeLink($link){
-		$strsql = "DELETE FROM user_links WHERE link_id = ".$link->getLink_id()." and user_id = ".$link->getUser_id();
+		$strsql = "DELETE FROM user_links WHERE link_id = ".$this->_db->intValue($link->getLink_id())." and user_id = ".$this->_db->intValue($link->getUser_id());
 		$result = $this->_db->databaseExecUpdate($strsql);
 		return $result;
 	}
 
-	
+
 /**
 *Retorna um registro da tabela directories definido pelo campo directory_id
 *
 *@param Links
 */
 	function getLink($link){
-		$strsql = "SELECT * FROM user_links WHERE link_id = ".$link->getLink_id()." and user_id = ".$link->getUser_id();
+		$strsql = "SELECT * FROM user_links WHERE link_id = ".$this->_db->intValue($link->getLink_id())." and user_id = ".$this->_db->intValue($link->getUser_id());
 
 		$result = $this->_db->databaseQuery($strsql);
 		$linkItem = array();
@@ -101,13 +101,13 @@ class LinksDAO {
 				$sort = "rate desc";
 			break;
 		}
-		
-		$strsql = "SELECT * FROM user_links WHERE user_id = ".$link->getUser_id()." order by ".$sort;
+
+		$strsql = "SELECT * FROM user_links WHERE user_id = ".$this->_db->intValue($link->getUser_id())." order by ".$sort;
 
         if($count > 0){
-		    $strsql .= " LIMIT $from,$count";
+		    $strsql .= " LIMIT " . $this->_db->intValue($from) . "," . $this->_db->intValue($count);
 		}
-		
+
 		$result = $this->_db->databaseQuery($strsql);
 		$linkList = array();
 		for($i = 0; $i < count($result); $i++)
@@ -124,14 +124,14 @@ class LinksDAO {
 		}
 		return $linkList;
 	}
-	
+
 /**
 *Retorna um registro da tabela directories definido pelo campo directory_id
 *
 *@param Links
 */
 	function getInHomeLinks($link){
-		$strsql = "SELECT * FROM user_links WHERE user_id = ".$link->getUser_id()." and in_home=1 order by rate desc";
+		$strsql = "SELECT * FROM user_links WHERE user_id = ".$this->_db->intValue($link->getUser_id())." and in_home=1 order by rate desc";
 
 		$result = $this->_db->databaseQuery($strsql);
 		$linkList = array();
@@ -149,14 +149,14 @@ class LinksDAO {
 		}
 		return $linkList;
 	}
-	
+
 /*
 *Verifica se o Artigo já se encontra na shelf do usuário
 *Verifica se o artigo já esta na shelf independente do status visible
 *@returns boolean
 */
 	function linkExist($link){
-		$strsql = "SELECT * FROM user_links WHERE name = '".$link->getName()."' and user_id =".$link->getUser_id();
+		$strsql = "SELECT * FROM user_links WHERE name = " . $this->_db->quote($link->getName()) . " and user_id =".$this->_db->intValue($link->getUser_id());
 		$result = $this->_db->databaseQuery($strsql);
 
 		if(count($result) > 0){
@@ -167,31 +167,31 @@ class LinksDAO {
 	}
 
     function getTotalItens($link){
-		$strsql = "SELECT count(*) as total FROM user_links WHERE user_id=".$link->getUser_id();
+		$strsql = "SELECT count(*) as total FROM user_links WHERE user_id=".$this->_db->intValue($link->getUser_id());
 		$result = $this->_db->databaseQuery($strsql);
 		return $result[0]['total'];
     }
-	
+
 	function updateLink($link){
-		$strsql = "UPDATE user_links set name='".$link->getName()."', user_id=".$link->getUser_id().", url='".$link->getUrl()."', description='".$link->getDescription()."', in_home=".$link->getInHome()." WHERE link_id=".$link->getLink_id()." and user_id=".$link->getUser_id();
+		$strsql = "UPDATE user_links set name=" . $this->_db->quote($link->getName()) . ", user_id=".$this->_db->intValue($link->getUser_id()).", url=" . $this->_db->quote($link->getUrl()) . ", description=" . $this->_db->quote($link->getDescription()) . ", in_home=".$this->_db->intValue($link->getInHome())." WHERE link_id=".$this->_db->intValue($link->getLink_id())." and user_id=".$this->_db->intValue($link->getUser_id());
 		$result = $this->_db->databaseExecUpdate($strsql);
 		return $result;
 	}
 
 	function UpdateLinkRate($link){
-		$strsql = "Update user_links SET rate=".$link->getRate()." WHERE link_id=".$link->getLink_id() . " and user_id=".$link->getUser_id();
+		$strsql = "Update user_links SET rate=".$this->_db->intValue($link->getRate())." WHERE link_id=".$this->_db->intValue($link->getLink_id()) . " and user_id=".$this->_db->intValue($link->getUser_id());
 		$result = $this->_db->databaseExecUpdate($strsql);
 		return $result;
 	}
-	
+
 		function deleteFromHome($link){
-			$strsql = "Update user_links SET in_home=0 WHERE link_id=".$link->getLink_id() . " and user_id=".$link->getUser_id();		
+			$strsql = "Update user_links SET in_home=0 WHERE link_id=".$this->_db->intValue($link->getLink_id()) . " and user_id=".$this->_db->intValue($link->getUser_id());
 			$result = $this->_db->databaseExecUpdate($strsql);
 			return $result;
 		}
 
 		function addInHome($link){
-			$strsql = "Update user_links SET in_home=1 WHERE link_id=".$link->getLink_id() . " and user_id=".$link->getUser_id();
+			$strsql = "Update user_links SET in_home=1 WHERE link_id=".$this->_db->intValue($link->getLink_id()) . " and user_id=".$this->_db->intValue($link->getUser_id());
 			$result = $this->_db->databaseExecUpdate($strsql);
 			return $result;
 		}

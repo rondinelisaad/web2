@@ -30,9 +30,9 @@ class MyProfileArticleDAO {
 
 	function setMyProfiles($user_id)
 	{
-		$query_profiles = "SELECT profile_id, profile_name FROM profiles WHERE user_id = '".$user_id."' AND profile_status = 'on' ORDER BY profile_id";
+		$query_profiles = "SELECT profile_id, profile_name FROM profiles WHERE user_id = " . $this->_db->intValue($user_id) . " AND profile_status = 'on' ORDER BY profile_id";
         $profiles_result = $this->_db->databaseQuery($query_profiles);
-		
+
 
 		$this->my_profiles = $profiles_result;
 	}
@@ -48,7 +48,7 @@ class MyProfileArticleDAO {
 		// 3 - devolvo array de perfis com os artigos
 		$this->setMyProfiles($article_profile->getUserID());
 		$profiles_result = $this->getMyProfiles();
-		//$articleProfileList[] = array();   
+		//$articleProfileList[] = array();
 		for($p = 0; $p < count($profiles_result); $p++)
 		{
 			$profile_id = $profiles_result[$p]['profile_id'];
@@ -69,14 +69,14 @@ class MyProfileArticleDAO {
 					$order_by = null;
 			}
 			$where_new = (isset($_GET['new'])?' and is_new=1':null);
-			
-			$strsql = "SELECT profile_article.*,articles.publication_date FROM profile_article,articles WHERE articles.PID = profile_article.PID and profile_id = '".$profile_id."'".$where_new." ".$order_by;
+
+			$strsql = "SELECT profile_article.*,articles.publication_date FROM profile_article,articles WHERE articles.PID = profile_article.PID and profile_id = " . $this->_db->intValue($profile_id) . "".$where_new." ".$order_by;
 
 			$result = $this->_db->databaseQuery($strsql);
 			for($i = 0; $i < count($result); $i++)
 			{
 				$relevance = $result[$i]['relevance'];
-				$query_article = "SELECT * FROM articles WHERE PID = '".$result[$i]['PID']."' LIMIT 1";
+				$query_article = "SELECT * FROM articles WHERE PID = " . $this->_db->quote($result[$i]["PID"]) . " LIMIT 1";
 				$article_result = $this->_db->databaseQuery($query_article);
 				$articleProfile = new MyProfileArticle();
 				$article = new Article();

@@ -28,7 +28,7 @@ class ProfileArticleDAO {
 * Construtor da Classe ArticleDAO
 */
 	function ProfileArticleDAO(){
-		
+
 		$this->_db = new DBClass();
 	}
 
@@ -46,16 +46,21 @@ class ProfileArticleDAO {
 	function AddProfileArticle($profile_article){
 
 		$strsql = "INSERT INTO profile_article (
-		PID, 
-		profile_id, 
+		PID,
+		profile_id,
 		process_date,
 		relevance,
 		is_new
-		) 
-		VALUES ('".$profile_article->getPID()."','".$profile_article->getProfileID()."','".date("Ymd")."','".$profile_article->getRelevance()."','1')";
+		)
+		VALUES (" .
+			$this->_db->quote($profile_article->getPID()) . "," .
+			$this->_db->intValue($profile_article->getProfileID()) . "," .
+			$this->_db->quote(date("Ymd")) . "," .
+			$this->_db->quote($profile_article->getRelevance()) . "," .
+			"'1'" .
+			")";
 
 		$result = $this->_db->databaseExecInsert($strsql);
-//		die(var_dump($result));
 		return $result;
 	}
 
@@ -66,12 +71,12 @@ class ProfileArticleDAO {
 * @returns integer $sucess 1 em caso de sucesso, 0 em caso de erro
 */
 	function UpdateProfileArticle($profile_article){
-		$strsql = 'UPDATE profile_article SET 		
-		process_date = "'.date("Y-m-d H:i:s").'",
-		relevance = "'.$profile_article->getRelevance().'",
-		is_new = "'.$profile_article->getIsNew().'"
-		
-		WHERE PID = "'.$profile_article->getPID().'" and profile_id = "'.$profile_article->getProfileID().'"';
+		$strsql = "UPDATE profile_article SET " .
+			"process_date = " . $this->_db->quote(date("Y-m-d H:i:s")) . ", " .
+			"relevance = " . $this->_db->quote($profile_article->getRelevance()) . ", " .
+			"is_new = " . $this->_db->quote($profile_article->getIsNew()) . " " .
+			"WHERE PID = " . $this->_db->quote($profile_article->getPID()) .
+			" and profile_id = " . $this->_db->intValue($profile_article->getProfileID());
 
 		$result = $this->_db->databaseExecUpdate($strsql);
 
@@ -82,11 +87,11 @@ class ProfileArticleDAO {
 * Consulta os dados dos perfis de um usuário no Banco de Dados
 *
 * @param $userId id do usuário
-* 
-* @returns array of UserProfile 
+*
+* @returns array of UserProfile
 */
 	function getProfileArticle($PID, $profileId){
-		$strsql = "SELECT * FROM  profile_article WHERE PID = '".$PID."' and profile_id='".$profileId."'";
+		$strsql = "SELECT * FROM  profile_article WHERE PID = " . $this->_db->quote($PID) . " and profile_id=" . $this->_db->intValue($profileId);
 		$arr = $this->_db->databaseQuery($strsql);
 		$profile_article = $this->load($arr[0]);
 		return $profile_article;
@@ -108,15 +113,13 @@ class ProfileArticleDAO {
 	}
 
 	function deleteRelationship($profileID){
-		$strsql = "DELETE FROM profile_article WHERE profile_id='".$profileID."' and  is_new='3'"; 
+		$strsql = "DELETE FROM profile_article WHERE profile_id=" . $this->_db->intValue($profileID) . " and  is_new='3'";
 		$result = $this->_db->databaseExecUpdate($strsql);
 		return $result;
 	}
 
 	function setAsDeleted($profileID){
-		$strsql = 'UPDATE profile_article SET 		
-		is_new = "3"		
-		WHERE profile_id = "'.$profileID.'"';
+		$strsql = 'UPDATE profile_article SET is_new = "3" WHERE profile_id = ' . $this->_db->intValue($profileID);
 		$result = $this->_db->databaseExecUpdate($strsql);
 
 		return $result;

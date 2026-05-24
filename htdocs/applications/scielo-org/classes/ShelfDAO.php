@@ -26,7 +26,7 @@ class ShelfDAO {
 * Construtor da Classe ArticleDAO
 */
 	function ShelfDAO(){
-		
+
 		$this->_db = new DBClass();
 	}
 /**
@@ -51,7 +51,7 @@ class ShelfDAO {
 		}else{
 			$accessStat = 0;
 		}
-		
+
 
 		$strsql = "INSERT INTO
 							user_shelf
@@ -62,12 +62,12 @@ class ShelfDAO {
 								insert_date,
 								visible)
 							VALUES (
-								'".$shelf->getUserID()."',
-								'".$shelf->getPID()."',
-								'".$citedStat."',
-								'".$accessStat."',
-								'".date('Y-m-d H:i:s')."',
-								'".$shelf->getVisible()."')";
+								" . $this->_db->intValue($shelf->getUserID()) . ",
+								" . $this->_db->quote($shelf->getPID()) . ",
+								" . $this->_db->intValue($citedStat) . ",
+								" . $this->_db->intValue($accessStat) . ",
+								" . $this->_db->quote(date('Y-m-d H:i:s')) . ",
+								" . $this->_db->intValue($shelf->getVisible()) . ")";
 
 		$result = $this->_db->databaseExecInsert($strsql);
 		return $result;
@@ -81,30 +81,30 @@ class ShelfDAO {
 */
 	function UpdateArticleInShelf($shelf){
 		$strsql = "UPDATE user_shelf SET ";
-		
+
 		if(($shelf->getCitedStat() === 0) || ($shelf->getCitedStat() === 1))
 		{
-			$strsql .= "cited_stat = '".$shelf->getCitedStat()."'";
+			$strsql .= "cited_stat = " . $this->_db->intValue($shelf->getCitedStat()) . "";
 		}
 
 		if(($shelf->getAccessStat() ===0) || ($shelf->getAccessStat() ===1)){
-			$strsql .= "access_stat = '".$shelf->getAccessStat()."'";
+			$strsql .= "access_stat = " . $this->_db->intValue($shelf->getAccessStat()) . "";
 		}
 
 		if(($shelf->getVisible() === 0) || ($shelf->getVisible() === 1)){
-			$strsql .= "visible = '".$shelf->getVisible()."'";	
+			$strsql .= "visible = " . $this->_db->intValue($shelf->getVisible()) . "";
 		}
 
-		$strsql .= " WHERE user_id = '".$shelf->getUserID()."' AND PID = '".$shelf->getPID()."'";
+		$strsql .= " WHERE user_id = " . $this->_db->intValue($shelf->getUserID()) . " AND PID = " . $this->_db->quote($shelf->getPID()) . "";
 
 		$result = $this->_db->databaseExecUpdate($strsql);
 
 		return $result;
 	}
-	
+
 	function UpdateArticleRate($shelf){
-		$strsql = "Update user_shelf SET rate=".$shelf->getRate()." WHERE shelf_id=".$shelf->getShelf_id();
-		
+		$strsql = "Update user_shelf SET rate=".$this->_db->intValue($shelf->getRate())." WHERE shelf_id=".$this->_db->intValue($shelf->getShelf_id());
+
 		$result = $this->_db->databaseExecUpdate($strsql);
 	}
 
@@ -114,21 +114,21 @@ class ShelfDAO {
 * @returns integer $sucess 1 em caso de sucesso, 0 em caso de erro
 */
 	function removeArticleFromShelf($shelf){
-		$strsql = "DELETE FROM user_shelf WHERE user_id = '".$shelf->getUserID()."' AND pid = '".$shelf->getPID()."'";
+		$strsql = "DELETE FROM user_shelf WHERE user_id = " . $this->_db->intValue($shelf->getUserID()) . " AND pid = " . $this->_db->quote($shelf->getPID()) . "";
 		$result = $this->_db->databaseExecUpdate($strsql);
 		return $result;
 	}
 
 
 /**
-*Retorna um objeto  
+*Retorna um objeto
 *
 *Lê a base de dados, e retorna um array de objetos Shelf
 *@param Shelf shelf objeto shelf que contém o ID do usuário que se quer ter a shelf carregada
 *@returns Shelf shelf um objeto shelf atualizado
 */
 	function getShelfItem($shelf){
-		$strsql = "SELECT * FROM user_shelf, articles WHERE user_id = '".$shelf->getUserID()."' and articles.pid = '".$shelf->getPID()."' and user_shelf.pid = articles.pid";
+		$strsql = "SELECT * FROM user_shelf, articles WHERE user_id = " . $this->_db->intValue($shelf->getUserID()) . " and articles.pid = " . $this->_db->quote($shelf->getPID()) . " and user_shelf.pid = articles.pid";
 
 		$result = $this->_db->databaseQuery($strsql);
 		$shelf = new Shelf();
@@ -151,9 +151,9 @@ class ShelfDAO {
 		$shelf->setUserID($result[0]['user_id']);
 		$shelf->setVisible($result[0]['visible']);
 		$shelf->setRate($result[0]['rate']);
-		$shelf->setDirectory($result[0]['directory']);		
+		$shelf->setDirectory($result[0]['directory']);
 		$shelf->setArticle($article);
-		return $shelf;	
+		return $shelf;
 	}
 
 /**
@@ -170,13 +170,13 @@ class ShelfDAO {
 		$directory_id = $shelf->getDirectory();
 		if (  isset($directory_id)   ){
 			if ($directory_id == 0){
-				$filter = " and user_shelf.directory_id=".$directory_id;			
+				$filter = " and user_shelf.directory_id=".$this->_db->intValue($directory_id);
 			}else{
 				$filterTb = ", directories";
-				$filter = " and user_shelf.directory_id=directories.directory_id  and user_shelf.directory_id=".$directory_id;
+				$filter = " and user_shelf.directory_id=directories.directory_id  and user_shelf.directory_id=".$this->_db->intValue($directory_id);
 			}
 		}
-		
+
 		switch ($params["sort"]){
 			case "rate":
 				$sort = "rate desc";
@@ -188,10 +188,10 @@ class ShelfDAO {
 				$sort = "rate desc";
 			break;
 		}
-		$strsql = "SELECT * FROM user_shelf, articles".$filterTb." WHERE user_shelf.user_id = '".$shelf->getUserID()."' and user_shelf.pid = articles.pid and user_shelf.visible = 1 ".$filter." order by user_shelf.".$sort;
+		$strsql = "SELECT * FROM user_shelf, articles".$filterTb." WHERE user_shelf.user_id = " . $this->_db->intValue($shelf->getUserID()) . " and user_shelf.pid = articles.pid and user_shelf.visible = 1 ".$filter." order by user_shelf.".$sort;
 
         if($count > 0){
-		    $strsql .= " LIMIT $from,$count";
+		    $strsql .= " LIMIT " . $this->_db->intValue($from) . "," . $this->_db->intValue($count);
 		}
 		$result = $this->_db->databaseQuery($strsql);
 		$shelfList = array();
@@ -209,7 +209,7 @@ class ShelfDAO {
 			$article->setYear($result[$i]['year']);
 			$article->setAuthorXML($result[$i]['authors_xml']);
 			$article->setKeywordXML($result[$i]['keywords_xml']);
-			
+
 			$shelf->setShelf_id($result[$i]['shelf_id']);
 			$shelf->setPID($result[$i]['PID']);
 			$shelf->setCitedStat($result[$i]['cited_stat']);
@@ -229,7 +229,7 @@ class ShelfDAO {
 *@returns boolean
 */
 	function isInShelf($shelf){
-		$strsql = "SELECT * FROM user_shelf WHERE user_id = '".$shelf->getUserID()."' and pid ='".$shelf->getPID()."'";
+		$strsql = "SELECT * FROM user_shelf WHERE user_id = " . $this->_db->intValue($shelf->getUserID()) . " and pid =" . $this->_db->quote($shelf->getPID()) . "";
 
 		$result = $this->_db->databaseQuery($strsql);
 
@@ -245,7 +245,7 @@ class ShelfDAO {
 *@returns boolean
 */
 	function hasAlerts($shelf){
-		$strsql = "SELECT * FROM user_shelf WHERE user_id = '".$shelf->getUserID()."' and pid ='".$shelf->getPID()."'";
+		$strsql = "SELECT * FROM user_shelf WHERE user_id = " . $this->_db->intValue($shelf->getUserID()) . " and pid =" . $this->_db->quote($shelf->getPID()) . "";
 
 		$result = $this->_db->databaseQuery($strsql);
 
@@ -271,7 +271,7 @@ class ShelfDAO {
 *@returns mixed Array de objetos Shelf
 */
 	function getCitedAlertList($shelf){
-		$strsql = "SELECT * FROM user_shelf, articles WHERE user_id = '".$shelf->getUserID()."' and user_shelf.pid = articles.pid and user_shelf.cited_stat = 1";
+		$strsql = "SELECT * FROM user_shelf, articles WHERE user_id = " . $this->_db->intValue($shelf->getUserID()) . " and user_shelf.pid = articles.pid and user_shelf.cited_stat = 1";
 		$result = $this->_db->databaseQuery($strsql);
 		$shelfList = array();
 
@@ -310,7 +310,7 @@ class ShelfDAO {
 *@returns mixed Array de objetos Shelf
 */
 	function getAccessedAlertList($shelf){
-		$strsql = "SELECT * FROM user_shelf, articles WHERE user_id = '".$shelf->getUserID()."' and user_shelf.pid = articles.pid and user_shelf.access_stat = 1";
+		$strsql = "SELECT * FROM user_shelf, articles WHERE user_id = " . $this->_db->intValue($shelf->getUserID()) . " and user_shelf.pid = articles.pid and user_shelf.access_stat = 1";
 		$result = $this->_db->databaseQuery($strsql);
 		$shelfList = array();
 
@@ -346,25 +346,25 @@ class ShelfDAO {
         function getTotalItens($shelf){
 			$directory_id = $shelf->getDirectory();
 			if (  isset($directory_id)    ){
-				$filter = " and directory_id=".$directory_id;
+				$filter = " and directory_id=".$this->_db->intValue($directory_id);
 			}
-			$strsql = "SELECT count(*) as total FROM user_shelf WHERE user_id = ".$shelf->getUserID()." AND visible = 1 ".$filter ;
+			$strsql = "SELECT count(*) as total FROM user_shelf WHERE user_id = " . $this->_db->intValue($shelf->getUserID()) . " AND visible = 1 ".$filter ;
 			$result = $this->_db->databaseQuery($strsql);
 			return $result[0]['total'];
         }
-		
+
 		function updateShelfDirectory($shelf){
-			$strsql = "Update user_shelf SET directory_id=".$shelf->getDirectory()." WHERE user_id = '".$shelf->getUserID()."' and shelf_id=".$shelf->getShelf_id();
+			$strsql = "Update user_shelf SET directory_id=".$this->_db->intValue($shelf->getDirectory())." WHERE user_id = " . $this->_db->intValue($shelf->getUserID()) . " and shelf_id=".$this->_db->intValue($shelf->getShelf_id());
 			$result = $this->_db->databaseExecUpdate($strsql);
 		}
-		
+
 		function moveAllToAnotherDirectory($shelf,$removeDir){
-			$strsql = "Update user_shelf SET directory_id=".$shelf->getDirectory()." WHERE user_id = '".$shelf->getUserID()."' and directory_id=".$removeDir;
+			$strsql = "Update user_shelf SET directory_id=".$this->_db->intValue($shelf->getDirectory())." WHERE user_id = " . $this->_db->intValue($shelf->getUserID()) . " and directory_id=".$this->_db->intValue($removeDir);
 			$result = $this->_db->databaseExecUpdate($strsql);
 		}
-		
+
 	function deleteAllOfDirectory($shelf,$removeDir){
-		$strsql = "DELETE FROM user_shelf WHERE user_id = '".$shelf->getUserID()."' AND directory_id = ".$removeDir;
+		$strsql = "DELETE FROM user_shelf WHERE user_id = " . $this->_db->intValue($shelf->getUserID()) . " AND directory_id = ".$this->_db->intValue($removeDir);
 		$result = $this->_db->databaseExecUpdate($strsql);
 		return $result;
 	}
