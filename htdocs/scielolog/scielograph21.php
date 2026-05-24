@@ -9,6 +9,17 @@ include_once ("jpgraph/jpgraph_bar.php");
 include_once ("include_grafico.php");
 
 $ui=date('y').date('z');
+$dti = isset($_REQUEST["dti"]) ? $_REQUEST["dti"] : (isset($dti) ? $dti : "");
+$dtf = isset($_REQUEST["dtf"]) ? $_REQUEST["dtf"] : (isset($dtf) ? $dtf : "");
+$pid = isset($_REQUEST["pid"]) ? $_REQUEST["pid"] : (isset($pid) ? $pid : array());
+$dti = preg_match("/^[0-9-]*$/", $dti) ? $dti : "";
+$dtf = preg_match("/^[0-9-]*$/", $dtf) ? $dtf : "";
+if (!is_array($pid)) {
+	$pid = ($pid == "") ? array() : array($pid);
+}
+$pid = array_values(array_filter($pid, function($value) {
+	return preg_match("/^[A-Za-z0-9._-]+$/", (string)$value);
+}));
 
 $db_data=$defFile["PATH"]["PATH_DATABASE"]."/accesslog/log_scielo/trab/datemfn";
 $db_acesso=$defFile["PATH"]["PATH_DATABASE"]."/accesslog/log_scielo/trab/acesso";

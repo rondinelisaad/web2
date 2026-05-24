@@ -4,6 +4,23 @@ include_once ("include_montaXML.php");
 // Constantes
 $ui=getmypid();
 
+$issn = isset($_REQUEST["issn"]) ? $_REQUEST["issn"] : (isset($issn) ? $issn : "");
+$pid = isset($_REQUEST["pid"]) ? $_REQUEST["pid"] : (isset($pid) ? $pid : "");
+$lng = isset($_REQUEST["lng"]) ? $_REQUEST["lng"] : (isset($lng) ? $lng : "");
+$lang = isset($_REQUEST["lang"]) ? $_REQUEST["lang"] : (isset($lang) ? $lang : "");
+$access = isset($_REQUEST["access"]) ? $_REQUEST["access"] : (isset($access) ? $access : "");
+
+$issn = preg_match("/^[0-9Xx-]{4,9}$/", $issn) ? $issn : "";
+$pid = preg_match("/^[A-Za-z0-9._-]*$/", $pid) ? $pid : "";
+$lng = preg_match("/^[a-z]{2}$/", $lng) ? $lng : "";
+$lang = preg_match("/^[a-z]{2}$/", $lang) ? $lang : "";
+$access = preg_match("/^[0-9]*$/", $access) ? $access : "";
+
+if ($issn == "") {
+	header("HTTP/1.1 400 Bad Request");
+	die("Invalid issn");
+}
+
 // INICIO - Configuração das variaveis
 // dependem da instalação
 

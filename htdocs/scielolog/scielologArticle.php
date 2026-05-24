@@ -4,8 +4,26 @@ include_once ("include_montaXML.php");
 // Constantes
 
 $ui=getmypid();
-$pid=$_REQUEST["pid"];
-$app=$_REQUEST["app"];
+$pid = isset($_REQUEST["pid"]) ? $_REQUEST["pid"] : "";
+$app = isset($_REQUEST["app"]) ? $_REQUEST["app"] : "";
+$lng = isset($_REQUEST["lng"]) ? $_REQUEST["lng"] : (isset($lng) ? $lng : "");
+$lang = isset($_REQUEST["lang"]) ? $_REQUEST["lang"] : (isset($lang) ? $lang : "");
+$dti = isset($_REQUEST["dti"]) ? $_REQUEST["dti"] : (isset($dti) ? $dti : "");
+$dtf = isset($_REQUEST["dtf"]) ? $_REQUEST["dtf"] : (isset($dtf) ? $dtf : "");
+$access = isset($_REQUEST["access"]) ? $_REQUEST["access"] : (isset($access) ? $access : "");
+
+$pid = preg_match("/^[A-Za-z0-9._-]+$/", $pid) ? $pid : "";
+$app = preg_match("/^[A-Za-z0-9_-]*$/", $app) ? $app : "";
+$lng = preg_match("/^[a-z]{2}$/", $lng) ? $lng : "";
+$lang = preg_match("/^[a-z]{2}$/", $lang) ? $lang : "";
+$dti = preg_match("/^[0-9-]*$/", $dti) ? $dti : "";
+$dtf = preg_match("/^[0-9-]*$/", $dtf) ? $dtf : "";
+$access = preg_match("/^[0-9]*$/", $access) ? $access : "";
+
+if ($pid == "") {
+	header("HTTP/1.1 400 Bad Request");
+	die("Invalid pid");
+}
 
 // INICIO - Configuracao das variaveis
 // dependem da instalacao

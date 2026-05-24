@@ -2,14 +2,29 @@
 include_once ("include_grafico.php");
 include_once ("include_montaXML.php");
 
-$script=$_REQUEST["script"];
-$dti=$_REQUEST["dti"];
-$dtf=$_REQUEST["dtf"];
-$nlines=$_REQUEST["nlines"];
-$cpage=$_REQUEST["cpage"];
-$order=$_REQUEST["order"];
-$lng=$_REQUEST["lng"];
-$pid=$_REQUEST["pid"];
+$script = isset($_REQUEST["script"]) ? $_REQUEST["script"] : "";
+$dti = isset($_REQUEST["dti"]) ? $_REQUEST["dti"] : "";
+$dtf = isset($_REQUEST["dtf"]) ? $_REQUEST["dtf"] : "";
+$nlines = isset($_REQUEST["nlines"]) ? $_REQUEST["nlines"] : "";
+$cpage = isset($_REQUEST["cpage"]) ? $_REQUEST["cpage"] : "";
+$order = isset($_REQUEST["order"]) ? $_REQUEST["order"] : "";
+$lng = isset($_REQUEST["lng"]) ? $_REQUEST["lng"] : "";
+$pid = isset($_REQUEST["pid"]) ? $_REQUEST["pid"] : "";
+
+$allowedScripts = array("sci_journalstat", "sci_statiss", "sci_statart");
+$script = in_array($script, $allowedScripts) ? $script : "";
+$dti = preg_match("/^[0-9-]*$/", $dti) ? $dti : "";
+$dtf = preg_match("/^[0-9-]*$/", $dtf) ? $dtf : "";
+$nlines = preg_match("/^[0-9]+$/", $nlines) ? $nlines : "";
+$cpage = preg_match("/^[0-9]+$/", $cpage) ? $cpage : "";
+$order = preg_match("/^[0-9]+$/", $order) ? $order : "";
+$lng = preg_match("/^[a-z]{2}$/", $lng) ? $lng : "";
+$pid = preg_match("/^[A-Za-z0-9._-]*$/", $pid) ? $pid : "";
+
+if ($script == "") {
+	header("HTTP/1.1 400 Bad Request");
+	die("Invalid script");
+}
 // Constantes
 
 $ui=getmypid();

@@ -4,8 +4,21 @@
 	require_once("include.php");
         require_once("../class.XSLTransformer.php");
 
-	$lng = $_REQUEST["lng"];
-	$pid = $_REQUEST["pid"];
+	function ofi_is_local_debug_enabled() {
+		$remoteAddr = isset($_SERVER["REMOTE_ADDR"]) ? $_SERVER["REMOTE_ADDR"] : "";
+		return getenv("SCIELO_ENABLE_DEBUG") === "1"
+			&& ($remoteAddr === "127.0.0.1" || $remoteAddr === "::1");
+	}
+
+	$lng = isset($_REQUEST["lng"]) && preg_match("/^[a-z]{2}$/", $_REQUEST["lng"]) ? $_REQUEST["lng"] : "en";
+	$pid = isset($_REQUEST["pid"]) ? $_REQUEST["pid"] : array();
+	if (!is_array($pid)) {
+		$pid = ($pid == "") ? array() : array($pid);
+	}
+	$pid = array_values(array_filter($pid, function($value) {
+		return preg_match("/^[A-Za-z0-9._-]+$/", (string)$value);
+	}));
+	$debug = isset($_REQUEST["debug"]) ? $_REQUEST["debug"] : "";
         
 // Create new Scielo object
         $host = $_SERVER['HTTP_HOST'];
@@ -114,7 +127,7 @@
 		$result=exec($OP);
 	}
 
-	if ($_REQUEST["debug"]=="xml") {
+	if ($debug=="xml" && ofi_is_local_debug_enabled()) {
 	   	echo $output;
 		exit();	
 	}
@@ -126,7 +139,7 @@
 
 	$xsl = $defFile["PATH"]["PATH_XSL"]."/sciofi_artmonthyearstat.xsl";
 
-        if ($_REQUEST["debug"]=="xsl") {
+        if ($debug=="xsl" && ofi_is_local_debug_enabled()) {
                 echo file_get_contents($xsl);
         }
 
@@ -162,4 +175,3 @@ echo(date('Y'));
 <a class="email" href="mailto:<?=$defFile["SITE_INFO"]["E_MAIL"]?>"><?=$defFile["SITE_INFO"]["SITE_INFO"]?></a>
 </center>
 </p>
-

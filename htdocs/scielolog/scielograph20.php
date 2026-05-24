@@ -9,6 +9,10 @@ include_once ("include_grafico.php");
 
 //$ui=getmypid();
 $ui=date('y').date('z');
+$dti = isset($_REQUEST["dti"]) ? $_REQUEST["dti"] : (isset($dti) ? $dti : "");
+$dtf = isset($_REQUEST["dtf"]) ? $_REQUEST["dtf"] : (isset($dtf) ? $dtf : "");
+$dti = preg_match("/^[0-9-]*$/", $dti) ? $dti : "";
+$dtf = preg_match("/^[0-9-]*$/", $dtf) ? $dtf : "";
 
 $db_data=$defFile["PATH"]["PATH_DATABASE"]."/accesslog/log_scielo/trab/datemfn";
 $db_acesso=$defFile["PATH"]["PATH_DATABASE"]."/accesslog/log_scielo/trab/acesso";

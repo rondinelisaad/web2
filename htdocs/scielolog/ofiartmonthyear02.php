@@ -2,6 +2,22 @@
 	include_once ("include_grafico.php");
 	include_once ("include.php");
 
+	function ofi02_is_local_debug_enabled() {
+		$remoteAddr = isset($_SERVER["REMOTE_ADDR"]) ? $_SERVER["REMOTE_ADDR"] : "";
+		return getenv("SCIELO_ENABLE_DEBUG") === "1"
+			&& ($remoteAddr === "127.0.0.1" || $remoteAddr === "::1");
+	}
+
+	$lng = isset($_REQUEST["lng"]) && preg_match("/^[a-z]{2}$/", $_REQUEST["lng"]) ? $_REQUEST["lng"] : (isset($lng) ? $lng : "en");
+	$debug = isset($_REQUEST["debug"]) ? $_REQUEST["debug"] : (isset($debug) ? $debug : "");
+	$pid = isset($_REQUEST["pid"]) ? $_REQUEST["pid"] : (isset($pid) ? $pid : array());
+	if (!is_array($pid)) {
+		$pid = ($pid == "") ? array() : array($pid);
+	}
+	$pid = array_values(array_filter($pid, function($value) {
+		return preg_match("/^[A-Za-z0-9._-]+$/", (string)$value);
+	}));
+
 	for ($j=0;$j < count($pid);++$j) {
 		$pid2.=$pid[$j];
 	}
@@ -104,7 +120,7 @@
 		$result=exec($OP);
 	}
 
-	if ($debug=="xml") {
+	if ($debug=="xml" && ofi02_is_local_debug_enabled()) {
 	   	echo $output;
 		exit();	
 	}	

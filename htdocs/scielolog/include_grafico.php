@@ -23,15 +23,19 @@ function get_titulo($pid) {
 	global $defFile;
 	$db_issn=$defFile["PATH"]["PATH_DATABASE"]."/accesslog/log_scielo/trab/issn";
 	for ($i=0;$i < count($pid);$i++) {
-		$result=exec($defFile["PATH"]["PATH_PROC"]."/cisis/mx $db_issn \"$pid[$i]\" lw=0 \"pft=v150/\" now");
+		$safePid = preg_match("/^[A-Za-z0-9._-]+$/", (string)$pid[$i]) ? $pid[$i] : "";
+		if ($safePid == "") {
+			continue;
+		}
+		$result=exec($defFile["PATH"]["PATH_PROC"]."/cisis/mx $db_issn \"$safePid\" lw=0 \"pft=v150/\" now");
 		$lista[]["title"]=$result;
 	}
 	return $lista;
 }
 
 function monta_proc($access) {
-  	if ($access=='') { $access=0; }
-  	$proc_access="\"proc=if val(v999) < val('$access') then 'd*' fi\"";
+  	$access = preg_match("/^[0-9]+$/", (string)$access) ? (int)$access : 0;
+  	$proc_access="\"proc=if val(v999) < val(\x27$access\x27) then \x27d*\x27 fi\"";
   	return $proc_access;
 }
 
@@ -135,6 +139,7 @@ function calcula_from($cpage,$nlines) {
 }
 
 function monta_bool($pid,$str) {
+   $pid = preg_match("/^[A-Za-z0-9._-]+$/", (string)$pid) ? $pid : "";
    if ($pid=='') {
       $bool="\"bool=$str\"";
    } else {
@@ -144,6 +149,7 @@ function monta_bool($pid,$str) {
 }
 
 function monta_bool02($pid) {
+   $pid = preg_match("/^[A-Za-z0-9._-]+$/", (string)$pid) ? $pid : "";
    if ($pid=='') {
       $bool="\"bool=$\"";
    } else {
@@ -153,7 +159,17 @@ function monta_bool02($pid) {
 }
 
 function monta_bool_array($pid,$str) {
-   if ($pid=='') {
+   if (!is_array($pid)) {
+      $pid = ($pid == "") ? array() : array($pid);
+   }
+   $safePid = array();
+   for ($j=0;$j < count($pid);++$j) {
+      if (preg_match("/^[A-Za-z0-9._-]+$/", (string)$pid[$j])) {
+         $safePid[] = $pid[$j];
+      }
+   }
+   $pid = $safePid;
+   if (count($pid) == 0) {
       $bool="\"bool=$str\"";
    } else {
    	  $issn="(";
