@@ -1,14 +1,3 @@
 <?php
-
-
-
-phpinfo();
-
-
-
+http_response_code(404);
 ?>
-<html>
-<body>
-&#0037;
-</body>
-</html>

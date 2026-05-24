@@ -14,6 +14,21 @@ $dateStop = isset($_REQUEST['dateStop']) ? $_REQUEST['dateStop'] : '';
 $count = isset($_REQUEST['count']) ? $_REQUEST['count'] : '';
 $date = isset($_REQUEST['date']) ? $_REQUEST['date'] : '';
 
+$pid = preg_match('/^[A-Za-z0-9._-]*$/', $pid) ? $pid : '';
+$lang = preg_match('/^[a-z]{2}$/', $lang) ? $lang : 'en';
+$debug = preg_match('/^[A-Za-z]*$/', $debug) ? $debug : '';
+$pRelease = preg_match('/^[A-Za-z0-9._-]*$/', $pRelease) ? $pRelease : '';
+$dateStart = preg_match('/^[0-9-]*$/', $dateStart) ? $dateStart : '';
+$dateStop = preg_match('/^[0-9-]*$/', $dateStop) ? $dateStop : '';
+$count = preg_match('/^[0-9]*$/', $count) ? $count : '';
+$date = preg_match('/^[0-9-]*$/', $date) ? $date : '';
+
+function _rss_is_local_debug_enabled() {
+  $remoteAddr = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '';
+  return getenv('SCIELO_ENABLE_DEBUG') === '1'
+    && ($remoteAddr === '127.0.0.1' || $remoteAddr === '::1');
+}
+
 function _rss_build_url($parts) {
   $scheme = isset($parts['scheme']) ? $parts['scheme'] : 'http';
   $host = isset($parts['host']) ? $parts['host'] : '127.0.0.1';
@@ -151,15 +166,15 @@ $url = "http://" . $_SERVER['HTTP_HOST'] . "/cgi-bin/wxis.exe/?IsisScript=Scielo
 $xml = _rss_fetch($url);
 $xsl = dirname(__FILE__) . "/xsl/createRSS.xsl";
 
-if (isset($debug) && $debug !== '') {
+if (isset($debug) && $debug !== '' && _rss_is_local_debug_enabled()) {
   echo '<h1>XML</h1>';
   echo '<textarea cols="120" rows="18">' . "\n";
-  echo $xml;
+  echo htmlspecialchars($xml, ENT_QUOTES, 'UTF-8');
   echo '</textarea>';
 
   echo '<h1>XSL</h1>';
   echo '<textarea cols="120" rows="18">' . "\n";
-  echo $xsl;
+  echo htmlspecialchars($xsl, ENT_QUOTES, 'UTF-8');
   echo '</textarea>';
   die();
 }

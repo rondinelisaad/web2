@@ -37,6 +37,13 @@ class ScieloBase
 		$this->ScieloBase($host);
 	}
 
+	function _IsLocalDebugEnabled()
+	{
+		$remoteAddr = isset($_SERVER["REMOTE_ADDR"]) ? $_SERVER["REMOTE_ADDR"] : "";
+		return getenv("SCIELO_ENABLE_DEBUG") === "1"
+			&& ($remoteAddr === "127.0.0.1" || $remoteAddr === "::1");
+	}
+
 	function ScieloBase ($host)
 	{
         $this->_request = new RequestVars ();
@@ -48,6 +55,10 @@ class ScieloBase
         if ( !$this->_request->getRequestValue ("script", $this->_script) ) $this->_script = $this->_homepg;
         $this->_request->getRequestValue ("debug", $this->_debug);
         $this->_debug = strtoupper ($this->_debug);
+        if ($this->_debug && !$this->_IsLocalDebugEnabled()) {
+            $this->_debug = "";
+        }
+
 
 		// Create a DefFile object to gather information from def file
 		$this->_SetDefFileObject();
@@ -250,17 +261,17 @@ class ScieloBase
 				echo $buf;
 				break;
 			case "XSL":
-				echo $this->_xsl;
+				echo htmlspecialchars($this->_xsl, ENT_QUOTES, "UTF-8");
 				break;
 			default:
 				echo "<form>\n";
 				echo "<b>Generated XML</b><br>\n";
 				echo '<TEXTAREA cols="80" rows="20">\n';
-				echo $this->_xml;
+				echo htmlspecialchars($this->_xml, ENT_QUOTES, "UTF-8");
 				echo "\n</TEXTAREA>\n</form>";
 
-				echo "<b>url of IsisScript</b>=$this->_IsisScriptUrl<br>\n";
-				echo "<b>\$xsl</b>=$this->_xsl<br>\n";
+				echo "<b>url of IsisScript</b>=" . htmlspecialchars($this->_IsisScriptUrl, ENT_QUOTES, "UTF-8") . "<br>\n";
+				echo "<b>\$xsl</b>=" . htmlspecialchars($this->_xsl, ENT_QUOTES, "UTF-8") . "<br>\n";
 				break;
 		}
 	}

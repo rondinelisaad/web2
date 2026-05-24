@@ -1,9 +1,20 @@
 <?php
 	ini_set("display_errors","0");
 	error_reporting(E_ALL ^E_NOTICE);
-	$lang = isset($_REQUEST['lang'])?($_REQUEST['lang']):"";
-	$pid = isset($_REQUEST['pid'])?($_REQUEST['pid']):"";
-	$text = isset($_REQUEST['text'])?($_REQUEST['text']):"";
+		$lang = isset($_REQUEST['lang'])?strtolower((string)$_REQUEST['lang']):"";
+		if (!in_array($lang, array("", "pt", "en", "es"), true)) {
+			$lang = "";
+		}
+		$pid = isset($_REQUEST['pid'])?(string)$_REQUEST['pid']:"";
+		if ($pid !== "" && !preg_match('/^[A-Za-z0-9._:;()\\-]+$/', $pid)) {
+			$pid = "";
+		}
+		$text = isset($_REQUEST['text'])?($_REQUEST['text']):"";
+
+		function referenceIsLocalDebugEnabled() {
+			$remoteAddr = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '';
+			return getenv('SCIELO_ENABLE_DEBUG') === '1' && in_array($remoteAddr, array('127.0.0.1', '::1'), true);
+		}
 
 	require_once(dirname(__FILE__)."/../../applications/scielo-org/users/langs.php");
 	require_once(dirname(__FILE__)."/../../classDefFile.php");
@@ -116,7 +127,7 @@
 											$xml .='<vars><htdocs>'.$htdocsPath.'</htdocs><lang>'.$lang.'</lang><applserver>'. $applServer .'</applserver><service_log>'.$flagLog.'</service_log></vars>';
 											$xml .= str_replace('<?xml version="1.0" encoding="ISO-8859-1"?>','',$xmlFile);
 											$xml .='</root>';
-											if($_REQUEST['debug'] == 'on'){
+											if(isset($_REQUEST['debug']) && $_REQUEST['debug'] == 'on' && referenceIsLocalDebugEnabled()){
                                                 echo "QUERY=".$serviceQuery."\n";
 												die($xml);
 											}

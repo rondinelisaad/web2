@@ -4,8 +4,13 @@
 	$lang = isset($_REQUEST['lang'])?($_REQUEST['lang']):"";
 	$pid = isset($_REQUEST['pid'])?($_REQUEST['pid']):"";
 	$text = isset($_REQUEST['text'])?($_REQUEST['text']):"";
+	function datasus_is_local_debug_enabled() {
+		$remoteAddr = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '';
+		return getenv('SCIELO_ENABLE_DEBUG') === '1'
+			&& ($remoteAddr === '127.0.0.1' || $remoteAddr === '::1');
+	}
 
-	require_once(dirname(__FILE__)."/../../applications/scielo-org/users/langs.php");	
+	require_once(dirname(__FILE__)."/../../applications/scielo-org/users/langs.php");
 	$defFile = parse_ini_file(dirname(__FILE__)."/../../scielo.def.php");
 
 ?>
@@ -25,7 +30,7 @@
 					}
 					.articleList TD {
 						padding-bottom: 6px;
-							
+
 					}
 					.articleList TD TD {
 						border-bottom: 1px solid #AAA;
@@ -76,12 +81,12 @@
 											<br/><br/>
 											</span></h3>
 										</TD>
-									</TR>									
+									</TR>
 									<TR>
 										<TD colspan="2">
 											<div class="articleList">
 											<?php
-												$serviceUrl = "http://trigramas.bireme.br/cgi-bin/mxlind/cgi=@areasgeo?pid=".$pid;
+												$serviceUrl = "http://trigramas.bireme.br/cgi-bin/mxlind/cgi=@areasgeo?pid=".rawurlencode($pid);
 												$xmlFile = file_get_contents($serviceUrl);
 												$xml = '<?xml version="1.0" encoding="ISO-8859-1"?>';
 												$xml .='<root>';
@@ -91,10 +96,10 @@
 														</vars>';
 												$xml .= str_replace('<?xml version="1.0" encoding="ISO-8859-1" ?>','',$xmlFile);
 												$xml .='</root>';
-												if($_REQUEST['debug'] == 'xml'){
+												if(isset($_REQUEST['debug']) && $_REQUEST['debug'] == 'xml' && datasus_is_local_debug_enabled()){
 													die($xml);
 												}
-												$transformer = new XSLTransformer();								
+												$transformer = new XSLTransformer();
 												$transformer->setXslBaseUri($defFile["PATH_XSL"]);
 												$transformer->setXml($xml);
 												$transformer->setXslFile($defFile["PATH_XSL"]."datasus.xsl");
@@ -108,18 +113,18 @@
 												$output = str_replace('</p>',' ',$output);
 
 												echo $output;
-												
+
 												?>
 											</div>
 										</TD>
 									</TR>
 								</TABLE>
-								
+
 						</div>
 				</div>
 			</div>
 		</div>
-			<? 
+			<?
 				if($defFile['LOG']['ACTIVATE_LOG'] == '1') {
 			?>
 				<script src="http://www.google-analytics.com/urchin.js" type="text/javascript"></script>

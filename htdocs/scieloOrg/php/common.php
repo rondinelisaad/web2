@@ -28,6 +28,13 @@ function removeAccent($s)
     return ($t === false) ? $s : $t;
 }
 
+function commonIsLocalDebugEnabled()
+{
+    $remoteAddr = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '';
+    return getenv('SCIELO_ENABLE_DEBUG') === '1'
+        && ($remoteAddr === '127.0.0.1' || $remoteAddr === '::1');
+}
+
 $lang = isset($_REQUEST['lang']) ? ($_REQUEST['lang']) : '';
 $pid = isset($_REQUEST['pid']) ? ($_REQUEST['pid']) : '';
 $text = isset($_REQUEST['text']) ? ($_REQUEST['text']) : '';
@@ -97,12 +104,12 @@ $xml .= str_replace('<?xml version="1.0" encoding="ISO-8859-1" ?>', '', $xmlh);
 $xml .= '</root>';
 
 $xsl = $defFile->getKeyValue('PATH_XSL') . $xslName . '.xsl';
-if (isset($_REQUEST['debug'])) {
+if (isset($_REQUEST['debug']) && commonIsLocalDebugEnabled()) {
     echo '<textarea cols="80" rows="10">';
-    echo $xml;
+    echo htmlspecialchars($xml, ENT_QUOTES, 'UTF-8');
     echo '</textarea>';
     echo '<textarea cols="80" rows="10">';
-    echo @file_get_contents($xsl);
+    echo htmlspecialchars(@file_get_contents($xsl), ENT_QUOTES, 'UTF-8');
     echo '</textarea>';
 }
 

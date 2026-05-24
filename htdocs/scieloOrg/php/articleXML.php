@@ -6,9 +6,19 @@
  */
 header('Content-type: text/xml; charset=ISO-8859-1');
 
-$lang = isset($_REQUEST['lang']) ? ($_REQUEST['lang']) : '';
-$pid = isset($_REQUEST['pid']) ? ($_REQUEST['pid']) : '';
+$lang = isset($_REQUEST['lang']) ? strtolower((string)$_REQUEST['lang']) : '';
+$pid = isset($_REQUEST['pid']) ? (string)$_REQUEST['pid'] : '';
 $text = isset($_REQUEST['text']) ? ($_REQUEST['text']) : '';
+
+if (!in_array($lang, array('', 'pt', 'en', 'es'), true)) {
+    $lang = '';
+}
+
+function articleXmlIsLocalDebugEnabled()
+{
+    $remoteAddr = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '';
+    return getenv('SCIELO_ENABLE_DEBUG') === '1' && in_array($remoteAddr, array('127.0.0.1', '::1'), true);
+}
 
 require_once(dirname(__FILE__) . '/../../applications/scielo-org/users/functions.php');
 require_once(dirname(__FILE__) . '/../../applications/scielo-org/users/langs.php');
@@ -49,7 +59,7 @@ function fetchWxisXml($query, $pathHtdocs, $applServer)
     return $xml ? $xml : '';
 }
 
-if ($pid === '') {
+if ($pid === '' || !preg_match('/^[A-Za-z0-9._:;()\\-]+$/', $pid)) {
     echo '<?xml version="1.0" encoding="ISO-8859-1"?><error>missing pid</error>';
     exit;
 }
@@ -58,7 +68,7 @@ if ($pid === '') {
 $query1 = 'IsisScript=ScieloXML/sci_xmloutput.xis&database=artigo&search=IV=' . $pid . '$';
 $xml1 = fetchWxisXml($query1, $pathHtdocs, $applServer);
 
-if (isset($_REQUEST['debug']) && $_REQUEST['debug'] == 'xml') {
+if (isset($_REQUEST['debug']) && $_REQUEST['debug'] == 'xml' && articleXmlIsLocalDebugEnabled()) {
     die($xml1);
 }
 
@@ -66,7 +76,7 @@ if (isset($_REQUEST['debug']) && $_REQUEST['debug'] == 'xml') {
 $query2 = 'IsisScript=ScieloXML/sci_arttext.xis&def=scielo.def.php&pid=' . $pid;
 $xml2 = fetchWxisXml($query2, $pathHtdocs, $applServer);
 $xml2 = str_replace('<REFERENCES></REFERENCES>', '', $xml2);
-if (isset($_REQUEST['debug']) && $_REQUEST['debug'] == 'body') {
+if (isset($_REQUEST['debug']) && $_REQUEST['debug'] == 'body' && articleXmlIsLocalDebugEnabled()) {
     die($xml2);
 }
 

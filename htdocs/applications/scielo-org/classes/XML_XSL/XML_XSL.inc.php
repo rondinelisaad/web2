@@ -9,6 +9,13 @@ class XSL_XML  {
 	function XSL_XML($xslBaseUri=''){
 		$this->xslBaseUri = $xslBaseUri;
 	}
+
+	function isLocalDebugEnabled()
+	{
+		$remoteAddr = isset($_SERVER["REMOTE_ADDR"]) ? $_SERVER["REMOTE_ADDR"] : "";
+		return getenv("SCIELO_ENABLE_DEBUG") === "1"
+			&& ($remoteAddr === "127.0.0.1" || $remoteAddr === "::1");
+	}
 	
 	function xml_xsl ( $xml, $xsl, $debug="" )
 	{
@@ -17,10 +24,13 @@ class XSL_XML  {
 		$xslBaseUri = $this->xslBaseUri;
 		if ($xml=='') die("falta o XML");
 		if ($xsl=='') die("falta XSL para transformar\n");
-		if ( $debug == "XML" ) { die($xml); }
-		if ( $debug == "XSL" ) { die($xsl.'<!--'.$xslBaseUri.$xsl.'-->'); }
+		if ( $debug == "XML" && $this->isLocalDebugEnabled() ) { die($xml); }
+		if ( $debug == "XSL" && $this->isLocalDebugEnabled() ) { die($xsl); }
 
-		if (!file_exists($xsl)){die($xsl." not found.");}
+		if (!file_exists($xsl)){
+			error_log("XSL not found: " . $xsl);
+			die("XSL not found.");
+		}
 		$transform = new XSLTransformer();
 		
 		if (strpos(' '.$xml, '/')==1 || strpos(' '.$xml, 'http://')==1 || strpos(' '.$xml, 'ftp://')==1){	
@@ -31,10 +41,14 @@ class XSL_XML  {
 			$transform->setXslBaseUri("file://" . $xslBaseUri);
 		}
 		
-		if ($transform->setXml($xml) == false)
-		       die($transform->getErrorMessage());
-		if ($transform->setXsl($xsl) == false)
-		       die($transform->getErrorMessage());
+		if ($transform->setXml($xml) == false){
+		       error_log($transform->getErrorMessage());
+		       die("XML transformation failed.");
+		}
+		if ($transform->setXsl($xsl) == false){
+		       error_log($transform->getErrorMessage());
+		       die("XML transformation failed.");
+		}
 		if ($transform->transform() == false){
 		       $r = $transform->getErrorMessage();
 		}else{
@@ -154,6 +168,10 @@ class XSL_XML  {
 	
 	
 	function debugScript ($param, $xml, $xsl) {
+		if (!$this->isLocalDebugEnabled()) {
+			die("debug disabled");
+		}
+
 		$param = strtolower($param);
 		switch ($param) {
 			case "xml":
@@ -161,7 +179,8 @@ class XSL_XML  {
 			case "xsl":
 				die($xsl);
 			case "phpinfo":
-				die(phpinfo());
+				phpinfo();
+				die();
 			default:
 				die("invalid option to debug parameter!");
 		}

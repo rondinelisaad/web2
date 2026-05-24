@@ -2,11 +2,27 @@
 ini_set('display_errors', '0');
 error_reporting(E_ALL ^ E_NOTICE);
 
-$lang = isset($_REQUEST['lng']) ? ($_REQUEST['lng']) : 'en';
+$lang = isset($_REQUEST['lng']) ? strtolower((string)$_REQUEST['lng']) : 'en';
+if (!in_array($lang, array('pt', 'en', 'es'), true)) {
+    $lang = 'en';
+}
 $_REQUEST['lang'] = $lang;
-$pid = isset($_REQUEST['pid']) ? ($_REQUEST['pid']) : '';
+$pid = isset($_REQUEST['pid']) ? (string)$_REQUEST['pid'] : '';
 $text = isset($_REQUEST['text']) ? ($_REQUEST['text']) : '';
-$refPid = isset($_REQUEST['refpid']) ? ($_REQUEST['refpid']) : '';
+$refPid = isset($_REQUEST['refpid']) ? (string)$_REQUEST['refpid'] : '';
+
+function reflinksIsLocalDebugEnabled()
+{
+    $remoteAddr = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '';
+    return getenv('SCIELO_ENABLE_DEBUG') === '1' && in_array($remoteAddr, array('127.0.0.1', '::1'), true);
+}
+
+if ($pid !== '' && !preg_match('/^[A-Za-z0-9._:;()\\-]+$/', $pid)) {
+    $pid = '';
+}
+if ($refPid !== '' && !preg_match('/^[A-Za-z0-9._:;()\\-]+$/', $refPid)) {
+    $refPid = '';
+}
 
 require_once(dirname(__FILE__) . '/../../applications/scielo-org/users/functions.php');
 require_once(dirname(__FILE__) . '/../../applications/scielo-org/users/langs.php');
@@ -65,7 +81,7 @@ if (!$_REQUEST['refid']) {
     $xml .= str_replace('<?xml version="1.0" encoding="ISO-8859-1"?>', '', $xml1);
     $xml .= '</root>';
 
-    if ($_REQUEST['debug1'] == 'on') {
+    if (isset($_REQUEST['debug1']) && $_REQUEST['debug1'] == 'on' && reflinksIsLocalDebugEnabled()) {
         die($xml);
     }
 
@@ -99,7 +115,7 @@ if ($rootPos !== false && $titlePos !== false && $titlePos > $rootPos) {
     $xmlFinal .= '<root><vars><refid>' . $_REQUEST['refid'] . '</refid><htdocs>' . $pathHtdocs . '</htdocs><service_log>' . $flagLog . '</service_log></vars><ref_TITLE><![CDATA[' . $fullTitle . ']]></ref_TITLE><TITLE></TITLE></root>';
 }
 
-if ($_REQUEST['debug2'] == 'on') {
+if (isset($_REQUEST['debug2']) && $_REQUEST['debug2'] == 'on' && reflinksIsLocalDebugEnabled()) {
     die($xmlFinal);
 }
 
