@@ -50,9 +50,27 @@ class RequestVars
             $this->_request = array_merge($getVars, $postVars);
         }
 
-        if (!isset($this->_request['lng']) || strpos("|en|pt|es|", $this->_request['lng']) == 0) {
-            $this->_request['lng'] = "en";
+        if (!isset($this->_request['lng']) || !in_array(strtolower($this->_request['lng']), array('pt', 'es', 'en'))) {
+            $this->_request['lng'] = $this->_detectDefaultLanguage();
+        } else {
+            $this->_request['lng'] = strtolower($this->_request['lng']);
         }
+    }
+
+    function _detectDefaultLanguage()
+    {
+        $acceptLanguage = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? strtolower($_SERVER['HTTP_ACCEPT_LANGUAGE']) : '';
+        if ($acceptLanguage) {
+            $languages = explode(',', $acceptLanguage);
+            foreach ($languages as $language) {
+                $code = substr(trim($language), 0, 2);
+                if (in_array($code, array('pt', 'es', 'en'))) {
+                    return $code;
+                }
+            }
+        }
+
+        return 'pt';
     }
 
     function getRequestValue ($key, &$value)

@@ -3,6 +3,12 @@
   require_once("classScielo.php");
   require_once('applications/scielo-org/sso/header.php');
 
+  if ((isset($_REQUEST['script']) ? $_REQUEST['script'] : '') === 'sci_serial'
+      && (isset($_REQUEST['pid']) ? $_REQUEST['pid'] : '') === '1020-4989') {
+    header('Location: /revistas/rpsp/paboutj.htm', true, 302);
+    exit;
+  }
+
   // Create new Scielo object
   $host = $_SERVER['HTTP_HOST'];
   $scielo = new Scielo($host);

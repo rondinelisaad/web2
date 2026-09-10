@@ -4,6 +4,20 @@ set -euo pipefail
 mkdir -p /run/php-fpm
 chown apache:apache /run/php-fpm
 
+HTTPD_PORT="${HTTPD_PORT:-80}"
+sed -ri "s#^[[:space:]]*Listen[[:space:]].*#Listen ${HTTPD_PORT}#" /etc/httpd/conf/httpd.conf
+sed -ri 's#^;?[[:space:]]*clear_env[[:space:]]*=.*#clear_env = no#' /etc/php-fpm.d/www.conf
+if ! grep -q '^env\[SCIELO_ENABLE_DEBUG\]' /etc/php-fpm.d/www.conf; then
+  printf '\nenv[SCIELO_ENABLE_DEBUG] = %s\n' "${SCIELO_ENABLE_DEBUG:-0}" >> /etc/php-fpm.d/www.conf
+fi
+if [[ -n "${SERVER_SCIELO:-}" ]]; then
+  SCIELO_SERVER="${SERVER_SCIELO}"
+elif [[ "${HTTPD_PORT}" == "80" ]]; then
+  SCIELO_SERVER="127.0.0.1"
+else
+  SCIELO_SERVER="127.0.0.1:${HTTPD_PORT}"
+fi
+
 # Ensure required def files exist.
 if [[ ! -f /var/www/html/htdocs/scielo.def.php && -f /var/www/html/htdocs/scielo.def.php.template ]]; then
   cp /var/www/html/htdocs/scielo.def.php.template /var/www/html/htdocs/scielo.def.php
@@ -11,9 +25,12 @@ fi
 if [[ ! -f /var/www/html/htdocs/applications/scielo-org/scielo.def.php && -f /var/www/html/htdocs/applications/scielo-org/scielo.def.php.template ]]; then
   cp /var/www/html/htdocs/applications/scielo-org/scielo.def.php.template /var/www/html/htdocs/applications/scielo-org/scielo.def.php
 fi
+if [[ ! -f /var/www/html/htdocs/pressrelease/config.php && -f /var/www/html/htdocs/pressrelease/config.php.template ]]; then
+  cp /var/www/html/htdocs/pressrelease/config.php.template /var/www/html/htdocs/pressrelease/config.php
+fi
 
-# Force local WXIS endpoint inside container.
-sed -ri 's#^SERVER_SCIELO=.*#SERVER_SCIELO=127.0.0.1#' /var/www/html/htdocs/scielo.def.php || true
+# Configure public SciELO server used to generate absolute links.
+sed -ri "s#^SERVER_SCIELO=.*#SERVER_SCIELO=${SCIELO_SERVER}#" /var/www/html/htdocs/scielo.def.php || true
 sed -ri 's#^ENABLED_CACHE=.*#ENABLED_CACHE=0#' /var/www/html/htdocs/scielo.def.php || true
 sed -ri 's#^CACHE_STATUS\\s*=.*#CACHE_STATUS = off#' /var/www/html/htdocs/scielo.def.php || true
 
@@ -22,6 +39,17 @@ mkdir -p /home/scielo/www
 ln -sfn /var/www/html/htdocs /home/scielo/www/htdocs
 ln -sfn /var/www/html/cgi-bin /home/scielo/www/cgi-bin
 ln -sfn /var/www/html/proc /home/scielo/www/proc
+if [[ ! -e /var/www/html/cgi-bin/wxis.exe && -x /var/www/html/cgi-bin/temp/wxis ]]; then
+  ln -sfn /var/www/html/cgi-bin/temp/wxis /var/www/html/cgi-bin/wxis.exe
+fi
+if [[ -d /var/www/html/htdocs/revistas ]]; then
+  mkdir -p /var/www/html/htdocs/img/revistas
+  for journal_dir in /var/www/html/htdocs/revistas/*; do
+    if [[ -d "${journal_dir}" && ! -e "/var/www/html/htdocs/img/revistas/$(basename "${journal_dir}")" ]]; then
+      ln -sfn "${journal_dir}" "/var/www/html/htdocs/img/revistas/$(basename "${journal_dir}")"
+    fi
+  done
+fi
 
 if [[ ! -e /var/www/html/bases && -d /var/www/html/bases_modelo ]]; then
   ln -sfn /var/www/html/bases_modelo /var/www/html/bases

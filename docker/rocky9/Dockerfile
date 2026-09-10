@@ -2,6 +2,7 @@ FROM rockylinux:9
 
 RUN dnf -y install \
     httpd \
+    glibc.i686 \
     php \
     php-fpm \
     php-cli \

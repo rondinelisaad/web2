@@ -5,8 +5,11 @@ services:
       context: .
       dockerfile: docker/rocky9/Dockerfile
     container_name: scielo-web-rocky9
-    ports:
-      - "8090:80"
+    network_mode: host
+    environment:
+      HTTPD_PORT: "8090"
+      SERVER_SCIELO: "educa.fcc.org.br"
+      SCIELO_ENABLE_DEBUG: "1"
     volumes:
       - ./:/var/www/html
     restart: unless-stopped
