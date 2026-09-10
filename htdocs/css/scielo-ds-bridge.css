@@ -8962,6 +8962,16 @@ body.serials-page .serials-footer-logos {
   margin-top: 0 !important;
 }
 
+/* Section anchors are navigation targets, not link labels. */
+.arttext-page .arttext-article-card p.sec a,
+.arttext-page .arttext-article-card p.subsec a,
+.arttext-page .arttext-article-card p.sub-subsec a,
+.arttext-page .arttext-article-card p.sec a:hover,
+.arttext-page .arttext-article-card p.subsec a:hover,
+.arttext-page .arttext-article-card p.sub-subsec a:hover {
+  text-decoration: none !important;
+}
+
 /* Bibliographic author-year citations remain inline links, not superscripts. */
 .arttext-page .arttext-article-card sup.xref-bibr,
 .arttext-page .arttext-article-card sup.xref-bibr a {
