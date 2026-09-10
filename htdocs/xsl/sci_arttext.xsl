@@ -959,6 +959,69 @@
 				});
 			}
 
+			function normalizeAuthorBlocks() {
+				Array.prototype.forEach.call(article.querySelectorAll('[class^="index"] .autores, [class^="index"] .authors'), function (container) {
+					Array.prototype.forEach.call(container.querySelectorAll('.contribid'), function (contribid) {
+						if (contribid.closest('.author')) { return; }
+						var author = contribid.previousElementSibling;
+						while (author &amp;&amp; !author.classList.contains('author')) { author = author.previousElementSibling; }
+						if (!author) { return; }
+						var previous = contribid.previousSibling;
+						if (previous &amp;&amp; previous.nodeType === 1 &amp;&amp; previous.tagName.toLowerCase() === 'br') {
+							author.appendChild(previous);
+						}
+						author.appendChild(contribid);
+					});
+				});
+			}
+
+			function addEmailsFromAffiliations() {
+				var authors = article.querySelectorAll('[class^="index"] .autores .author, [class^="index"] .authors .author');
+				var emailPattern = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/ig;
+				var affiliationRecords = [];
+				Array.prototype.forEach.call(article.querySelectorAll('[class^="index"] .aff, [class^="index"] .affiliation, [class^="index"] .corresp'), function (affiliation) {
+					var matches = affiliation.textContent.match(emailPattern) || [];
+					if (matches.length) { affiliationRecords.push({ element: affiliation, emails: matches }); }
+				});
+				Array.prototype.forEach.call(authors, function (author) {
+					var emails = [];
+					Array.prototype.forEach.call(author.querySelectorAll('sup a[href^="#aff"]'), function (ref) {
+						var anchor = document.getElementsByName(ref.getAttribute('href').slice(1))[0];
+						var affiliation = anchor &amp;&amp; (anchor.closest('.aff') || anchor.closest('.affiliation') || anchor.closest('.corresp'));
+						var record = affiliationRecords.filter(function (item) { return item.element === affiliation; })[0];
+						(record ? record.emails : []).forEach(function (email) {
+							if (emails.indexOf(email.toLowerCase()) === -1) { emails.push(email.toLowerCase()); }
+						});
+					});
+					if (!emails.length || author.querySelector('.author-email-link')) { return; }
+
+					var contribid = author.querySelector('.contribid');
+					if (!contribid) {
+						contribid = document.createElement('span');
+						contribid.className = 'contribid';
+						var lineBreak = document.createElement('br');
+						author.appendChild(lineBreak);
+						author.appendChild(contribid);
+					}
+					emails.forEach(function (email) {
+						var link = document.createElement('a');
+						link.className = 'author-email-link';
+						link.title = 'E-mail do autor';
+						link.setAttribute('aria-label', 'E-mail do autor');
+						link.href = 'mailto:' + email;
+						link.innerHTML = '&lt;svg class="author-email-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"&gt;&lt;path d="M4 6h16v12H4z"&gt;&lt;/path&gt;&lt;path d="m4 7 8 6 8-6"&gt;&lt;/path&gt;&lt;/svg&gt;';
+						contribid.insertBefore(link, contribid.firstChild);
+					});
+				});
+				affiliationRecords.forEach(function (record) {
+					var walker = document.createTreeWalker(record.element, NodeFilter.SHOW_TEXT, null, false);
+					var node;
+					while ((node = walker.nextNode())) {
+						node.nodeValue = node.nodeValue.replace(/\s*(?:(?:e-?mail|correo electr[ôo]nico)\s*:\s*|;\s*)[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\s*\.?/ig, '');
+					}
+				});
+			}
+
 			var body = article.querySelector('#article-body') || article.querySelector('[id$="-body"].body') || article.querySelector('.body');
 			if (body) { body.setAttribute('id', 'article-body'); }
 
@@ -985,6 +1048,8 @@
 				lock.innerHTML = '&lt;svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"&gt;&lt;path d="M7 10V8a5 5 0 0 1 9.5-2.2"&gt;&lt;/path&gt;&lt;rect x="5" y="10" width="14" height="10" rx="2"&gt;&lt;/rect&gt;&lt;path d="M12 14v3"&gt;&lt;/path&gt;&lt;/svg&gt;';
 				title.insertBefore(lock, title.firstChild);
 			}
+			normalizeAuthorBlocks();
+			addEmailsFromAffiliations();
 			normalizeArticleSectionHeadings();
 			alignBodyTypographyWithAbstract();
 
