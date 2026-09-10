@@ -651,9 +651,9 @@
 			<xsl:with-param name="SURNAME" select="SURNAME"/>
 			<xsl:with-param name="NAME" select="NAME"/>
 			<xsl:with-param name="SEARCH">
-				<xsl:if test=" $AUTHLINK = 1 ">
-					<xsl:value-of select="@SEARCH"/>
-				</xsl:if>
+					<xsl:if test=" $AUTHLINK = 1 ">
+						<xsl:value-of select="SURNAME"/>
+					</xsl:if>
 			</xsl:with-param>
 			<xsl:with-param name="LANG" select="$LANG"/>
 			<xsl:with-param name="NORM" select="$NORM"/>
