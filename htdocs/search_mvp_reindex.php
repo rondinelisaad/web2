@@ -35,7 +35,7 @@ $reset = strtolower((string)($opts['reset'] ?? '1')) !== '0';
 
 $pdo = search_mvp_connect();
 if ($reset) {
-    $pdo->exec("DELETE FROM search_documents");
+    search_mvp_clear_index($pdo);
 }
 
 echo "MVP indexer start\n";
@@ -89,6 +89,7 @@ foreach ($serialNodes as $serialNode) {
         echo "  - skip: no ISSUE nodes\n";
         continue;
     }
+    $issueNodes = array_reverse($issueNodes);
 
     $localIssue = 0;
     foreach ($issueNodes as $issueNode) {
@@ -136,15 +137,18 @@ foreach ($serialNodes as $serialNode) {
                 continue;
             }
 
-            $title = search_mvp_extract_text($abstractXml, '//ARTICLE/NOHTML-TITLE');
+            $title = search_mvp_extract_text($abstractXml, '//ARTICLE/TITLE');
             if ($title === '') {
-                $title = search_mvp_extract_text($abstractXml, '//ARTICLE/TITLE');
+                $title = search_mvp_extract_text($abstractXml, '//ARTICLE/TRANS-TITLE');
+            }
+            if ($title === '') {
+                $title = search_mvp_extract_text($abstractXml, '//ARTICLE/NOHTML-TITLE');
             }
             if ($title === '') {
                 $title = search_mvp_extract_text($abstractXml, '//TITLEGROUP/TITLE');
             }
 
-            $authors = search_mvp_extract_text($abstractXml, '//ARTICLE/AUTHORS/AUTH_PERS/AUTHOR/SURNAME');
+            $authors = search_mvp_extract_authors($abstractXml);
             $abstractText = search_mvp_extract_text($abstractXml, '//ARTICLE/ABSTRACT');
             $pubYearRaw = search_mvp_extract_text($abstractXml, '//ARTICLE/ISSUEINFO/@YEAR');
             $pubYear = ctype_digit($pubYearRaw) ? (int)$pubYearRaw : null;
