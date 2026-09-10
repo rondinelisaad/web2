@@ -251,6 +251,40 @@ def replace_css_version(prefix):
     )
 
 
+def localize_existing_english_page(source):
+    replacements = (
+        ('lang="pt"', 'lang="en"'),
+        ("lang=pt", "lang=en"),
+        ("lng=pt", "lng=en"),
+        ("/paboutj.htm", "/iaboutj.htm"),
+        ("/pedboard.htm", "/iedboard.htm"),
+        ("/pinstruc.htm", "/iinstruc.htm"),
+        ("Sobre o periódico", "About the journal"),
+        ("Publicação de:", "Published by:"),
+        ("Área:", "Area:"),
+        ("Versão impressa ISSN:", "Print version ISSN:"),
+        ("Versão on-line ISSN:", "Online version ISSN:"),
+        ("Pular para o conteúdo principal", "Skip to main content"),
+        ("Pesquisa", "Search"),
+        ("Lista de periódicos", "Journal list"),
+        ("Todos os números", "All issues"),
+        ("Número anterior", "Previous issue"),
+        ("Número seguinte", "Next issue"),
+        ("Número atual", "Current issue"),
+        ("Home do periódico", "Journal home"),
+        ("Buscar", "Search"),
+        ("Métricas", "Metrics"),
+        ("Periódicos", "Journals"),
+        ("Português", "English"),
+        ("Reportar erro", "Report error"),
+        ("Acessibilidade", "Accessibility"),
+    )
+    for old, new in replacements:
+        source = source.replace(old, new)
+    source = re.sub(r"<title>(.*?)\s+-\s+About this journal\s+-\s+About the journal</title>", r"<title>\1 - About the journal</title>", source, flags=re.I)
+    return source
+
+
 def extend_breadcrumb(prefix, page_title):
     marker = '<section class="d-none d-md-flex breadcrumb'
     section_pos = prefix.rfind(marker)
@@ -310,6 +344,8 @@ def modernize(path):
     page_title = config["title"]
     if 'class="serial-modern-header"' in source and "journal-about-section" in source:
         refreshed = replace_css_version(source)
+        if config["code"] == "en" and not re.search(r'<html[^>]+lang=["\']en["\']', refreshed, flags=re.I):
+            refreshed = localize_existing_english_page(refreshed)
         if refreshed != source:
             path.write_text(refreshed, encoding="utf-8")
             return "refreshed-css", ""
