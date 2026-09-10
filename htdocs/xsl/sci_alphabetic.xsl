@@ -397,8 +397,8 @@
 			<div class="journal-action-row">
 				<xsl:attribute name="aria-label"><xsl:choose><xsl:when test="normalize-space(//CONTROLINFO/LANGUAGE)='en'">Journal actions</xsl:when><xsl:when test="normalize-space(//CONTROLINFO/LANGUAGE)='es'">Acciones de la revista</xsl:when><xsl:otherwise>Ações do periódico</xsl:otherwise></xsl:choose></xsl:attribute>
 				<a class="journal-action-btn" href="{$journalLinkBase}home">
-					<xsl:attribute name="title"><xsl:choose><xsl:when test="normalize-space(//CONTROLINFO/LANGUAGE)='en'">Journal home</xsl:when><xsl:when test="normalize-space(//CONTROLINFO/LANGUAGE)='es'">Página inicial de la revista</xsl:when><xsl:otherwise>Home do periódico</xsl:otherwise></xsl:choose></xsl:attribute>
-					<xsl:attribute name="aria-label"><xsl:choose><xsl:when test="normalize-space(//CONTROLINFO/LANGUAGE)='en'">Journal home</xsl:when><xsl:when test="normalize-space(//CONTROLINFO/LANGUAGE)='es'">Página inicial de la revista</xsl:when><xsl:otherwise>Home do periódico</xsl:otherwise></xsl:choose></xsl:attribute>
+					<xsl:attribute name="title"><xsl:choose><xsl:when test="normalize-space(//CONTROLINFO/LANGUAGE)='en'">Journal home</xsl:when><xsl:when test="normalize-space(//CONTROLINFO/LANGUAGE)='es'">Home de la revista</xsl:when><xsl:otherwise>Home do periódico</xsl:otherwise></xsl:choose></xsl:attribute>
+					<xsl:attribute name="aria-label"><xsl:choose><xsl:when test="normalize-space(//CONTROLINFO/LANGUAGE)='en'">Journal home</xsl:when><xsl:when test="normalize-space(//CONTROLINFO/LANGUAGE)='es'">Home de la revista</xsl:when><xsl:otherwise>Home do periódico</xsl:otherwise></xsl:choose></xsl:attribute>
 					<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 11.5L12 4l9 7.5"/><path d="M5.5 10.5V20h5v-6h3v6h5v-9.5"/></svg>
 				</a>
 				<a class="journal-action-btn" href="{$journalLinkBase}site">

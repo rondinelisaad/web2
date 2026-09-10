@@ -9,7 +9,7 @@
 		<xsl:param name="lang" select="normalize-space(/SERIAL/CONTROLINFO/LANGUAGE)"/>
 		<xsl:choose>
 			<xsl:when test="$key='all_issues'"><xsl:choose><xsl:when test="$lang='en'">All issues</xsl:when><xsl:when test="$lang='es'">Todos los números</xsl:when><xsl:otherwise>Todos os números</xsl:otherwise></xsl:choose></xsl:when>
-			<xsl:when test="$key='journal_home'"><xsl:choose><xsl:when test="$lang='en'">Journal home</xsl:when><xsl:when test="$lang='es'">Página inicial de la revista</xsl:when><xsl:otherwise>Home do periódico</xsl:otherwise></xsl:choose></xsl:when>
+			<xsl:when test="$key='journal_home'"><xsl:choose><xsl:when test="$lang='en'">Journal home</xsl:when><xsl:when test="$lang='es'">Home de la revista</xsl:when><xsl:otherwise>Home do periódico</xsl:otherwise></xsl:choose></xsl:when>
 			<xsl:when test="$key='previous_issue'"><xsl:choose><xsl:when test="$lang='en'">Previous issue</xsl:when><xsl:when test="$lang='es'">Número anterior</xsl:when><xsl:otherwise>Número anterior</xsl:otherwise></xsl:choose></xsl:when>
 			<xsl:when test="$key='next_issue'"><xsl:choose><xsl:when test="$lang='en'">Next issue</xsl:when><xsl:when test="$lang='es'">Número siguiente</xsl:when><xsl:otherwise>Número seguinte</xsl:otherwise></xsl:choose></xsl:when>
 			<xsl:when test="$key='current_issue'"><xsl:choose><xsl:when test="$lang='en'">Current issue</xsl:when><xsl:when test="$lang='es'">Número actual</xsl:when><xsl:otherwise>Número atual</xsl:otherwise></xsl:choose></xsl:when>
