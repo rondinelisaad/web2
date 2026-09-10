@@ -694,7 +694,7 @@
 				<ul class="home-main-dropdown">
 					<li><a href="/search_mvp.php?lang={$lang}">Pesquisa</a></li>
 					<li><a href="/scielo.php?script=sci_alphabetic&amp;lng={$lang}&amp;nrm=iso">Lista de peri&#243;dicos</a></li>
-					<li><a href="https://educa.fcc.org.br/metricas/?lang=pt">Métricas e Indicadores</a></li>
+					<li><a href="https://educa.fcc.org.br/metricas/?lang=pt">M&#233;tricas e Indicadores</a></li>
 					<li><a href="/about/?lang={$lang}">Sobre o Educ@</a></li>
 					<li><a href="/equipe/equipe_p.htm">Equipe Educ@</a></li>
 				</ul>
