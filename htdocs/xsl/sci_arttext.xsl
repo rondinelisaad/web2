@@ -235,7 +235,7 @@
 				<link rel="stylesheet" type="text/css" href="/css/screen.css"/>
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/bootstrap.css"/>
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/article.css"/>
-				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css?v=arttext-20260722-11"/>
+				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css?v=arttext-citations-20260910-1"/>
 				<xsl:apply-templates select="." mode="css"/>
 	            <xsl:if test="//show_readcube_epdf = '1'">
 	                <script src="http://content.readcube.com/scielo/epdf_linker.js" type="text/javascript" async="true"></script>
@@ -424,14 +424,14 @@
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/bootstrap.css"/>
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/article.css"/>
 				<link rel="stylesheet" type="text/css" href="/xsl/pmc/v3.0/xml.css"/>
-				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css?v=arttext-20260722-11"/>
+				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css?v=arttext-citations-20260910-1"/>
 				<!--link rel="stylesheet" type="text/css" href="/xsl/pmc/v3.0/css/jpub-preview.css" /-->
 			</xsl:when>
 			<!--xsl:when test="$version='xml'">
             	<link rel="stylesheet" type="text/css" href="/css/screen.css"/>
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/bootstrap.css"/>
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/article.css"/>
-				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css?v=arttext-20260722-11"/>
+				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css?v=arttext-citations-20260910-1"/>
                 <link xmlns="" rel="stylesheet" type="text/css" href="/css/pmc/ViewNLM.css"/>
                 <link xmlns="" rel="stylesheet" type="text/css" href="/css/pmc/ViewScielo.css"/>
 
@@ -440,7 +440,7 @@
 				<link rel="stylesheet" type="text/css" href="/css/screen.css"/>
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/bootstrap.css"/>
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/article.css"/>
-				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css?v=arttext-20260722-11"/>
+				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css?v=arttext-citations-20260910-1"/>
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
@@ -688,13 +688,14 @@
 		<xsl:variable name="lang" select="normalize-space(//CONTROLINFO/LANGUAGE)"/>
 		<xsl:variable name="pid" select="//ISSUE/ARTICLE/@PID"/>
 		<xsl:variable name="tlng" select="//ISSUE/ARTICLE/@TEXTLANG"/>
+		<xsl:variable name="metricsLabel"><xsl:choose><xsl:when test="$lang='en'">Metrics and Indicators</xsl:when><xsl:when test="$lang='es'">M&#233;tricas e Indicadores</xsl:when><xsl:otherwise>M&#233;tricas e Indicadores</xsl:otherwise></xsl:choose></xsl:variable>
 		<header class="serial-modern-header arttext-modern-header">
 			<details class="home-main-menu serial-modern-menu">
 				<summary class="serial-modern-menu-btn">&#9776; Menu</summary>
 				<ul class="home-main-dropdown">
 					<li><a href="/search_mvp.php?lang={$lang}">Pesquisa</a></li>
 					<li><a href="/scielo.php?script=sci_alphabetic&amp;lng={$lang}&amp;nrm=iso">Lista de peri&#243;dicos</a></li>
-					<li><a href="https://educa.fcc.org.br/metricas/?lang=pt">M&#233;tricas e Indicadores</a></li>
+					<li><a href="https://educa.fcc.org.br/metricas/?lang=pt"><xsl:value-of select="$metricsLabel"/></a></li>
 					<li><a href="/about/?lang={$lang}">Sobre o Educ@</a></li>
 					<li><a href="/equipe/equipe_p.htm">Equipe Educ@</a></li>
 				</ul>
@@ -723,12 +724,36 @@
 	</xsl:template>
 
 	<xsl:template name="ARTTEXT_READING_NAV">
-		<aside class="arttext-reading-nav" aria-label="Sum&#225;rio do artigo">
+		<xsl:variable name="lang" select="normalize-space(//CONTROLINFO/LANGUAGE)"/>
+		<aside class="arttext-reading-nav">
 			<nav>
-				<strong>Sum&#225;rio</strong>
-				<a href="#article-body" class="is-active">Texto</a>
-				<a href="#article-references">Refer&#234;ncias bibliogr&#225;ficas</a>
-				<a href="#article-publication-dates">Datas de publica&#231;&#227;o</a>
+				<strong>
+					<xsl:choose>
+						<xsl:when test="$lang='en'">Summary</xsl:when>
+						<xsl:when test="$lang='es'">Sumario</xsl:when>
+						<xsl:otherwise>Sum&#225;rio</xsl:otherwise>
+					</xsl:choose>
+				</strong>
+				<a href="#article-body" class="is-active">
+					<xsl:choose>
+						<xsl:when test="$lang='en'">Text</xsl:when>
+						<xsl:otherwise>Texto</xsl:otherwise>
+					</xsl:choose>
+				</a>
+				<a href="#article-references">
+					<xsl:choose>
+						<xsl:when test="$lang='en'">Bibliographic references</xsl:when>
+						<xsl:when test="$lang='es'">Referencias bibliogr&#225;ficas</xsl:when>
+						<xsl:otherwise>Refer&#234;ncias bibliogr&#225;ficas</xsl:otherwise>
+					</xsl:choose>
+				</a>
+				<a href="#article-publication-dates">
+					<xsl:choose>
+						<xsl:when test="$lang='en'">Publication dates</xsl:when>
+						<xsl:when test="$lang='es'">Fechas de publicaci&#243;n</xsl:when>
+						<xsl:otherwise>Datas de publica&#231;&#227;o</xsl:otherwise>
+					</xsl:choose>
+				</a>
 			</nav>
 		</aside>
 	</xsl:template>
@@ -737,27 +762,31 @@
 		<xsl:variable name="lang" select="normalize-space(//CONTROLINFO/LANGUAGE)"/>
 		<xsl:variable name="tlng" select="//ISSUE/ARTICLE/@TEXTLANG"/>
 		<xsl:variable name="issuePid" select="//CURRENTISSUE/@PID"/>
-		<div class="arttext-reading-toolbar" aria-label="Ferramentas de leitura">
+		<xsl:variable name="summaryLabel"><xsl:choose><xsl:when test="$lang='en'">Summary</xsl:when><xsl:when test="$lang='es'">Sumario</xsl:when><xsl:otherwise>Sum&#225;rio</xsl:otherwise></xsl:choose></xsl:variable>
+		<xsl:variable name="previousLabel"><xsl:choose><xsl:when test="$lang='en'">Previous</xsl:when><xsl:when test="$lang='es'">Anterior</xsl:when><xsl:otherwise>Anterior</xsl:otherwise></xsl:choose></xsl:variable>
+		<xsl:variable name="currentLabel"><xsl:choose><xsl:when test="$lang='en'">Current</xsl:when><xsl:when test="$lang='es'">Actual</xsl:when><xsl:otherwise>Atual</xsl:otherwise></xsl:choose></xsl:variable>
+		<xsl:variable name="nextLabel"><xsl:choose><xsl:when test="$lang='en'">Next</xsl:when><xsl:when test="$lang='es'">Siguiente</xsl:when><xsl:otherwise>Seguinte</xsl:otherwise></xsl:choose></xsl:variable>
+		<div class="arttext-reading-toolbar" aria-label="Reading tools">
 			<div class="arttext-reading-navlinks">
 				<a href="/scielo.php?script=sci_issuetoc&amp;pid={$issuePid}&amp;lng={$lang}&amp;nrm=iso" class="arttext-toolbar-home">
 					<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
 						<path d="M3 11.5L12 4l9 7.5"/>
 						<path d="M5.5 10.5V20h5v-6h3v6h5v-9.5"/>
 					</svg>
-					<span>Sum&#225;rio</span>
+					<span><xsl:value-of select="$summaryLabel"/></span>
 				</a>
 				<xsl:choose>
 					<xsl:when test="//PREVIOUS/@PID">
-						<a href="/scielo.php?script=sci_arttext&amp;pid={//PREVIOUS/@PID}&amp;lng={$lang}&amp;nrm=iso&amp;tlng={$tlng}">&#8249; Anterior</a>
+						<a href="/scielo.php?script=sci_arttext&amp;pid={//PREVIOUS/@PID}&amp;lng={$lang}&amp;nrm=iso&amp;tlng={$tlng}">&#8249; <xsl:value-of select="$previousLabel"/></a>
 					</xsl:when>
-					<xsl:otherwise><span class="is-disabled">&#8249; Anterior</span></xsl:otherwise>
+					<xsl:otherwise><span class="is-disabled">&#8249; <xsl:value-of select="$previousLabel"/></span></xsl:otherwise>
 				</xsl:choose>
-				<span class="is-current">Atual</span>
+				<span class="is-current"><xsl:value-of select="$currentLabel"/></span>
 				<xsl:choose>
 					<xsl:when test="//NEXT/@PID">
-						<a href="/scielo.php?script=sci_arttext&amp;pid={//NEXT/@PID}&amp;lng={$lang}&amp;nrm=iso&amp;tlng={$tlng}">Seguinte &#8250;</a>
+						<a href="/scielo.php?script=sci_arttext&amp;pid={//NEXT/@PID}&amp;lng={$lang}&amp;nrm=iso&amp;tlng={$tlng}"><xsl:value-of select="$nextLabel"/> &#8250;</a>
 					</xsl:when>
-					<xsl:otherwise><span class="is-disabled">Seguinte &#8250;</span></xsl:otherwise>
+					<xsl:otherwise><span class="is-disabled"><xsl:value-of select="$nextLabel"/> &#8250;</span></xsl:otherwise>
 				</xsl:choose>
 			</div>
 			<div class="arttext-reading-actions">
@@ -835,6 +864,8 @@
 		<xsl:variable name="journalPid" select="//ISSN_AS_ID"/>
 		<xsl:variable name="issuePid" select="//CURRENTISSUE/@PID"/>
 		<xsl:variable name="articlePid" select="//ISSUE/ARTICLE/@PID"/>
+		<xsl:variable name="journalsLabel"><xsl:choose><xsl:when test="$lang='en'">Journals</xsl:when><xsl:when test="$lang='es'">Revistas</xsl:when><xsl:otherwise>Peri&#243;dicos</xsl:otherwise></xsl:choose></xsl:variable>
+		<xsl:variable name="summaryLabel"><xsl:choose><xsl:when test="$lang='en'">Summary</xsl:when><xsl:when test="$lang='es'">Sumario</xsl:when><xsl:otherwise>Sum&#225;rio</xsl:otherwise></xsl:choose></xsl:variable>
 		<section class="d-none d-md-flex breadcrumb mt-3 mb-5 serial-breadcrumb arttext-breadcrumb">
 			<div class="container">
 				<div class="serial-breadcrumb-inner">
@@ -845,10 +876,10 @@
 								<path d="M5.5 10.5V20h5v-6h3v6h5v-9.5"/>
 							</svg>
 						</a></li>
-						<li class="breadcrumb-item"><a href="/scielo.php?script=sci_alphabetic&amp;lng={$lang}&amp;nrm=iso">Peri&#243;dicos</a></li>
+						<li class="breadcrumb-item"><a href="/scielo.php?script=sci_alphabetic&amp;lng={$lang}&amp;nrm=iso"><xsl:value-of select="$journalsLabel"/></a></li>
 						<li class="breadcrumb-item"><a href="/scielo.php?script=sci_serial&amp;pid={$journalPid}&amp;lng={$lang}&amp;nrm=iso"><xsl:value-of select="//TITLEGROUP/TITLE" disable-output-escaping="yes"/></a></li>
 						<xsl:if test="$issuePid">
-							<li class="breadcrumb-item"><a href="/scielo.php?script=sci_issuetoc&amp;pid={$issuePid}&amp;lng={$lang}&amp;nrm=iso">Sum&#225;rio</a></li>
+							<li class="breadcrumb-item"><a href="/scielo.php?script=sci_issuetoc&amp;pid={$issuePid}&amp;lng={$lang}&amp;nrm=iso"><xsl:value-of select="$summaryLabel"/></a></li>
 						</xsl:if>
 						<li class="breadcrumb-item">Artigo</li>
 					</ol>
