@@ -1017,7 +1017,7 @@
 					var walker = document.createTreeWalker(record.element, NodeFilter.SHOW_TEXT, null, false);
 					var node;
 					while ((node = walker.nextNode())) {
-						node.nodeValue = node.nodeValue.replace(/\s*(?:e-?mail|correo electr[ôo]nico)\s*:\s*[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\s*\.?/ig, '');
+						node.nodeValue = node.nodeValue.replace(/\s*(?:(?:e-?mail|correo electr[ôo]nico)\s*:\s*|;\s*)[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\s*\.?/ig, '');
 					}
 				});
 			}
