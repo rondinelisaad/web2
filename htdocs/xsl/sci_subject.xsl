@@ -64,6 +64,7 @@
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/bootstrap.css"/>
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/article.css"/>
 				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css"/>
+				<xsl:call-template name="EDUCA_GOOGLE_TAG"/>
 			</head>
 			<body class="serial-page" link="#0000ff" vlink="#800080" bgcolor="#ffffff">
 				<xsl:call-template name="ACCESS_SKIP_LINK"/>
@@ -148,16 +149,9 @@
 					<h1 class="visually-hidden">
 						<xsl:value-of select="$translations/xslid[@id='sci_subject']/text[@find = 'subject_list_of_serials']"/>
 					</h1>
-					<table cellspacing="0" border="0" cellpadding="7" width="100%">
-						<tr>
-							<td width="26%">&#160;</td>
-							<td width="74%">
-								<font class="nomodel" size="+1" color="#000080">
-		                                <xsl:value-of select="$translations/xslid[@id='sci_subject']/text[@find = 'library_collection']"/>
-								</font>
-							</td>
-						</tr>
-					</table>
+					<div class="subject-library-title">
+						<xsl:value-of select="$translations/xslid[@id='sci_subject']/text[@find = 'library_collection']"/>
+					</div>
 					<br/>
 					<br/>
 					<xsl:apply-templates select="//LIST"/>

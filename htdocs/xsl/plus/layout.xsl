@@ -355,7 +355,23 @@
             <xsl:if test="position()!=last()">; </xsl:if>
         </span>
     </xsl:template>
+    <xsl:template name="author-email-icon-link">
+        <xsl:param name="email"/>
+        <xsl:if test="normalize-space($email)!=''">
+            <a class="author-email-link" title="E-mail do autor" aria-label="E-mail do autor">
+                <xsl:attribute name="href">mailto:<xsl:value-of select="normalize-space($email)"/></xsl:attribute>
+                <svg class="author-email-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 6h16v12H4z"/>
+                    <path d="m4 7 8 6 8-6"/>
+                </svg>
+            </a>
+        </xsl:if>
+    </xsl:template>
     <xsl:template match="name" mode="HTML">
+        <xsl:variable name="correspRid" select="../xref[@ref-type='corresp'][1]/@rid"/>
+        <xsl:variable name="authorPosition" select="count(../preceding-sibling::contrib[@contrib-type='author' or not(@contrib-type)]) + 1"/>
+        <xsl:variable name="emailByRid" select="ancestor::article[1]//author-notes/corresp[@id=$correspRid]//email[1]"/>
+        <xsl:variable name="emailByPosition" select="ancestor::article[1]//author-notes/corresp[$authorPosition]//email[1]"/>
         <span>
             <xsl:apply-templates select="." mode="DATA-DISPLAY"/>
             <xsl:apply-templates select="..//xref" mode="HTML-author"/>
@@ -364,6 +380,18 @@
             <!-- manter esta quebra de linha -->
         </xsl:text>
         <br/>
+        <xsl:choose>
+            <xsl:when test="$emailByRid">
+                <xsl:call-template name="author-email-icon-link">
+                    <xsl:with-param name="email" select="$emailByRid"/>
+                </xsl:call-template>
+            </xsl:when>
+            <xsl:when test="$emailByPosition">
+                <xsl:call-template name="author-email-icon-link">
+                    <xsl:with-param name="email" select="$emailByPosition"/>
+                </xsl:call-template>
+            </xsl:when>
+        </xsl:choose>
         <xsl:apply-templates select="../contrib-id" mode="HTML"></xsl:apply-templates>
         <br/>
     </xsl:template>
@@ -401,7 +429,7 @@
             <!-- FIXME -->
             <strong>Author notes</strong>
             <br/>
-            <xsl:apply-templates select="*"/>
+            <xsl:apply-templates select="*[not(self::corresp and .//email)]"/>
         </div>
     </xsl:template>
     <xsl:template match="email">
@@ -1349,6 +1377,13 @@ Weaver, William. The Collectors: command performances. Photography by Robert Emm
         </footer>
     </xsl:template>
     <xsl:template match="history" mode="HTML-BODY-FOOTER">
+        <p class="sec">
+            <xsl:choose>
+                <xsl:when test="$PAGE_LANG='en'">HISTORY</xsl:when>
+                <xsl:when test="$PAGE_LANG='es'">HISTORIAL</xsl:when>
+                <xsl:otherwise>HISTÓRICO</xsl:otherwise>
+            </xsl:choose>
+        </p>
         <p>
             <xsl:apply-templates select="*" mode="HTML-BODY-FOOTER"/>
         </p>
@@ -1564,6 +1599,8 @@ Weaver, William. The Collectors: command performances. Photography by Robert Emm
     <xsl:template match="history/date/@date-type" mode="HTML-label-en">
         <xsl:choose>
             <xsl:when test=". = 'rev-recd'">Revised</xsl:when>
+            <xsl:when test=". = 'preprint'">Preprint posted on</xsl:when>
+            <xsl:when test=". = 'corrected'">Corrected</xsl:when>
             <xsl:otherwise>
                 <xsl:value-of select="translate(substring(.,1,1), 'ar', 'AR')"/>
                 <xsl:value-of select="substring(.,2)"/>
@@ -1575,6 +1612,8 @@ Weaver, William. The Collectors: command performances. Photography by Robert Emm
             <xsl:when test=". = 'rev-recd'">Revisado</xsl:when>
             <xsl:when test=". = 'accepted'">Aceito</xsl:when>
             <xsl:when test=". = 'received'">Recebido</xsl:when>
+            <xsl:when test=". = 'preprint'">Preprint postado em</xsl:when>
+            <xsl:when test=". = 'corrected'">Corrigido</xsl:when>
         </xsl:choose>
     </xsl:template>
     <xsl:template match="history/date/@date-type" mode="HTML-label-es">
@@ -1582,6 +1621,8 @@ Weaver, William. The Collectors: command performances. Photography by Robert Emm
             <xsl:when test=". = 'rev-recd'">Revisado</xsl:when>
             <xsl:when test=". = 'accepted'">Aprobado</xsl:when>
             <xsl:when test=". = 'received'">Recibido</xsl:when>
+            <xsl:when test=". = 'preprint'">Preprint publicado en</xsl:when>
+            <xsl:when test=". = 'corrected'">Corregido</xsl:when>
         </xsl:choose>
     </xsl:template>
 
@@ -1914,4 +1955,3 @@ Weaver, William. The Collectors: command performances. Photography by Robert Emm
         </img>
     </xsl:template>
 </xsl:stylesheet>
-

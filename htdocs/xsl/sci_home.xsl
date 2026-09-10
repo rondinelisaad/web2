@@ -17,7 +17,7 @@
 	<xsl:template match="HOMEPAGE">
 		<html lang="{normalize-space(//CONTROLINFO/LANGUAGE)}">
 			<head>
-				<title><xsl:value-of select="//SCIELOINFOGROUP/SITE_NAME" /></title>
+				<title>Educ@</title>
 				<meta http-equiv="Pragma" content="no-cache"/>
 				<meta http-equiv="Expires" content="Mon, 06 Jan 1990 00:00:01 GMT"/>
 				<xsl:if test="//NEW_HOME">
@@ -29,7 +29,8 @@
 				<link rel="STYLESHEET" type="text/css" href="/css/scielo.css"/>
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/bootstrap.css"/>
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/article.css"/>
-				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css"/>
+				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css?v=home-news-mobile-20260902-1"/>
+				<xsl:call-template name="EDUCA_GOOGLE_TAG"/>
 			</head>
 			<xsl:if test="not(//NEW_HOME)">
 				<body class="home-page" link="#000080" vlink="#800080" bgcolor="#ffffff">
@@ -41,6 +42,7 @@
 						</xsl:choose>
 					</a>
 					<xsl:apply-templates select="CONTROLINFO"/>
+					<script type="text/javascript" src="/js/educa-accessibility.js?v=20260615-details-1"></script>
 				</body>
 			</xsl:if>
 		</html>
@@ -50,7 +52,29 @@
 	<xsl:template match="CONTROLINFO">
 		<header class="home-top-header">
 			<div class="home-topbar">
-				<button class="serials-ghost-btn" type="button">&#9776; Menu</button>
+				<details class="home-main-menu">
+					<summary class="serials-ghost-btn">&#9776; Menu</summary>
+					<ul class="home-main-dropdown">
+						<li>
+							<a href="http://{SCIELO_INFO/SERVER}{SCIELO_INFO/PATH_DATA}search_mvp.php?lang=pt">Busca</a>
+						</li>
+						<li>
+							<a href="http://{SCIELO_INFO/SERVER}{SCIELO_INFO/PATH_DATA}scielo.php?script=sci_alphabetic&amp;lng=pt&amp;nrm=iso">Lista de periódicos</a>
+						</li>
+						<li>
+							<a href="http://{SCIELO_INFO/SERVER}{SCIELO_INFO/PATH_DATA}avaliacao/">Avaliação de periódicos</a>
+						</li>
+						<li>
+							<a href="https://educa.fcc.org.br/metricas/?lang=pt">Métricas e Indicadores</a>
+						</li>
+						<li>
+							<a href="http://{SCIELO_INFO/SERVER}{SCIELO_INFO/PATH_DATA}about/?lang=pt">Sobre o Educ@</a>
+						</li>
+						<li>
+							<a href="http://{SCIELO_INFO/SERVER}{SCIELO_INFO/PATH_DATA}equipe/equipe_p.htm">Equipe Educ@</a>
+						</li>
+					</ul>
+				</details>
 				<a class="serials-about-link">
 					<xsl:attribute name="href">/about/?lang=<xsl:value-of select="normalize-space(LANGUAGE)"/></xsl:attribute>
 					&#9432;
@@ -120,7 +144,6 @@
 				<input type="hidden" name="lang">
 					<xsl:attribute name="value"><xsl:value-of select="normalize-space(LANGUAGE)"/></xsl:attribute>
 				</input>
-				<input type="hidden" name="field" value="all"/>
 				<input type="hidden" name="page" value="1"/>
 				<input class="home-search-input" type="text" name="q">
 					<xsl:attribute name="aria-label">
@@ -138,6 +161,36 @@
 						</xsl:choose>
 					</xsl:attribute>
 				</input>
+				<select class="home-search-field" name="field" aria-label="Campo da busca">
+					<option value="all">
+						<xsl:choose>
+							<xsl:when test="normalize-space(LANGUAGE)='en'">All fields</xsl:when>
+							<xsl:when test="normalize-space(LANGUAGE)='es'">Todos los campos</xsl:when>
+							<xsl:otherwise>Todos os campos</xsl:otherwise>
+						</xsl:choose>
+					</option>
+					<option value="abstract">
+						<xsl:choose>
+							<xsl:when test="normalize-space(LANGUAGE)='en'">Abstract</xsl:when>
+							<xsl:when test="normalize-space(LANGUAGE)='es'">Resumen</xsl:when>
+							<xsl:otherwise>Resumo</xsl:otherwise>
+						</xsl:choose>
+					</option>
+					<option value="author">
+						<xsl:choose>
+							<xsl:when test="normalize-space(LANGUAGE)='en'">Author</xsl:when>
+							<xsl:when test="normalize-space(LANGUAGE)='es'">Autor</xsl:when>
+							<xsl:otherwise>Autor</xsl:otherwise>
+						</xsl:choose>
+					</option>
+					<option value="journal">
+						<xsl:choose>
+							<xsl:when test="normalize-space(LANGUAGE)='en'">Journal</xsl:when>
+							<xsl:when test="normalize-space(LANGUAGE)='es'">Revista</xsl:when>
+							<xsl:otherwise>Periódico</xsl:otherwise>
+						</xsl:choose>
+					</option>
+				</select>
 				<button class="home-search-btn" type="submit">
 					<xsl:choose>
 						<xsl:when test="normalize-space(LANGUAGE)='en'">Search</xsl:when>
@@ -145,52 +198,65 @@
 						<xsl:otherwise>Buscar</xsl:otherwise>
 					</xsl:choose>
 				</button>
+				<div class="home-advanced-fields" id="homeAdvancedFields"></div>
+				<button class="home-add-field" id="homeAddField" type="button">
+					<xsl:choose>
+						<xsl:when test="normalize-space(LANGUAGE)='en'">Add another field</xsl:when>
+						<xsl:when test="normalize-space(LANGUAGE)='es'">Agregar otro campo</xsl:when>
+						<xsl:otherwise>Adicionar outro campo</xsl:otherwise>
+					</xsl:choose>
+				</button>
 			</form>
 			<input type="hidden" id="home-current-lang" value="{normalize-space(LANGUAGE)}"/>
 		</section>
 		<section class="home-journal-links">
-			<h2>
-				<xsl:choose>
-					<xsl:when test="normalize-space(LANGUAGE)='en'">Journal list</xsl:when>
-					<xsl:when test="normalize-space(LANGUAGE)='es'">Lista de revistas</xsl:when>
-					<xsl:otherwise>Lista de peri&#243;dicos</xsl:otherwise>
-				</xsl:choose>
-			</h2>
-			<div class="home-journal-links-box">
-				<a class="home-journal-link">
+			<div class="home-shortcuts">
+				<a class="home-shortcut-card">
 					<xsl:attribute name="href">http://<xsl:value-of select="SCIELO_INFO/SERVER"/><xsl:value-of select="SCIELO_INFO/PATH_DATA"/>scielo.php?script=sci_alphabetic&amp;lng=<xsl:value-of select="LANGUAGE"/>&amp;nrm=iso</xsl:attribute>
 					<xsl:choose>
-						<xsl:when test="normalize-space(LANGUAGE)='en'">Alphabetic</xsl:when>
-						<xsl:when test="normalize-space(LANGUAGE)='es'">Alfab&#233;tica</xsl:when>
-						<xsl:otherwise>Alfab&#233;tica</xsl:otherwise>
+						<xsl:when test="normalize-space(LANGUAGE)='en'">Journal list</xsl:when>
+						<xsl:when test="normalize-space(LANGUAGE)='es'">Lista de revistas</xsl:when>
+						<xsl:otherwise>Lista de peri&#243;dicos</xsl:otherwise>
 					</xsl:choose>
 				</a>
-				<a class="home-journal-link">
-					<xsl:attribute name="href">http://<xsl:value-of select="SCIELO_INFO/SERVER"/><xsl:value-of select="SCIELO_INFO/PATH_DATA"/>scielo.php?script=sci_subject&amp;lng=<xsl:value-of select="LANGUAGE"/>&amp;nrm=iso</xsl:attribute>
+				<a class="home-shortcut-card" href="/avaliacao/">
 					<xsl:choose>
-						<xsl:when test="normalize-space(LANGUAGE)='en'">Thematic</xsl:when>
-						<xsl:when test="normalize-space(LANGUAGE)='es'">Tem&#225;tica</xsl:when>
-						<xsl:otherwise>Tem&#225;tica</xsl:otherwise>
+						<xsl:when test="normalize-space(LANGUAGE)='en'">Journal evaluation</xsl:when>
+						<xsl:when test="normalize-space(LANGUAGE)='es'">Evaluación de revistas</xsl:when>
+						<xsl:otherwise>Avalia&#231;&#227;o de peri&#243;dicos</xsl:otherwise>
 					</xsl:choose>
 				</a>
-				<div class="home-journal-search-box">
-					<input id="home-journal-filter" class="home-journal-filter" type="text">
-						<xsl:attribute name="aria-label">
-							<xsl:choose>
-								<xsl:when test="normalize-space(LANGUAGE)='en'">Filter journals</xsl:when>
-								<xsl:when test="normalize-space(LANGUAGE)='es'">Filtrar revistas</xsl:when>
-								<xsl:otherwise>Filtrar periódicos</xsl:otherwise>
-							</xsl:choose>
-						</xsl:attribute>
-						<xsl:attribute name="placeholder">
-							<xsl:choose>
-								<xsl:when test="normalize-space(LANGUAGE)='en'">Search journals</xsl:when>
-								<xsl:when test="normalize-space(LANGUAGE)='es'">Buscar revistas</xsl:when>
-								<xsl:otherwise>Busca por peri&#243;dicos</xsl:otherwise>
-							</xsl:choose>
-						</xsl:attribute>
-					</input>
-					<div id="home-journal-results" class="home-journal-results"></div>
+				<a class="home-shortcut-card">
+					<xsl:attribute name="href">/metricas/?lang=<xsl:value-of select="normalize-space(LANGUAGE)"/></xsl:attribute>
+					<xsl:choose>
+						<xsl:when test="normalize-space(LANGUAGE)='en'">Metrics and indicators system</xsl:when>
+						<xsl:when test="normalize-space(LANGUAGE)='es'">Sistema de métricas e indicadores</xsl:when>
+						<xsl:otherwise>Sistema de M&#233;tricas e Indicadores</xsl:otherwise>
+					</xsl:choose>
+				</a>
+				<a class="home-shortcut-card">
+					<xsl:attribute name="href">/about/?lang=<xsl:value-of select="normalize-space(LANGUAGE)"/></xsl:attribute>
+					<xsl:choose>
+						<xsl:when test="normalize-space(LANGUAGE)='en'">About Educ@</xsl:when>
+						<xsl:when test="normalize-space(LANGUAGE)='es'">Acerca de Educ@</xsl:when>
+						<xsl:otherwise>Sobre o Educ@</xsl:otherwise>
+					</xsl:choose>
+				</a>
+			</div>
+		</section>
+		<section class="home-institutional">
+			<div class="home-institutional-inner">
+				<div class="home-institutional-logo">
+					<img alt="Educ@" src="/img/pt/scielobre.gif"/>
+				</div>
+				<div class="home-institutional-copy">
+					<p>
+						<xsl:choose>
+							<xsl:when test="normalize-space(LANGUAGE)='en'">Educ@ is an online indexing database that provides broad access to collections of scholarly journals in education. Implemented by Fundação Carlos Chagas, it uses the SciELO methodology to expand the dissemination, preservation and retrieval of academic and scientific output in education.</xsl:when>
+							<xsl:when test="normalize-space(LANGUAGE)='es'">Educ@ es un indexador en línea que proporciona amplio acceso a colecciones de revistas científicas del área de educación. Implementado por la Fundação Carlos Chagas, utiliza la metodología SciELO para ampliar la divulgación, preservación y recuperación de la producción académica y científica en educación.</xsl:when>
+							<xsl:otherwise>O Educ@ é um indexador on-line que proporciona amplo acesso a coleções de periódicos científicos da área de educação. Implementado pela Fundação Carlos Chagas, utiliza a metodologia SciELO para ampliar a divulgação, preservação e recuperação da produção acadêmica e científica em educação.</xsl:otherwise>
+						</xsl:choose>
+					</p>
 				</div>
 			</div>
 		</section>
@@ -247,46 +313,68 @@
 		</main>
 		<footer class="serials-footer">
 			<div class="serials-footer-top">
-					<div class="serials-footer-brand">
-						<img alt="Educ@" src="/img/pt/scielobre.gif"/>
+				<div class="serials-footer-brand">
+					<img alt="Educ@" src="/img/pt/scielobre.gif"/>
 				</div>
 				<div class="serials-footer-meta">
 					<div class="name"><strong>Educ@</strong></div>
-					<div><strong>Funda&#231;&#227;o Carlos Chagas</strong></div>
+					<div class="serials-footer-fcc-brand"><img alt="Fundação Carlos Chagas" src="/img/fcc.png"/></div>
 					<div>Av. Prof. Francisco Morato, 1565 - Jd. Guedala</div>
-					<div>05513-900 S&#227;o Paulo SP - Brasil</div>
-					<div>Tel: +55 11 3723-3082</div>
-					<div>educ@fcc.org.br</div>
+					<div>05513-900 S&#227;o Paulo - SP - Brasil</div>
+					<div>
+						<a class="email journal-footer-email serials-footer-email" href="mailto:educ@fcc.org.br">
+							<svg class="journal-footer-email-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+								<rect x="3" y="5" width="18" height="14" rx="2"/>
+								<path d="M3 7l9 6 9-6"/>
+							</svg>
+							<span>educ@fcc.org.br</span>
+						</a>
+					</div>
 					<div class="social">
-						<a class="social-link" aria-label="Bluesky" href="https://bsky.app/" target="_blank" rel="noopener noreferrer"><span class="social-icon social-bluesky"></span></a>
-						<a class="social-link" aria-label="LinkedIn" href="https://www.linkedin.com/company/scielo" target="_blank" rel="noopener noreferrer"><span class="social-icon social-linkedin"></span></a>
-						<a class="social-link" aria-label="Facebook" href="https://www.facebook.com/scielo.br" target="_blank" rel="noopener noreferrer"><span class="social-icon social-facebook"></span></a>
-						<a class="social-link" aria-label="YouTube" href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer"><span class="social-icon social-youtube"></span></a>
+						<a class="social-link" aria-label="Instagram" href="https://www.instagram.com/fundacaocarloschagas/" target="_blank" rel="noopener noreferrer"><span class="social-icon social-instagram"></span></a>
+						<a class="social-link" aria-label="LinkedIn" href="https://br.linkedin.com/company/fundacaocarloschagas" target="_blank" rel="noopener noreferrer"><span class="social-icon social-linkedin"></span></a>
+						<a class="social-link" aria-label="Facebook" href="https://www.facebook.com/FundacaoCarlosChagasFCC/" target="_blank" rel="noopener noreferrer"><span class="social-icon social-facebook"></span></a>
+						<a class="social-link" aria-label="YouTube" href="https://www.youtube.com/c/Funda%C3%A7%C3%A3oCarlosChagas-FCC" target="_blank" rel="noopener noreferrer"><span class="social-icon social-youtube"></span></a>
 					</div>
 				</div>
 				<div class="serials-footer-license">
-					<img alt="CC BY 4.0" src="https://licensebuttons.net/l/by/4.0/88x31.png"/>
+					<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="license noopener noreferrer">
+						<img alt="CC BY 4.0" src="https://licensebuttons.net/l/by/4.0/88x31.png"/>
+					</a>
 				</div>
-			</div>
-			<div class="serials-footer-logos">
-				<img alt="CAPES" src="/design-system/1.0.0/img/logo-footer-capes.svg"/>
-				<img alt="CNPq" src="/design-system/1.0.0/img/logo-footer-cnpq.svg"/>
-				<img alt="FAPESP" src="/design-system/1.0.0/img/logo-footer-fapesp.svg"/>
-				<img alt="BVS" src="/design-system/1.0.0/img/logo-footer-bvs.svg"/>
-				<img alt="OPAS BIREME" src="/design-system/1.0.0/img/logo-footer-bireme.svg"/>
-				<img alt="FapUNIFESP" src="/design-system/1.0.0/img/logo-footer-fap.svg"/>
 			</div>
 			<div class="serials-footer-open-access">
 				<img alt="Open Access" src="/design-system/1.0.0/img/logo-open-access.svg"/>
-				<span>Leia a Declaração de Acesso Aberto</span>
+				<a href="https://www.gov.br/funag/pt-br/centrais-de-conteudo/publicacoes/acesso-aberto" target="_blank" rel="noopener noreferrer">Leia a Declaração de Acesso Aberto</a>
 			</div>
 		</footer>
+		<div class="serials-template-utils">
+			<a href="mailto:educ@fcc.org.br?subject=Reportar%20erro" class="serials-template-report">
+				<xsl:choose>
+					<xsl:when test="normalize-space(LANGUAGE)='en'">Report error</xsl:when>
+					<xsl:when test="normalize-space(LANGUAGE)='es'">Reportar error</xsl:when>
+					<xsl:otherwise>Reportar erro</xsl:otherwise>
+				</xsl:choose>
+			</a>
+			<a href="#main-content" class="serials-template-accessibility">
+				<xsl:attribute name="aria-label">
+					<xsl:choose>
+						<xsl:when test="normalize-space(LANGUAGE)='en'">Accessibility</xsl:when>
+						<xsl:when test="normalize-space(LANGUAGE)='es'">Accesibilidad</xsl:when>
+						<xsl:otherwise>Acessibilidade</xsl:otherwise>
+					</xsl:choose>
+				</xsl:attribute>
+				A
+			</a>
+		</div>
 		<script><![CDATA[
 		(function () {
 		  var input = document.getElementById('home-journal-filter');
 		  var results = document.getElementById('home-journal-results');
 		  var langInput = document.getElementById('home-current-lang');
 		  var currentLang = (langInput && langInput.value) ? langInput.value : 'pt';
+		  var homeAdvancedFields = document.getElementById('homeAdvancedFields');
+		  var homeAddField = document.getElementById('homeAddField');
 			  var prGrid = document.getElementById('home-pr-grid');
 			  var prPrev = document.getElementById('home-pr-prev');
 			  var prNext = document.getElementById('home-pr-next');
@@ -305,6 +393,69 @@
 		      .replace(/>/g, '&gt;')
 		      .replace(/"/g, '&quot;')
 		      .replace(/'/g, '&#39;');
+		  }
+
+		  function homeSearchLabels() {
+		    if (currentLang === 'en') {
+		      return {
+		        term: 'Search terms',
+		        all: 'All fields',
+		        abstract: 'Abstract',
+		        author: 'Author',
+		        journal: 'Journal',
+		        remove: 'Remove field'
+		      };
+		    }
+		    if (currentLang === 'es') {
+		      return {
+		        term: 'Términos de búsqueda',
+		        all: 'Todos los campos',
+		        abstract: 'Resumen',
+		        author: 'Autor',
+		        journal: 'Revista',
+		        remove: 'Eliminar campo'
+		      };
+		    }
+		    return {
+		      term: 'Termos de busca',
+		      all: 'Todos os campos',
+		      abstract: 'Resumo',
+		      author: 'Autor',
+		      journal: 'Periódico',
+		      remove: 'Remover campo'
+		    };
+		  }
+
+		  function homeOption(value, label) {
+		    return '<option value="' + value + '">' + escapeHtml(label) + '</option>';
+		  }
+
+		  function addHomeAdvancedField() {
+		    if (!homeAdvancedFields) {
+		      return;
+		    }
+		    var labels = homeSearchLabels();
+		    var row = document.createElement('div');
+		    row.className = 'home-advanced-row';
+		    row.innerHTML =
+		      '<select name="adv_op[]" aria-label="Operador">' +
+		        homeOption('AND', 'AND') +
+		        homeOption('OR', 'OR') +
+		        homeOption('AND NOT', 'AND NOT') +
+		      '</select>' +
+		      '<input type="text" name="adv_q[]" placeholder="' + escapeHtml(labels.term) + '">' +
+		      '<select name="adv_field[]" aria-label="Campo">' +
+		        homeOption('all', labels.all) +
+		        homeOption('abstract', labels.abstract) +
+		        homeOption('author', labels.author) +
+		        homeOption('journal', labels.journal) +
+		      '</select>' +
+		      '<button type="button" class="home-remove-field" aria-label="' + escapeHtml(labels.remove) + '">×</button>';
+		    homeAdvancedFields.appendChild(row);
+		    var field = row.querySelector('input');
+		    if (field) {
+		      field.focus();
+		    }
 		  }
 
 		  function render(items) {
@@ -366,19 +517,33 @@
 		      });
 		  }
 
-		  input.addEventListener('focus', loadJournals);
-		  input.addEventListener('input', function () {
-		    if (!loaded) {
-		      loadJournals();
-		      return;
-		    }
-		    filterAndRender();
-		  });
-		  document.addEventListener('click', function (e) {
-		    if (!results.contains(e.target) && e.target !== input) {
-		      results.style.display = 'none';
-		    }
-		  });
+		  if (input && results) {
+		    input.addEventListener('focus', loadJournals);
+		    input.addEventListener('input', function () {
+		      if (!loaded) {
+		        loadJournals();
+		        return;
+		      }
+		      filterAndRender();
+		    });
+		    document.addEventListener('click', function (e) {
+		      if (!results.contains(e.target) && e.target !== input) {
+		        results.style.display = 'none';
+		      }
+		    });
+		  }
+
+		  if (homeAddField && homeAdvancedFields) {
+		    homeAddField.addEventListener('click', addHomeAdvancedField);
+		    homeAdvancedFields.addEventListener('click', function (event) {
+		      if (event.target && event.target.className === 'home-remove-field') {
+		        var row = event.target.parentNode;
+		        if (row) {
+		          row.parentNode.removeChild(row);
+		        }
+		      }
+		    });
+		  }
 
 		  function readMoreLabel() {
 		    if (currentLang === 'en') {
@@ -460,20 +625,16 @@
 		    var start = prPage * prPerPage;
 		    var end = start + prPerPage;
 		    var visiblePosts = posts.slice(start, end);
-			    var btn = readMoreLabel();
 			    prGrid.innerHTML = visiblePosts.map(function (post) {
 			      var image = post.image ? post.image : '/design-system/1.0.0/img/list.loading.gif';
-			      var excerpt = post.excerpt ? ('<div class="home-pr-excerpt">' + escapeHtml(post.excerpt) + '</div>') : '';
 			      return (
 			        '<article class="home-pr-card">' +
 			          '<a class="home-pr-image-link" href="' + post.link + '" target="_blank" rel="noopener noreferrer">' +
-			            '<img src="' + image + '" alt="">' +
+			            '<img src="' + image + '" alt="" loading="lazy" decoding="async">' +
 			          '</a>' +
 			          '<div class="home-pr-body">' +
 			            '<div class="home-pr-date">' + escapeHtml(formatDate(post.date)) + '</div>' +
 			            '<a class="home-pr-title" href="' + post.link + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(post.title) + '</a>' +
-			            excerpt +
-			            '<a class="home-pr-readmore" href="' + post.link + '" target="_blank" rel="noopener noreferrer">' + btn + '</a>' +
 			          '</div>' +
 			        '</article>'
 			      );
@@ -497,7 +658,15 @@
 		    if (!prGrid) {
 		      return;
 		    }
-		    fetch('/fcc_news_proxy.php?lang=' + encodeURIComponent(currentLang) + '&limit=8', { credentials: 'same-origin' })
+		    var controller = window.AbortController ? new AbortController() : null;
+		    var timeout = controller ? window.setTimeout(function () {
+		      controller.abort();
+		    }, 5000) : null;
+		    var options = { credentials: 'same-origin' };
+		    if (controller) {
+		      options.signal = controller.signal;
+		    }
+		    fetch('/fcc_news_proxy.php?lang=' + encodeURIComponent(currentLang) + '&limit=8', options)
 		      .then(function (r) { return r.json(); })
 		      .then(function (data) {
 		        prPosts = data.posts || [];
@@ -506,7 +675,23 @@
 		      })
 		      .catch(function () {
 		        prGrid.innerHTML = '<div class="home-pr-loading">' + loadFailLabel() + '</div>';
+		      })
+		      .finally(function () {
+		        if (timeout) {
+		          window.clearTimeout(timeout);
+		        }
 		      });
+		  }
+
+		  function schedulePressReleasesLoad() {
+		    if (!prGrid) {
+		      return;
+		    }
+		    if (window.requestIdleCallback) {
+		      window.requestIdleCallback(loadPressReleases, { timeout: 1500 });
+		      return;
+		    }
+		    window.setTimeout(loadPressReleases, 500);
 		  }
 
 		  if (prPrev) {
@@ -546,7 +731,7 @@
 		    });
 		  }
 
-		  loadPressReleases();
+		  schedulePressReleasesLoad();
 		})();
 		]]></script>
 	</xsl:template>

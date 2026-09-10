@@ -206,6 +206,7 @@
   <call name="CreateChangesInfoXML"><pft>v5</pft></call>
   <call name="CreateISSN4IDXML"><pft>v5</pft></call>
   <call name="CreateISSN4TITLEXML"><pft>v5</pft></call>
+  <call name="CreatePublishersGroupXML"><pft>ref(['TITLE']val(v5),(v480/))</pft></call>
   <call name="CreateCopyrightXML"><pft>v5</pft></call>
   <call name="CreateContactXML"><pft>v5</pft></call>
   

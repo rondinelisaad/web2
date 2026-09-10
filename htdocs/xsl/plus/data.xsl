@@ -5,6 +5,16 @@
     xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl" exclude-result-prefixes="xs math xd"
     version="3.0">
 
+    <xsl:template name="keyword-label-by-lang">
+        <xsl:param name="lang"/>
+        <xsl:choose>
+            <xsl:when test="$lang='pt'">Palavras-chave</xsl:when>
+            <xsl:when test="$lang='es'">Palabras clave</xsl:when>
+            <xsl:when test="$lang='fr'">Mots-clés</xsl:when>
+            <xsl:otherwise>Keywords</xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+
     <xsl:template match="article-meta" mode="plus-issue-label">
         <xsl:if test="volume and translate(volume, '0', '')!=''">v<xsl:value-of select="volume"
             /></xsl:if>
@@ -304,8 +314,9 @@
         </xsl:choose>
     </xsl:template>
     <xsl:template match="kwd-group" mode="DATA-DISPLAY-TITLE">
-        <xsl:apply-templates select="title"/>
-        <xsl:if test="not(.//title)">Key words</xsl:if>
+        <xsl:call-template name="keyword-label-by-lang">
+            <xsl:with-param name="lang" select="normalize-space(@xml:lang)"/>
+        </xsl:call-template>
     </xsl:template>
     <xsl:template match="abstract|trans-abstract" mode="DATA-DISPLAY-TITLE">
         <xsl:param name="lang"/>

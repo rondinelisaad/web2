@@ -43,6 +43,16 @@
 		</xsl:choose>
 	</xsl:variable>
 
+	<xsl:template name="keyword-label-by-lang">
+		<xsl:param name="lang"/>
+		<xsl:choose>
+			<xsl:when test="$lang='pt'">Palavras-chave</xsl:when>
+			<xsl:when test="$lang='es'">Palabras clave</xsl:when>
+			<xsl:when test="$lang='fr'">Mots-clés</xsl:when>
+			<xsl:otherwise>Keywords</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+
 	<xsl:template match="*" mode="next_elem_name">
 		<xsl:apply-templates select="following-sibling::node()[1]" mode="node-name"/>
 	</xsl:template>
@@ -347,21 +357,7 @@
 		<xsl:variable name="lang" select="normalize-space(@xml:lang)"/>
 		<!--xsl:param name="test" select="1"/>     <xsl:value-of select="$test"/-->
 		<p>
-			<!--Define o nome a ser exibido a frente das palavras-chave conforme o idioma-->
-			<xsl:choose>
-				<xsl:when test="title">
-					<b><xsl:value-of select="title"/>&#160;</b>
-				</xsl:when>
-				<xsl:when test="$lang='es'">
-					<b>Palabras-clave: </b>
-				</xsl:when>
-				<xsl:when test="$lang='pt'">
-					<b>Palavras-Chave: </b>
-				</xsl:when>
-				<xsl:otherwise>
-					<b>Key words: </b>
-				</xsl:otherwise>
-			</xsl:choose>
+			<b><xsl:call-template name="keyword-label-by-lang"><xsl:with-param name="lang" select="$lang"/></xsl:call-template>: </b>
 			<xsl:apply-templates select=".//kwd"/>
 		</p>
 	</xsl:template>
@@ -473,10 +469,43 @@
 		</p>
 	</xsl:template>
 	<xsl:template match="contrib">
+		<xsl:variable name="correspRid" select="xref[@ref-type='corresp'][1]/@rid"/>
+		<xsl:variable name="authorPosition" select="count(preceding-sibling::contrib[not(@contrib-type) or @contrib-type='author']) + 1"/>
+		<xsl:variable name="emailByRid" select="ancestor::article[1]//author-notes/corresp[@id=$correspRid]//email[1]"/>
+		<xsl:variable name="emailByPosition" select="ancestor::article[1]//author-notes/corresp[$authorPosition]//email[1]"/>
 		<p class="author">
 			<xsl:apply-templates select="*[name()!='contrib-id']|text()"/>
-			<xsl:if test="contrib-id"><br/><span class="contribid"><xsl:apply-templates select=".//contrib-id" mode="contrib-id"></xsl:apply-templates></span></xsl:if>
+			<xsl:if test="contrib-id or $emailByRid or $emailByPosition">
+				<br/>
+				<span class="contribid">
+					<xsl:choose>
+						<xsl:when test="$emailByRid">
+							<xsl:call-template name="author-email-icon-link">
+								<xsl:with-param name="email" select="$emailByRid"/>
+							</xsl:call-template>
+						</xsl:when>
+						<xsl:when test="$emailByPosition">
+							<xsl:call-template name="author-email-icon-link">
+								<xsl:with-param name="email" select="$emailByPosition"/>
+							</xsl:call-template>
+						</xsl:when>
+					</xsl:choose>
+					<xsl:apply-templates select=".//contrib-id" mode="contrib-id"></xsl:apply-templates>
+				</span>
+			</xsl:if>
 		</p>
+	</xsl:template>
+	<xsl:template name="author-email-icon-link">
+		<xsl:param name="email"/>
+		<xsl:if test="normalize-space($email)!=''">
+			<a class="author-email-link" title="E-mail do autor" aria-label="E-mail do autor">
+				<xsl:attribute name="href">mailto:<xsl:value-of select="normalize-space($email)"/></xsl:attribute>
+				<svg class="author-email-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+					<path d="M4 6h16v12H4z"/>
+					<path d="m4 7 8 6 8-6"/>
+				</svg>
+			</a>
+		</xsl:if>
 	</xsl:template>
 	<xsl:template match="contrib/name">
 		<span class="author-name">
@@ -1262,6 +1291,13 @@
 	
 	<xsl:template match="history">
 		<div class="history">
+			<p class="sec">
+				<xsl:choose>
+					<xsl:when test="$TEXT_LANG='en'">HISTORY</xsl:when>
+					<xsl:when test="$TEXT_LANG='es'">HISTORIAL</xsl:when>
+					<xsl:otherwise>HISTÓRICO</xsl:otherwise>
+				</xsl:choose>
+			</p>
 			<p>
 				<xsl:apply-templates select="date"/>
 			</p>
@@ -1318,6 +1354,8 @@
 	<xsl:template match="history/date/@date-type" mode="scift-as-label-en">
 		<xsl:choose>
 			<xsl:when test=". = 'rev-recd'">Revised</xsl:when>
+			<xsl:when test=". = 'preprint'">Preprint posted on</xsl:when>
+			<xsl:when test=". = 'corrected'">Corrected</xsl:when>
 			<xsl:when test=". = 'pub'">Published</xsl:when>
 			<xsl:otherwise>
 				<xsl:value-of select="translate(substring(.,1,1), 'ar', 'AR')"/>
@@ -1330,6 +1368,8 @@
 			<xsl:when test=". = 'rev-recd'">Revisado</xsl:when>
 			<xsl:when test=". = 'accepted'">Aceito</xsl:when>
 			<xsl:when test=". = 'received'">Recebido</xsl:when>
+			<xsl:when test=". = 'preprint'">Preprint postado em</xsl:when>
+			<xsl:when test=". = 'corrected'">Corrigido</xsl:when>
 			<xsl:when test=". = 'pub'">Publicado</xsl:when>
 		</xsl:choose>
 	</xsl:template>
@@ -1338,6 +1378,8 @@
 			<xsl:when test=". = 'rev-recd'">Revisado</xsl:when>
 			<xsl:when test=". = 'accepted'">Aprobado</xsl:when>
 			<xsl:when test=". = 'received'">Recibido</xsl:when>
+			<xsl:when test=". = 'preprint'">Preprint publicado en</xsl:when>
+			<xsl:when test=". = 'corrected'">Corregido</xsl:when>
 			<xsl:when test=". = 'pub'">Publicado</xsl:when>
 		</xsl:choose>
 	</xsl:template>
@@ -1367,7 +1409,7 @@
 
 	<xsl:template match="author-notes">
 		<div class="author-notes">
-			<xsl:apply-templates select=" corresp | .//fn | text()"/>
+			<xsl:apply-templates select="corresp[not(.//email)] | .//fn | text()"/>
 		</div>
 	</xsl:template>
 
@@ -1940,4 +1982,3 @@
 	
 	
 </xsl:stylesheet>
-

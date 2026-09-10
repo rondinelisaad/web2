@@ -10,6 +10,7 @@
 		<xsl:param name="compact_nav">0</xsl:param>
 		<xsl:param name="compact_variant"></xsl:param>
 		<xsl:param name="show_lang_switch">0</xsl:param>
+		<xsl:param name="show_search_portal">1</xsl:param>
 		<xsl:choose>
 			<xsl:when test="$compact_nav='1' and ($compact_variant='issues' or $compact_variant='issuetoc' or $compact_variant='arttext')">
 				<div class="issues-top">
@@ -44,7 +45,9 @@
 								</xsl:choose>
 							</div>
 							<div class="serial-nav-tools">
-								<xsl:call-template name="SEARCHPORTAL"/>
+								<xsl:if test="$show_search_portal!='0'">
+									<xsl:call-template name="SEARCHPORTAL"/>
+								</xsl:if>
 								<xsl:call-template name="METRICS"/>
 								<xsl:if test="$home = 1">
 									<xsl:call-template name="HOME"/>
@@ -52,6 +55,7 @@
 								<xsl:if test="$show_lang_switch='1'">
 									<xsl:call-template name="NAV_LANGUAGE_SWITCHER"/>
 								</xsl:if>
+								<xsl:call-template name="RSS_BUTTON"/>
 							</div>
 						</div>
 					</div>
@@ -91,7 +95,9 @@
 														</xsl:choose>
 													</div>
 													<div class="serial-nav-tools">
-														<xsl:call-template name="SEARCHPORTAL"/>
+														<xsl:if test="$show_search_portal!='0'">
+															<xsl:call-template name="SEARCHPORTAL"/>
+														</xsl:if>
 														<xsl:call-template name="METRICS"/>
 														<xsl:if test="$home = 1">
 															<xsl:call-template name="HOME"/>
@@ -99,6 +105,7 @@
 														<xsl:if test="$show_lang_switch='1'">
 															<xsl:call-template name="NAV_LANGUAGE_SWITCHER"/>
 														</xsl:if>
+														<xsl:call-template name="RSS_BUTTON"/>
 													</div>
 												</div>
 											</xsl:when>
@@ -196,14 +203,9 @@
 									<xsl:variable name="sci_serial">
 										<xsl:apply-templates select="." mode="sci_serial"/>
 									</xsl:variable>
-									<xsl:if test="//PAGE_NAME = $sci_serial or //PAGE_NAME = $issuetoc">
+									<xsl:if test="$compact_nav != '1' and (//PAGE_NAME = $sci_serial or //PAGE_NAME = $issuetoc)">
 										<TD valign="bottom">
-											<xsl:element name="a">
-												<xsl:attribute name="href"><xsl:value-of select="concat('http://',CONTROLINFO/SCIELO_INFO/SERVER,'/rss.php?pid=',//PAGE_PID,'&amp;lang=',//LANGUAGE)"/></xsl:attribute>
-												<xsl:attribute name="title"><xsl:value-of select="concat('RSS feed ',//TITLEGROUP/TITLE)"/></xsl:attribute>
-												<xsl:attribute name="class"><xsl:value-of select="'rss'"/></xsl:attribute>
-												<span>RSS</span>
-											</xsl:element>
+											<xsl:call-template name="RSS_BUTTON"/>
 										</TD>
 									</xsl:if>
 								</TR>
@@ -216,6 +218,22 @@
 		<BR/>
 			</xsl:otherwise>
 		</xsl:choose>
+	</xsl:template>
+	<xsl:template name="RSS_BUTTON">
+		<xsl:variable name="issuetoc">
+			<xsl:apply-templates select="." mode="issuetoc"/>
+		</xsl:variable>
+		<xsl:variable name="sci_serial">
+			<xsl:apply-templates select="." mode="sci_serial"/>
+		</xsl:variable>
+		<xsl:if test="//PAGE_NAME = $sci_serial or //PAGE_NAME = $issuetoc">
+			<xsl:element name="a">
+				<xsl:attribute name="href"><xsl:value-of select="concat('http://',CONTROLINFO/SCIELO_INFO/SERVER,'/rss.php?pid=',//PAGE_PID,'&amp;lang=',//LANGUAGE)"/></xsl:attribute>
+				<xsl:attribute name="title"><xsl:value-of select="concat('RSS feed ',//TITLEGROUP/TITLE)"/></xsl:attribute>
+				<xsl:attribute name="class">rss sci-nav-btn sci-nav-rss</xsl:attribute>
+				<span>RSS</span>
+			</xsl:element>
+		</xsl:if>
 	</xsl:template>
 	<xsl:template name="ACCESS_SKIP_LINK">
 		<a class="skip-link" href="#main-content">
@@ -317,7 +335,7 @@
 				</xsl:otherwise>
 			</xsl:choose>
 		</xsl:variable>
-			<xsl:value-of select="$HOME_URL"/>?script=<xsl:value-of select="$page_name"/>&amp;<xsl:if test="normalize-space(//CONTROLINFO/PAGE_PID)!='' or normalize-space(//PAGE_PID)!=''">pid=<xsl:choose><xsl:when test="normalize-space(//CONTROLINFO/PAGE_PID)!=''"><xsl:value-of select="normalize-space(//CONTROLINFO/PAGE_PID)"/></xsl:when><xsl:otherwise><xsl:value-of select="normalize-space(//PAGE_PID)"/></xsl:otherwise></xsl:choose>&amp;</xsl:if>lng=<xsl:value-of select="$lang"/>&amp;nrm=<xsl:choose><xsl:when test="normalize-space(//CONTROLINFO/STANDARD)!=''"><xsl:value-of select="normalize-space(//CONTROLINFO/STANDARD)"/></xsl:when><xsl:when test="normalize-space(//STANDARD)!=''"><xsl:value-of select="normalize-space(//STANDARD)"/></xsl:when><xsl:otherwise>iso</xsl:otherwise></xsl:choose><xsl:if test="normalize-space(//CONTROLINFO/TLANG)!='' or normalize-space(//tlng)!=''">&amp;tlng=<xsl:choose><xsl:when test="normalize-space(//CONTROLINFO/TLANG)!=''"><xsl:value-of select="normalize-space(//CONTROLINFO/TLANG)"/></xsl:when><xsl:otherwise><xsl:value-of select="normalize-space(//tlng)"/></xsl:otherwise></xsl:choose></xsl:if><xsl:apply-templates select="." mode="repo_url_param_scielo"/>
+			<xsl:value-of select="$HOME_URL"/>?script=<xsl:value-of select="$page_name"/>&amp;<xsl:if test="normalize-space(//CONTROLINFO/PAGE_PID)!='' or normalize-space(//PAGE_PID)!=''">pid=<xsl:choose><xsl:when test="normalize-space(//CONTROLINFO/PAGE_PID)!=''"><xsl:value-of select="normalize-space(//CONTROLINFO/PAGE_PID)"/></xsl:when><xsl:otherwise><xsl:value-of select="normalize-space(//PAGE_PID)"/></xsl:otherwise></xsl:choose>&amp;</xsl:if>lng=<xsl:value-of select="$lang"/>&amp;nrm=<xsl:choose><xsl:when test="normalize-space(//CONTROLINFO/STANDARD)!=''"><xsl:value-of select="normalize-space(//CONTROLINFO/STANDARD)"/></xsl:when><xsl:when test="normalize-space(//STANDARD)!=''"><xsl:value-of select="normalize-space(//STANDARD)"/></xsl:when><xsl:otherwise>iso</xsl:otherwise></xsl:choose><xsl:if test="normalize-space(//CONTROLINFO/TLANG)!='' or normalize-space(//tlng)!=''">&amp;tlng=<xsl:choose><xsl:when test="$page_name='sci_arttext' or $page_name='sci_abstract'"><xsl:value-of select="$lang"/></xsl:when><xsl:when test="normalize-space(//CONTROLINFO/TLANG)!=''"><xsl:value-of select="normalize-space(//CONTROLINFO/TLANG)"/></xsl:when><xsl:otherwise><xsl:value-of select="normalize-space(//tlng)"/></xsl:otherwise></xsl:choose></xsl:if><xsl:apply-templates select="." mode="repo_url_param_scielo"/>
 		</xsl:template>
 	<xsl:template name="LANGUAGE_LABEL">
 		<xsl:param name="lang"/>
@@ -689,8 +707,8 @@
 					</xsl:otherwise>
 				</xsl:choose>
 			</xsl:variable>
-			<A class="sci-nav-btn" target="_blank" title="M&#233;tricas">
-				<xsl:attribute name="href">https://analytics.scielo.org/?journal=<xsl:value-of select="//ISSN_AS_ID"/>&amp;collection=<xsl:value-of select="$collection"/></xsl:attribute>
+			<A class="sci-nav-btn" title="M&#233;tricas">
+				<xsl:attribute name="href">https://educa.fcc.org.br/metricas/?lang=pt</xsl:attribute>
 				<span>
 					<xsl:choose>
 						<xsl:when test="$ui_lang='en'">Metrics</xsl:when>

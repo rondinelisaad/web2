@@ -235,15 +235,17 @@
 				<link rel="stylesheet" type="text/css" href="/css/screen.css"/>
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/bootstrap.css"/>
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/article.css"/>
-				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css"/>
+				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css?v=arttext-20260722-11"/>
 				<xsl:apply-templates select="." mode="css"/>
 	            <xsl:if test="//show_readcube_epdf = '1'">
 	                <script src="http://content.readcube.com/scielo/epdf_linker.js" type="text/javascript" async="true"></script>
     	        </xsl:if>
+				<xsl:call-template name="EDUCA_GOOGLE_TAG"/>
 			</head>
 			<body class="arttext-page">
 				<xsl:call-template name="ACCESS_SKIP_LINK"/>
 				<a name="top"/>
+				<xsl:call-template name="ARTTEXT_MODERN_HEADER"/>
 				<div class="container">
 					<div class="top">
 						<div id="issues"/>
@@ -255,104 +257,98 @@
 							<xsl:with-param name="home">1</xsl:with-param>
 							<xsl:with-param name="alpha">0</xsl:with-param>
 							<xsl:with-param name="show_lang_switch">1</xsl:with-param>
+							<xsl:with-param name="show_search_portal">0</xsl:with-param>
 							<xsl:with-param name="scope" select="TITLEGROUP/SIGLUM"/>
 						</xsl:call-template>
 					</div>
+					<xsl:call-template name="ARTTEXT_BREADCRUMB"/>
 					<main id="main-content" tabindex="-1" class="content">
-						<h1 class="visually-hidden">
-							<xsl:value-of select="ISSUE/ARTICLE/citation_title" disable-output-escaping="yes"/>
-						</h1>
-						<div class="issues-journal-logo">
-							<img src="{//CONTROLINFO/SCIELO_INFO/PATH_SERIMG}{//TITLEGROUP/SIGLUM}/glogo.gif" alt="{//TITLEGROUP/TITLE}"/>
-						</div>
-						<xsl:if test="$show_toolbox = 1">
-							<xsl:call-template name="tool_box"/>
-						</xsl:if>
-						<xsl:choose>
-							<xsl:when test="//NO_SCI_SERIAL='yes'">
-								<h2 id="printISSN">
-									<xsl:value-of
-										select="$translations/xslid[@id='sci_arttext']/text[@find='original_version_published_in']"
-									/>
-								</h2>
-							</xsl:when>
-							<xsl:otherwise>
-								<h2>
-									<xsl:choose>
-										<xsl:when test="//CONTROLINFO/NO_SCI_SERIAL='yes'">
-											<xsl:value-of select="TITLEGROUP/TITLE"
-												disable-output-escaping="yes"/>
-
-										</xsl:when>
-										<xsl:otherwise>
-											<a>
-												<xsl:call-template name="AddScieloLink">
-												<xsl:with-param name="seq" select=".//ISSN_AS_ID"/>
-												<xsl:with-param name="script"
-												>sci_serial</xsl:with-param>
-												</xsl:call-template>
+						<article class="arttext-article-card">
+							<xsl:call-template name="ARTTEXT_READING_TOOLBAR"/>
+							<xsl:call-template name="ARTTEXT_CITATION_LINE"/>
+							<h1 class="visually-hidden">
+								<xsl:value-of select="ISSUE/ARTICLE/citation_title" disable-output-escaping="yes"/>
+							</h1>
+							<div class="issues-journal-logo">
+								<img src="{//CONTROLINFO/SCIELO_INFO/PATH_SERIMG}{//TITLEGROUP/SIGLUM}/glogo.gif" alt="{//TITLEGROUP/TITLE}"/>
+							</div>
+							<xsl:choose>
+								<xsl:when test="//NO_SCI_SERIAL='yes'">
+									<h2 id="printISSN">
+										<xsl:value-of
+											select="$translations/xslid[@id='sci_arttext']/text[@find='original_version_published_in']"
+										/>
+									</h2>
+								</xsl:when>
+								<xsl:otherwise>
+									<h2>
+										<xsl:choose>
+											<xsl:when test="//CONTROLINFO/NO_SCI_SERIAL='yes'">
 												<xsl:value-of select="TITLEGROUP/TITLE"
-												disable-output-escaping="yes"/>
-											</a>
-										</xsl:otherwise>
-									</xsl:choose>
-								</h2>
-								<h2 id="printISSN">
-									<xsl:apply-templates select=".//ISSUE_ISSN">
-										<xsl:with-param name="LANG"
-											select="normalize-space(CONTROLINFO/LANGUAGE)"/>
-									</xsl:apply-templates>
-								</h2>
-							</xsl:otherwise>
-						</xsl:choose>
-						<h3>
-							<xsl:if test="TITLEGROUP/SIGLUM != 'bjmbr' ">
+													disable-output-escaping="yes"/>
+											</xsl:when>
+											<xsl:otherwise>
+												<a>
+													<xsl:call-template name="AddScieloLink">
+													<xsl:with-param name="seq" select=".//ISSN_AS_ID"/>
+													<xsl:with-param name="script"
+													>sci_serial</xsl:with-param>
+													</xsl:call-template>
+													<xsl:value-of select="TITLEGROUP/TITLE"
+													disable-output-escaping="yes"/>
+												</a>
+											</xsl:otherwise>
+										</xsl:choose>
+									</h2>
+									<h2 id="printISSN">
+										<xsl:apply-templates select=".//ISSUE_ISSN">
+											<xsl:with-param name="LANG"
+												select="normalize-space(CONTROLINFO/LANGUAGE)"/>
+										</xsl:apply-templates>
+									</h2>
+								</xsl:otherwise>
+							</xsl:choose>
+							<h3>
 								<xsl:apply-templates select="ISSUE/STRIP"/>
-							</xsl:if>
-							<xsl:if test="TITLEGROUP/SIGLUM = 'bjmbr' ">
-								<xsl:apply-templates select="ISSUE/STRIP"/>
-								<!--xsl:apply-templates select="ISSUE/ARTICLE" mode="Epub">
-									<xsl:with-param name="ahpdate" select="ISSUE/ARTICLE/@ahpdate"/>
-									<xsl:with-param name="rvpdate" select="ISSUE/ARTICLE/@rvpdate"/>
-								</xsl:apply-templates-->
-							</xsl:if>
-						</h3>
-						<h4 id="doi">
-							<xsl:apply-templates select="ISSUE/ARTICLE/@DOI" mode="display"/>&#160; </h4>
-						<div class="index,{ISSUE/ARTICLE/@TEXTLANG}">
-							<xsl:apply-templates select="ISSUE/ARTICLE/BODY"/>
-						</div>
-						<xsl:if test="$isProvisional='1' and $hasPDF='1'">
-							<a>
-								<xsl:call-template name="AddScieloLink">
-									<xsl:with-param name="seq" select="ISSUE/ARTICLE/@PID"/>
-									<xsl:with-param name="script">sci_pdf</xsl:with-param>
-									<xsl:with-param name="txtlang" select="ISSUE/ARTICLE/@TEXTLANG"
+							</h3>
+							<h4 id="doi">
+								<xsl:apply-templates select="ISSUE/ARTICLE/@DOI" mode="display"/>&#160; </h4>
+							<div class="index,{ISSUE/ARTICLE/@TEXTLANG}">
+								<xsl:apply-templates select="ISSUE/ARTICLE/BODY"/>
+							</div>
+							<xsl:if test="$isProvisional='1' and $hasPDF='1'">
+								<a>
+									<xsl:call-template name="AddScieloLink">
+										<xsl:with-param name="seq" select="ISSUE/ARTICLE/@PID"/>
+										<xsl:with-param name="script">sci_pdf</xsl:with-param>
+										<xsl:with-param name="txtlang" select="ISSUE/ARTICLE/@TEXTLANG"
+										/>
+									</xsl:call-template>
+									<xsl:value-of
+										select="$translations/xslid[@id='sci_arttext']/text[@find='fulltext_only_in_pdf']"
 									/>
-								</xsl:call-template>
-								<xsl:value-of
-									select="$translations/xslid[@id='sci_arttext']/text[@find='fulltext_only_in_pdf']"
-								/>
-							</a>
-						</xsl:if>
-						<xsl:if test="ISSUE/ARTICLE/fulltext">
-
-							<xsl:apply-templates select="ISSUE/ARTICLE[fulltext]"/>
-
-						</xsl:if>
-						<xsl:if test="not(ISSUE/ARTICLE/BODY) and not(ISSUE/ARTICLE/fulltext)">
-							<xsl:apply-templates select="ISSUE/ARTICLE/EMBARGO/@date">
-								<xsl:with-param name="lang" select="$interfaceLang"/>
-							</xsl:apply-templates>
-						</xsl:if>
-						<div align="left"/>
-						<div class="spacer">&#160;</div>
+								</a>
+							</xsl:if>
+							<xsl:if test="ISSUE/ARTICLE/fulltext">
+								<xsl:apply-templates select="ISSUE/ARTICLE[fulltext]"/>
+							</xsl:if>
+							<xsl:if test="not(ISSUE/ARTICLE/BODY) and not(ISSUE/ARTICLE/fulltext)">
+								<xsl:apply-templates select="ISSUE/ARTICLE/EMBARGO/@date">
+									<xsl:with-param name="lang" select="$interfaceLang"/>
+								</xsl:apply-templates>
+							</xsl:if>
+							<div align="left"/>
+							<div class="spacer">&#160;</div>
+						</article>
 					</main>
 					<xsl:apply-templates select="." mode="footer-journal"/>
 				</div>
+				<xsl:call-template name="ARTTEXT_UTILS"/>
 
 				<script language="javascript" src="applications/scielo-org/js/jquery-1.4.2.min.js"/>
 				<script language="javascript" src="applications/scielo-org/js/toolbox.js"/>
+				<script type="text/javascript" src="/js/educa-accessibility.js?v=20260615-details-1"></script>
+				<xsl:call-template name="ARTTEXT_READING_SCRIPT"/>
 				
 			</body>
 		</html>
@@ -374,30 +370,35 @@
 	            <xsl:if test="//show_readcube_epdf = '1'">
 	                <script src="http://content.readcube.com/scielo/epdf_linker.js" type="text/javascript" async="true"></script>
 	            </xsl:if>
+				<xsl:call-template name="EDUCA_GOOGLE_TAG"/>
 				</head>
 			<body class="arttext-page">
 				<xsl:call-template name="ACCESS_SKIP_LINK"/>
 				<a name="top"/>
+				<xsl:call-template name="ARTTEXT_MODERN_HEADER"/>
 				<div class="container">
 					<div class="top">
 						<div id="issues"/>
 						<xsl:apply-templates select="." mode="common-display-nav-bar"/>
 					</div>
+					<xsl:call-template name="ARTTEXT_BREADCRUMB"/>
 					<main id="main-content" tabindex="-1" class="content">
-						<h1 class="visually-hidden">
-							<xsl:value-of select="ISSUE/ARTICLE/citation_title" disable-output-escaping="yes"/>
-						</h1>
-						<xsl:if test="$show_toolbox = '1'">
-							<xsl:call-template name="tool_box"/>
-						</xsl:if>
-						<xsl:apply-templates select="." mode="text-header"/>
-						<xsl:apply-templates select="." mode="text-disclaimer"/>
-						<xsl:apply-templates select="." mode="text-content"/>
+						<article class="arttext-article-card">
+							<xsl:call-template name="ARTTEXT_READING_TOOLBAR"/>
+							<xsl:call-template name="ARTTEXT_CITATION_LINE"/>
+							<h1 class="visually-hidden">
+								<xsl:value-of select="ISSUE/ARTICLE/citation_title" disable-output-escaping="yes"/>
+							</h1>
+							<xsl:apply-templates select="." mode="text-header"/>
+							<xsl:apply-templates select="." mode="text-disclaimer"/>
+							<xsl:apply-templates select="." mode="text-content"/>
+						</article>
 					</main>
 					<xsl:if test="$version='html'">
 						<xsl:apply-templates select="." mode="footer-journal"/>
 					</xsl:if>
 				</div>
+				<xsl:call-template name="ARTTEXT_UTILS"/>
 				<xsl:if test="$version!='html'">
 					<div class="container">
 						<div align="left"/>
@@ -405,6 +406,8 @@
 						<xsl:apply-templates select="." mode="footer-journal"/>
 					</div>
 				</xsl:if>
+				<script type="text/javascript" src="/js/educa-accessibility.js?v=20260615-details-1"></script>
+				<xsl:call-template name="ARTTEXT_READING_SCRIPT"/>
 			</body>
 		</html>
 	</xsl:template>
@@ -420,15 +423,15 @@
 				<link rel="stylesheet" type="text/css" href="/css/screen.css"/>
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/bootstrap.css"/>
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/article.css"/>
-				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css"/>
 				<link rel="stylesheet" type="text/css" href="/xsl/pmc/v3.0/xml.css"/>
+				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css?v=arttext-20260722-11"/>
 				<!--link rel="stylesheet" type="text/css" href="/xsl/pmc/v3.0/css/jpub-preview.css" /-->
 			</xsl:when>
 			<!--xsl:when test="$version='xml'">
             	<link rel="stylesheet" type="text/css" href="/css/screen.css"/>
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/bootstrap.css"/>
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/article.css"/>
-				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css"/>
+				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css?v=arttext-20260722-11"/>
                 <link xmlns="" rel="stylesheet" type="text/css" href="/css/pmc/ViewNLM.css"/>
                 <link xmlns="" rel="stylesheet" type="text/css" href="/css/pmc/ViewScielo.css"/>
 
@@ -437,7 +440,7 @@
 				<link rel="stylesheet" type="text/css" href="/css/screen.css"/>
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/bootstrap.css"/>
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/article.css"/>
-				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css"/>
+				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css?v=arttext-20260722-11"/>
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
@@ -481,6 +484,7 @@
 			<xsl:with-param name="home">1</xsl:with-param>
 			<xsl:with-param name="alpha">0</xsl:with-param>
 			<xsl:with-param name="show_lang_switch">1</xsl:with-param>
+			<xsl:with-param name="show_search_portal">0</xsl:with-param>
 			<xsl:with-param name="scope" select="TITLEGROUP/SIGLUM"/>
 		</xsl:call-template>
 	</xsl:template>
@@ -678,6 +682,326 @@
 			</xsl:choose>
 			
 		</p>
+	</xsl:template>
+
+	<xsl:template name="ARTTEXT_MODERN_HEADER">
+		<xsl:variable name="lang" select="normalize-space(//CONTROLINFO/LANGUAGE)"/>
+		<xsl:variable name="pid" select="//ISSUE/ARTICLE/@PID"/>
+		<xsl:variable name="tlng" select="//ISSUE/ARTICLE/@TEXTLANG"/>
+		<header class="serial-modern-header arttext-modern-header">
+			<details class="home-main-menu serial-modern-menu">
+				<summary class="serial-modern-menu-btn">&#9776; Menu</summary>
+				<ul class="home-main-dropdown">
+					<li><a href="/search_mvp.php?lang={$lang}">Pesquisa</a></li>
+					<li><a href="/scielo.php?script=sci_alphabetic&amp;lng={$lang}&amp;nrm=iso">Lista de peri&#243;dicos</a></li>
+					<li><a href="https://educa.fcc.org.br/metricas/?lang=pt">Métricas e Indicadores</a></li>
+					<li><a href="/about/?lang={$lang}">Sobre o Educ@</a></li>
+					<li><a href="/equipe/equipe_p.htm">Equipe Educ@</a></li>
+				</ul>
+			</details>
+			<a class="serial-modern-brand" href="/scielo.php?lng={$lang}" aria-label="Educ@">
+				<img src="/img/pt/scielobre.gif" alt="Educ@"/>
+			</a>
+			<details class="serials-lang-menu serial-modern-lang arttext-lang-menu">
+				<summary class="serials-ghost-btn serials-lang-btn" aria-label="Language selector">
+					&#127760;
+					<xsl:text> </xsl:text>
+					<xsl:choose>
+						<xsl:when test="$lang='en'">English</xsl:when>
+						<xsl:when test="$lang='es'">Espa&#241;ol</xsl:when>
+						<xsl:otherwise>Portugu&#234;s</xsl:otherwise>
+					</xsl:choose>
+					<xsl:text> </xsl:text>&#9662;
+				</summary>
+				<ul class="serials-lang-dropdown">
+					<li><a href="/scielo.php?script=sci_arttext&amp;pid={$pid}&amp;lng=pt&amp;nrm=iso&amp;tlng=pt">Portugu&#234;s</a></li>
+					<li><a href="/scielo.php?script=sci_arttext&amp;pid={$pid}&amp;lng=en&amp;nrm=iso&amp;tlng=en">English</a></li>
+					<li><a href="/scielo.php?script=sci_arttext&amp;pid={$pid}&amp;lng=es&amp;nrm=iso&amp;tlng=es">Espa&#241;ol</a></li>
+				</ul>
+			</details>
+		</header>
+	</xsl:template>
+
+	<xsl:template name="ARTTEXT_READING_NAV">
+		<aside class="arttext-reading-nav" aria-label="Sum&#225;rio do artigo">
+			<nav>
+				<strong>Sum&#225;rio</strong>
+				<a href="#article-body" class="is-active">Texto</a>
+				<a href="#article-references">Refer&#234;ncias bibliogr&#225;ficas</a>
+				<a href="#article-publication-dates">Datas de publica&#231;&#227;o</a>
+			</nav>
+		</aside>
+	</xsl:template>
+
+	<xsl:template name="ARTTEXT_READING_TOOLBAR">
+		<xsl:variable name="lang" select="normalize-space(//CONTROLINFO/LANGUAGE)"/>
+		<xsl:variable name="tlng" select="//ISSUE/ARTICLE/@TEXTLANG"/>
+		<xsl:variable name="issuePid" select="//CURRENTISSUE/@PID"/>
+		<div class="arttext-reading-toolbar" aria-label="Ferramentas de leitura">
+			<div class="arttext-reading-navlinks">
+				<a href="/scielo.php?script=sci_issuetoc&amp;pid={$issuePid}&amp;lng={$lang}&amp;nrm=iso" class="arttext-toolbar-home">
+					<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+						<path d="M3 11.5L12 4l9 7.5"/>
+						<path d="M5.5 10.5V20h5v-6h3v6h5v-9.5"/>
+					</svg>
+					<span>Sum&#225;rio</span>
+				</a>
+				<xsl:choose>
+					<xsl:when test="//PREVIOUS/@PID">
+						<a href="/scielo.php?script=sci_arttext&amp;pid={//PREVIOUS/@PID}&amp;lng={$lang}&amp;nrm=iso&amp;tlng={$tlng}">&#8249; Anterior</a>
+					</xsl:when>
+					<xsl:otherwise><span class="is-disabled">&#8249; Anterior</span></xsl:otherwise>
+				</xsl:choose>
+				<span class="is-current">Atual</span>
+				<xsl:choose>
+					<xsl:when test="//NEXT/@PID">
+						<a href="/scielo.php?script=sci_arttext&amp;pid={//NEXT/@PID}&amp;lng={$lang}&amp;nrm=iso&amp;tlng={$tlng}">Seguinte &#8250;</a>
+					</xsl:when>
+					<xsl:otherwise><span class="is-disabled">Seguinte &#8250;</span></xsl:otherwise>
+				</xsl:choose>
+			</div>
+			<div class="arttext-reading-actions">
+				<details class="arttext-tool-menu">
+					<summary>Texto (<xsl:value-of select="translate($tlng, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')"/>)</summary>
+					<ul>
+						<xsl:choose>
+							<xsl:when test="//ARTICLE/@ORIGINALLANG or //ARTICLE/LANGUAGES/ART_TEXT_LANGS/LANG">
+								<xsl:for-each select="//ARTICLE/@ORIGINALLANG | //ARTICLE/LANGUAGES/ART_TEXT_LANGS/LANG">
+									<li><a href="/scielo.php?script=sci_arttext&amp;pid={//ISSUE/ARTICLE/@PID}&amp;lng={$lang}&amp;nrm=iso&amp;tlng={.}"><xsl:value-of select="translate(., 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')"/></a></li>
+								</xsl:for-each>
+							</xsl:when>
+							<xsl:otherwise>
+								<li><a href="/scielo.php?script=sci_arttext&amp;pid={//ISSUE/ARTICLE/@PID}&amp;lng={$lang}&amp;nrm=iso&amp;tlng={$tlng}"><xsl:value-of select="translate($tlng, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')"/></a></li>
+							</xsl:otherwise>
+						</xsl:choose>
+					</ul>
+				</details>
+				<details class="arttext-tool-menu">
+					<summary>PDF</summary>
+					<ul>
+						<xsl:choose>
+							<xsl:when test="//ARTICLE/LANGUAGES/PDF_LANGS/LANG">
+								<xsl:for-each select="//ARTICLE/LANGUAGES/PDF_LANGS/LANG">
+									<li><a href="/pdf/{@TRANSLATION}"><xsl:value-of select="translate(., 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')"/></a></li>
+								</xsl:for-each>
+							</xsl:when>
+							<xsl:otherwise><li><span>Indispon&#237;vel</span></li></xsl:otherwise>
+						</xsl:choose>
+					</ul>
+				</details>
+			</div>
+		</div>
+	</xsl:template>
+
+	<xsl:template name="ARTTEXT_CITATION_LINE">
+		<xsl:variable name="docType">
+			<xsl:choose>
+				<xsl:when test="//ISSUE/ARTICLE/@DOCTYPE='editorial'">Editorial</xsl:when>
+				<xsl:when test="//ISSUE/ARTICLE/@DOCTYPE='review'">Revis&#227;o</xsl:when>
+				<xsl:otherwise>Artigo</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		<div class="arttext-citation-line">
+			<span class="arttext-citation-text">
+				<xsl:value-of select="$docType"/>
+				<xsl:text> &#8226; </xsl:text>
+				<xsl:value-of select="//TITLEGROUP/SHORTTITLE" disable-output-escaping="yes"/>
+				<xsl:if test="//ISSUE/@VOL">
+					<xsl:text> </xsl:text><xsl:value-of select="//ISSUE/@VOL"/>
+				</xsl:if>
+				<xsl:if test="//ISSUE/@NUM">
+					<xsl:text>(</xsl:text><xsl:value-of select="//ISSUE/@NUM"/><xsl:text>)</xsl:text>
+				</xsl:if>
+				<xsl:if test="//ISSUE/STRIP/YEAR">
+					<xsl:text> &#8226; </xsl:text><xsl:value-of select="//ISSUE/STRIP/YEAR"/>
+				</xsl:if>
+				<xsl:if test="//ISSUE/ARTICLE/@DOI">
+					<xsl:text> &#8226; DOI: </xsl:text>
+					<a target="_blank">
+						<xsl:attribute name="href">https://doi.org/<xsl:value-of select="//ISSUE/ARTICLE/@DOI"/></xsl:attribute>
+						<xsl:text>https://doi.org/</xsl:text><xsl:value-of select="//ISSUE/ARTICLE/@DOI"/>
+					</a>
+				</xsl:if>
+			</span>
+			<button type="button" class="arttext-copy-citation" data-copy="https://doi.org/{//ISSUE/ARTICLE/@DOI}" aria-label="Copiar DOI">
+				<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10 13a5 5 0 0 0 7.1 0l2-2a5 5 0 0 0-7.1-7.1l-1.1 1.1"/><path d="M14 11a5 5 0 0 0-7.1 0l-2 2A5 5 0 0 0 12 20.1l1.1-1.1"/></svg>
+				<span>copiar</span>
+			</button>
+		</div>
+	</xsl:template>
+
+	<xsl:template name="ARTTEXT_BREADCRUMB">
+		<xsl:variable name="lang" select="normalize-space(//CONTROLINFO/LANGUAGE)"/>
+		<xsl:variable name="journalPid" select="//ISSN_AS_ID"/>
+		<xsl:variable name="issuePid" select="//CURRENTISSUE/@PID"/>
+		<xsl:variable name="articlePid" select="//ISSUE/ARTICLE/@PID"/>
+		<section class="d-none d-md-flex breadcrumb mt-3 mb-5 serial-breadcrumb arttext-breadcrumb">
+			<div class="container">
+				<div class="serial-breadcrumb-inner">
+					<ol class="breadcrumb mb-0 ps-0">
+						<li class="breadcrumb-item"><a href="/scielo.php?lng={$lang}">
+							<svg class="serial-home-icon serial-home-icon-breadcrumb" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+								<path d="M3 11.5L12 4l9 7.5"/>
+								<path d="M5.5 10.5V20h5v-6h3v6h5v-9.5"/>
+							</svg>
+						</a></li>
+						<li class="breadcrumb-item"><a href="/scielo.php?script=sci_alphabetic&amp;lng={$lang}&amp;nrm=iso">Peri&#243;dicos</a></li>
+						<li class="breadcrumb-item"><a href="/scielo.php?script=sci_serial&amp;pid={$journalPid}&amp;lng={$lang}&amp;nrm=iso"><xsl:value-of select="//TITLEGROUP/TITLE" disable-output-escaping="yes"/></a></li>
+						<xsl:if test="$issuePid">
+							<li class="breadcrumb-item"><a href="/scielo.php?script=sci_issuetoc&amp;pid={$issuePid}&amp;lng={$lang}&amp;nrm=iso">Sum&#225;rio</a></li>
+						</xsl:if>
+						<li class="breadcrumb-item">Artigo</li>
+					</ol>
+					<a class="btn btn-sm btn-secondary scielo__btn-with-icon--only serial-share-btn" href="mailto:?subject={//ISSUE/ARTICLE/citation_title}&amp;body=http://{//CONTROLINFO/SCIELO_INFO/SERVER}/scielo.php?script=sci_arttext%26pid={$articlePid}%26lng={$lang}%26nrm=iso%26tlng={//ISSUE/ARTICLE/@TEXTLANG}" aria-label="Compartilhar">
+						<svg class="serial-share-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+							<circle cx="18" cy="5" r="2.4"/>
+							<circle cx="6" cy="12" r="2.4"/>
+							<circle cx="18" cy="19" r="2.4"/>
+							<path d="M8.2 11l7.6-4.4"/>
+							<path d="M8.2 13l7.6 4.4"/>
+						</svg>
+						<span class="serial-share-caret">&#9662;</span>
+					</a>
+				</div>
+			</div>
+		</section>
+	</xsl:template>
+
+	<xsl:template name="ARTTEXT_UTILS">
+		<div class="serial-template-utils arttext-template-utils">
+			<a href="mailto:educ@fcc.org.br?subject=Reportar%20erro" class="serial-template-report">Reportar erro</a>
+			<a href="#main-content" class="serial-template-accessibility">Acessibilidade</a>
+		</div>
+	</xsl:template>
+
+	<xsl:template name="ARTTEXT_READING_SCRIPT">
+		<script type="text/javascript">
+		(function () {
+			var root = document.querySelector('.arttext-page');
+			if (!root) { return; }
+			var article = root.querySelector('.arttext-article-card');
+			var nav = root.querySelector('.arttext-reading-nav nav');
+			if (!article) { return; }
+
+			function shouldNormalizeAllCapsTitle(value, minLetters) {
+				var letters = (value || '').replace(/[^A-Za-zÀ-ÖØ-öø-ÿ]/g, '');
+				if (letters.length &lt; (minLetters || 8)) { return false; }
+				return /[A-ZÁÀÂÃÄÉÈÊËÍÌÎÏÓÒÔÕÖÚÙÛÜÇÑ]/.test(letters) &amp;&amp; !/[a-záàâãäéèêëíìîïóòôõöúùûüçñ]/.test(letters);
+			}
+
+			function restoreTitleAcronyms(value) {
+				return value.replace(/\b(apa|bncc|capes|cfc|cnpq|covid|eja|enade|enem|fcc|ideb|ies|inep|libras|ocde|pibic|pisa|pnaic|saeb|tdah|tdic|unesco|ufba|ufmg|ufpe|ufpr|ufrgs|ufrj|ufsc|usp)\b/gi, function (match) {
+					return match.toLocaleUpperCase('pt-BR');
+				});
+			}
+
+			function sentenceCaseTitle(value) {
+				var normalized = (value || '').toLocaleLowerCase('pt-BR');
+				normalized = normalized.replace(/(^|[.!?]\s+)([a-záàâãäéèêëíìîïóòôõöúùûüçñ])/g, function (match, prefix, letter) {
+					return prefix + letter.toLocaleUpperCase('pt-BR');
+				});
+				return restoreTitleAcronyms(normalized);
+			}
+
+			function normalizeTextElement(element, minLetters) {
+				if (!element) { return; }
+				var clone = element.cloneNode(true);
+				var openAccessIcon = clone.querySelector('.arttext-title-open-access');
+				if (openAccessIcon) { openAccessIcon.parentNode.removeChild(openAccessIcon); }
+				var value = clone.textContent.replace(/\s+/g, ' ').trim();
+				if (!shouldNormalizeAllCapsTitle(value, minLetters)) { return; }
+				function normalizeNode(node) {
+					if (node.nodeType === 3 &amp;&amp; node.nodeValue.trim()) {
+						node.nodeValue = sentenceCaseTitle(node.nodeValue);
+						return;
+					}
+					if (node.nodeType === 1 &amp;&amp; !node.classList.contains('arttext-title-open-access')) {
+						Array.prototype.forEach.call(node.childNodes, normalizeNode);
+					}
+				}
+				Array.prototype.forEach.call(element.childNodes, normalizeNode);
+			}
+
+			function normalizeArticleSectionHeadings() {
+				Array.prototype.forEach.call(article.querySelectorAll('.subsec, .sub-subsec'), function (heading) {
+					normalizeTextElement(heading, 3);
+				});
+			}
+
+			var body = article.querySelector('#article-body') || article.querySelector('[id$="-body"].body') || article.querySelector('.body');
+			if (body) { body.setAttribute('id', 'article-body'); }
+
+			function alignBodyTypographyWithAbstract() {
+				if (!body) { return; }
+				var abstractParagraph = article.querySelector('.trans-abstract p:not(.sec), .abstract p:not(.sec)');
+				if (!abstractParagraph || !window.getComputedStyle) { return; }
+				var computed = window.getComputedStyle(abstractParagraph);
+				Array.prototype.forEach.call(body.querySelectorAll('p:not(.sec):not(.subsec):not(.sub-subsec), p:not(.sec):not(.subsec):not(.sub-subsec) *'), function (node) {
+					node.style.fontFamily = computed.fontFamily;
+					node.style.fontSize = computed.fontSize;
+					node.style.lineHeight = computed.lineHeight;
+					node.style.fontWeight = computed.fontWeight;
+					node.style.color = computed.color;
+				});
+			}
+
+			var title = article.querySelector('[class^="index"] .title');
+			if (title &amp;&amp; !title.querySelector('.arttext-title-open-access')) {
+				var lock = document.createElement('span');
+				lock.className = 'arttext-title-open-access';
+				lock.setAttribute('title', 'Acesso aberto');
+				lock.setAttribute('aria-label', 'Acesso aberto');
+				lock.innerHTML = '&lt;svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"&gt;&lt;path d="M7 10V8a5 5 0 0 1 9.5-2.2"&gt;&lt;/path&gt;&lt;rect x="5" y="10" width="14" height="10" rx="2"&gt;&lt;/rect&gt;&lt;path d="M12 14v3"&gt;&lt;/path&gt;&lt;/svg&gt;';
+				title.insertBefore(lock, title.firstChild);
+			}
+			normalizeArticleSectionHeadings();
+			alignBodyTypographyWithAbstract();
+
+			var refs = article.querySelector('.ref');
+			if (refs) {
+				var refWrap = refs.closest('.section') || refs.parentNode;
+				if (refWrap &amp;&amp; !refWrap.id) { refWrap.id = 'article-references'; }
+			}
+
+			var dates = article.querySelector('.fn-author, .history, .articleDates');
+			if (dates) {
+				var dateWrap = dates.closest('.section') || dates.parentNode;
+				if (dateWrap &amp;&amp; !dateWrap.id) { dateWrap.id = 'article-publication-dates'; }
+			}
+
+			var copy = article.querySelector('.arttext-copy-citation');
+			if (copy) {
+				copy.addEventListener('click', function () {
+					var value = copy.getAttribute('data-copy') || '';
+					if (!value) { value = article.querySelector('.arttext-citation-text').textContent; }
+					if (navigator.clipboard &amp;&amp; navigator.clipboard.writeText) {
+						navigator.clipboard.writeText(value);
+					}
+					copy.textContent = 'Copiado';
+					setTimeout(function () { copy.textContent = 'Copiar'; }, 1600);
+				});
+			}
+
+			if (nav) {
+				var links = Array.prototype.slice.call(nav.querySelectorAll('a[href^="#"]'));
+				var targets = links.map(function (link) {
+					var id = link.getAttribute('href').slice(1);
+					return document.getElementById(id);
+				});
+				function setActive() {
+					var active = 0;
+					targets.forEach(function (target, index) {
+						if (target &amp;&amp; target.getBoundingClientRect().top &lt; 140) { active = index; }
+					});
+					links.forEach(function (link, index) {
+						link.classList.toggle('is-active', index === active);
+					});
+				}
+				window.addEventListener('scroll', setActive, { passive: true });
+				setActive();
+			}
+		}());
+		</script>
 	</xsl:template>
 	
 	

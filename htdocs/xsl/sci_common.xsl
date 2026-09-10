@@ -271,21 +271,18 @@
     </xsl:template>
     <!-- Shows e-mail links -->
     <xsl:template match="EMAILS">
-        <IMG>
-            <xsl:attribute name="src"><xsl:value-of select="$control_info/SCIELO_INFO/PATH_GENIMG"
-                    /><xsl:value-of select="$control_info/LANGUAGE"/>/e-mailt.gif</xsl:attribute>
-            <xsl:attribute name="alt">email</xsl:attribute>
-            <xsl:attribute name="border">0</xsl:attribute>
-        </IMG>
-        <br/>
         <xsl:apply-templates select="EMAIL"/>
     </xsl:template>
     <!-- Show E-Mail -->
     <xsl:template match="EMAIL">
-        <A class="email">
+        <a class="email journal-footer-email">
             <xsl:attribute name="href">mailto:<xsl:value-of select="."/></xsl:attribute>
-            <xsl:value-of select="."/>
-        </A>
+            <svg class="journal-footer-email-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <rect x="3" y="5" width="18" height="14" rx="2"/>
+                <path d="M3 7l9 6 9-6"/>
+            </svg>
+            <span><xsl:value-of select="."/></span>
+        </a>
     </xsl:template>
     <!-- Gets the type of the ISSN
          Parameters:
@@ -578,6 +575,17 @@
         </xsl:choose>
 
         <!-- &#160;&#160;&#160; -->
+    </xsl:template>
+    <xsl:template name="EDUCA_GOOGLE_TAG">
+        <!-- Google tag (gtag.js) -->
+        <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-51PHQJGZN1"></script>
+        <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+
+          gtag('config', 'G-51PHQJGZN1');
+        </script>
     </xsl:template>
     <!-- Invisible Image To Update Log File -->
     <xsl:template name="CREATE_ARTICLE_SERVICE_LINK">
@@ -1262,7 +1270,12 @@ tem esses dois templates "vazios" para nao aparecer o conteudo nos rodapes . . .
                 <xsl:when test="contains($license_href,'://creativecommons.org/licenses/')">http://i.creativecommons.org/l<xsl:value-of select="substring-after($main_license_href,'licenses')"/>/80x15.png</xsl:when>
                 <xsl:otherwise></xsl:otherwise>
             </xsl:choose></xsl:variable>
-            <xsl:variable name="license_href_with_lang"><xsl:value-of select="$main_license_href"/><xsl:if test="$lang!='' and contains($main_license_href,'://creativecommons.org/licenses/')">/deed.<xsl:value-of select="$lang"/></xsl:if></xsl:variable>
+            <xsl:variable name="license_href_with_lang">
+                <xsl:choose>
+                    <xsl:when test="contains($main_license_href,'creativecommons.org/licenses/by/4.0')">https://creativecommons.org/licenses/by/4.0/</xsl:when>
+                    <xsl:otherwise><xsl:value-of select="$main_license_href"/><xsl:if test="not(contains($main_license_href,'://creativecommons.org/licenses/')) and $lang!=''">/deed.<xsl:value-of select="$lang"/></xsl:if></xsl:otherwise>
+                </xsl:choose>
+            </xsl:variable>
             <xsl:if test="$license_href_with_lang!=''">
                 <p>
                     <xsl:if test="$license_img_src!=''">

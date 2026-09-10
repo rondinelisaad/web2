@@ -905,25 +905,7 @@ Parameters:
 		<xsl:choose>
 			<!-- if SEARCH expression is present prints the link -->
 			<xsl:when test=" $SEARCH != '' ">
-				<xsl:variable name="url">
-					<xsl:choose>
-						<xsl:when test="string-length($iah)&gt;0">
-							<xsl:value-of select="$iah"
-								/>&amp;base=article^dlibrary&amp;format=iso.pft&amp;lang=<xsl:value-of
-								select="$LANG_IAH"
-								/>&amp;nextAction=lnk&amp;indexSearch=AU&amp;exprSearch=<xsl:value-of
-								select="$SEARCH"/>
-						</xsl:when>
-						<xsl:otherwise>http://<xsl:value-of
-								select="concat($SERVER,$PATH_WXIS,$PATH_DATA_IAH)"
-								/>?IsisScript=<xsl:value-of select="$PATH_CGI_IAH"
-								/>iah.xis&amp;base=article^dlibrary&amp;format=iso.pft&amp;lang=<xsl:value-of
-								select="$LANG_IAH"
-								/>&amp;nextAction=lnk&amp;indexSearch=AU&amp;exprSearch=<xsl:value-of
-								select="$SEARCH"/>
-						</xsl:otherwise>
-					</xsl:choose>
-				</xsl:variable>
+				<xsl:variable name="url">/search_mvp.php?lang=<xsl:value-of select="$LANG"/>&amp;field=author&amp;page=1&amp;q=<xsl:value-of select="$SEARCH"/></xsl:variable>
 				<a href="{$url}">
 					<xsl:value-of select="$fullname" disable-output-escaping="yes"/>
 				</a>
