@@ -63,11 +63,10 @@
     $xml = '<ERROR></ERROR>';
   }
 
-  // Keep requested language consistent for sci_subject output (html lang/UI labels).
+  // Keep requested language consistent for HTML language and UI labels.
   $requestScript = isset($_REQUEST['script']) ? $_REQUEST['script'] : '';
   $requestLng = isset($_REQUEST['lng']) ? strtolower(trim($_REQUEST['lng'])) : '';
-  if ($requestScript === 'sci_subject'
-      && in_array($requestLng, array('pt', 'en', 'es'), true)
+  if (in_array($requestLng, array('pt', 'en', 'es'), true)
       && strpos($xml, '<ERROR') === false) {
       $xml = preg_replace(
           '/<LANGUAGE>[^<]*<\/LANGUAGE>/',
@@ -137,7 +136,10 @@
                   $sxml->xpath('/root/SERIAL/ISSUE/ARTICLE/@PID')
               )
           );
-          header('Location: /scielo.php?script=sci_arttext&pid='.$documentPID, true, 301);
+          $redirectLanguage = in_array($requestLng, array('pt', 'en', 'es'), true)
+              ? '&lng='.$requestLng
+              : '';
+          header('Location: /scielo.php?script=sci_arttext&pid='.$documentPID.$redirectLanguage, true, 301);
           exit;
       }
   }
