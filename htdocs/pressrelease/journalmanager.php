@@ -1,5 +1,5 @@
 <?php
-require_once("config.php");
+require_once(__DIR__ . "/config.php");
 
 function citation_display($data){
     $authors  = array();
@@ -111,17 +111,27 @@ function quering_api($url='fixture_prs.json', $ttl=600){
     if (strpos($url, JM_API_URL) !== 0 && !preg_match('/^[A-Za-z0-9._-]+\.json$/', $url)) {
         return '{}';
     }
+    if (!class_exists('Memcache')) {
+        $response = @file_get_contents($url);
+        return $response !== false ? $response : '{"objects":[]}';
+    }
     $m = new Memcache();
     $memcache_url = explode(":", JM_MEMCACHED_HOST);
     $memcache_domain = $memcache_url[0];
     $memcache_port = $memcache_url[1];
-    $m->connect($memcache_domain, $memcache_port); 
+    if (!@$m->connect($memcache_domain, $memcache_port)) {
+        $response = @file_get_contents($url);
+        return $response !== false ? $response : '{"objects":[]}';
+    }
 
     $from_cache = $m->get($url);
     if ($from_cache){
         return $from_cache;
     }else{
-        $response = file_get_contents($url, true);
+        $response = @file_get_contents($url, true);
+        if ($response === false) {
+            $response = '{"objects":[]}';
+        }
         $m->add($url, $response, $ttl);
     }
 
@@ -173,6 +183,10 @@ function get_press_releases_by_pid($pid, $lng){
     $json = json_decode(quering_api($request_url), true);
 
     $prs = array('article'=>array(), 'issue'=>array()) ;
+
+    if (!is_array($json) || !isset($json['objects']) || !is_array($json['objects'])) {
+        $json = array('objects' => array());
+    }
 
     foreach ($json['objects'] as $itempr){
         $pr = array();

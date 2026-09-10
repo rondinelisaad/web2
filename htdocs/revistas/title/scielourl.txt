@@ -1,0 +1,37 @@
+aval|www.myscielo.org|Avaliação: Revista da Avaliação da Educação Superior 
+ccedes|www.myscielo.org|Cadernos Cedes
+cp|www.myscielo.org|Cadernos de Pesquisa
+ciedu|www.myscielo.org|Ciência & Educação
+es|www.myscielo.org|Educação & Sociedade
+edur|www.myscielo.org|Educação em Revista
+er|www.myscielo.org|Educar em Revista
+ensaio|www.myscielo.org|Ensaio: Avaliação e Políticas Públicas em Educação
+eae|www.myscielo.org|Estudos em Avaliação Educacional
+nec|www.myscielo.org| Novos Estudos Cebrap
+pp|www.myscielo.org|Pro-Posições
+rbedu|www.myscielo.org|Revista Brasileira de Educação
+rbee|www.myscielo.org|Revista Brasileira de Educação Especial
+rfe|www.myscielo.org|Revista da Faculdade de Educação
+ref|www.myscielo.org|Revista Estudos Feministas
+cpa|www.myscielo.org|Cadernos Pagu
+|www.myscielo.org| Novos Estudos Cebrap [0101-3300]
+rp|www.myscielo.org|Revista Perspectiva
+he|www.myscielo.org|História da Educação
+rcp|www.myscielo.org|Childhood & Philosophy
+ctp|www.myscielo.org|Contrapontos
+ree|www.myscielo.org|Revista Eletrônica de Educação
+rt|www.myscielo.org|Revista Teias
+etd|www.myscielo.org|ETD Educação Temática Digital
+ra|www.myscielo.org|Reflexão e Ação
+rep|www.myscielo.org|Revista de Educação Pública
+erc|www.myscielo.org|EccoS Revista Científica
+rd|www.myscielo.org|Revista Dialogia
+abem|www.myscielo.org|Revista da ABEM
+po|www.myscielo.org|Poiésis 
+qua|www.myscielo.org|Quaestio: Revista de Estudos em Educação
+de|www.myscielo.org|Diálogo Educacional
+lc|www.myscielo.org|Linhas Críticas
+eq|www.myscielo.org|Revista Educação em Questão
+te|www.myscielo.org|Trabalho & Educação
+ep|www.myscielo.org|Educação e Pesquisa
+rer|www.myscielo.org|Educação e Realidade
