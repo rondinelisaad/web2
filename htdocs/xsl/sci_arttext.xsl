@@ -235,7 +235,7 @@
 				<link rel="stylesheet" type="text/css" href="/css/screen.css"/>
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/bootstrap.css"/>
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/article.css"/>
-				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css?v=arttext-20260722-11"/>
+				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css?v=arttext-citations-20260910-1"/>
 				<xsl:apply-templates select="." mode="css"/>
 	            <xsl:if test="//show_readcube_epdf = '1'">
 	                <script src="http://content.readcube.com/scielo/epdf_linker.js" type="text/javascript" async="true"></script>
@@ -424,14 +424,14 @@
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/bootstrap.css"/>
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/article.css"/>
 				<link rel="stylesheet" type="text/css" href="/xsl/pmc/v3.0/xml.css"/>
-				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css?v=arttext-20260722-11"/>
+				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css?v=arttext-citations-20260910-1"/>
 				<!--link rel="stylesheet" type="text/css" href="/xsl/pmc/v3.0/css/jpub-preview.css" /-->
 			</xsl:when>
 			<!--xsl:when test="$version='xml'">
             	<link rel="stylesheet" type="text/css" href="/css/screen.css"/>
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/bootstrap.css"/>
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/article.css"/>
-				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css?v=arttext-20260722-11"/>
+				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css?v=arttext-citations-20260910-1"/>
                 <link xmlns="" rel="stylesheet" type="text/css" href="/css/pmc/ViewNLM.css"/>
                 <link xmlns="" rel="stylesheet" type="text/css" href="/css/pmc/ViewScielo.css"/>
 
@@ -440,7 +440,7 @@
 				<link rel="stylesheet" type="text/css" href="/css/screen.css"/>
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/bootstrap.css"/>
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/article.css"/>
-				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css?v=arttext-20260722-11"/>
+				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css?v=arttext-citations-20260910-1"/>
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>

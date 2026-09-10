@@ -739,20 +739,20 @@
 	<xsl:template match="xref[@ref-type='bibr']">
 		<xsl:choose>
 			<xsl:when test="normalize-space(.//text())=''">
-				<sup>
+				<span class="xref-bibr">
 					<a href="#{@rid}">
 						<xsl:apply-templates select="key('element-by-id',@rid)" mode="label-text">
 							<xsl:with-param name="warning" select="true()"/>
 						</xsl:apply-templates>
 					</a>
-				</sup>
+				</span>
 			</xsl:when>
 			<xsl:when test="not(.//sup)">
-				<sup>
+				<span class="xref-bibr">
 					<a href="#{@rid}">
 						<xsl:apply-templates select="*|text()"/>
 					</a>
-				</sup>
+				</span>
 			</xsl:when>
 			<xsl:otherwise>
 				<a href="#{@rid}">

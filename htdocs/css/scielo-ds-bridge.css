@@ -8962,6 +8962,20 @@ body.serials-page .serials-footer-logos {
   margin-top: 0 !important;
 }
 
+/* Bibliographic author-year citations remain inline links, not superscripts. */
+.arttext-page .arttext-article-card sup.xref-bibr,
+.arttext-page .arttext-article-card sup.xref-bibr a {
+  display: inline !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-family: inherit !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  vertical-align: baseline !important;
+}
+
 /* Article page without left summary. */
 .arttext-page .arttext-reading-nav {
   display: none !important;
