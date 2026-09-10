@@ -4592,6 +4592,11 @@ body.serial-page > .container {
   text-decoration: underline;
 }
 
+/* Editorial policy is not part of the journal side menu. */
+.serial-page .col-lg-3 .list-group > a:nth-child(4) {
+  display: none !important;
+}
+
 .serial-page .journal-about-block {
   padding: 0 0 24px;
   margin: 0 0 26px;
