@@ -608,6 +608,12 @@ function search_mvp_search(array $params): array
         }
     }
 
+    // Keep author clicks as an exact phrase even if an older FTS index tokenizes punctuation.
+    if ($q !== '' && $field === 'author') {
+        $where[] = 'd.authors_norm LIKE :author_query_phrase';
+        $bind[':author_query_phrase'] = '%' . search_mvp_normalize($q) . '%';
+    }
+
     if ($year !== '' && ctype_digit($year)) {
         $where[] = 'd.pub_year = :year';
         $bind[':year'] = (int)$year;
@@ -644,24 +650,6 @@ function search_mvp_search(array $params): array
     $countStmt = $pdo->prepare($countSql);
     $countStmt->execute($bind);
     $total = (int)$countStmt->fetchColumn();
-
-    if ($total === 0 && $q !== '' && $field === 'author') {
-        $fallbackAuthor = search_mvp_author_fallback_query($q);
-        if ($fallbackAuthor !== '' && search_mvp_normalize($fallbackAuthor) !== search_mvp_normalize($q)) {
-            if ($useFts && isset($bind[':fts_query'])) {
-                $fallbackExpression = search_mvp_fts_expression('author', $fallbackAuthor);
-                if ($fallbackExpression !== '') {
-                    $bind[':fts_query'] = $fallbackExpression;
-                }
-            } elseif (isset($bind[':q_phrase'])) {
-                $bind[':q_phrase'] = '%' . search_mvp_normalize($fallbackAuthor) . '%';
-            }
-
-            $countStmt = $pdo->prepare($countSql);
-            $countStmt->execute($bind);
-            $total = (int)$countStmt->fetchColumn();
-        }
-    }
 
     $listSql = "SELECT d.pid, d.title, d.abstract_text, d.authors, d.journal_title, d.journal_issn, d.pub_year, d.lang, d.article_url, d.abstract_url, d.source_issue_pid, d.indexed_at
                 FROM {$fromSql}
