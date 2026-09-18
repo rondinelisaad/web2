@@ -9,7 +9,7 @@ from urllib.parse import quote
 
 ROOT = Path(sys.argv[1] if len(sys.argv) > 1 else "htdocs")
 REVISTAS = ROOT / "revistas"
-CSS_VERSION = "about-20260614-6"
+CSS_VERSION = "about-20260918-2"
 
 LANGUAGE_CONFIG = {
     "paboutj.htm": {"code": "pt", "title": "Sobre o periódico"},
