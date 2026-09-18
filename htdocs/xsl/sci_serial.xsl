@@ -52,7 +52,7 @@
 				<link rel="STYLESHEET" TYPE="text/css" href="/css/include_styles.css"/>
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/bootstrap.css"/>
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/article.css"/>
-				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css?v=serial-20260614-27"/>
+				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css?v=serial-20260918-1"/>
 				<!-- link pro RSS aparecer automaticamente no Browser -->
 				<xsl:call-template name="AddRssHeaderLink">
 					<xsl:with-param name="pid" select="//CURRENT/@PID"/>
