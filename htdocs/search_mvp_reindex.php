@@ -148,8 +148,16 @@ foreach ($serialNodes as $serialNode) {
                 $title = search_mvp_extract_text($abstractXml, '//TITLEGROUP/TITLE');
             }
 
-            $authors = search_mvp_extract_authors($abstractXml);
-            $abstractText = search_mvp_extract_text($abstractXml, '//ARTICLE/ABSTRACT');
+			$authors = search_mvp_extract_authors($abstractXml);
+			// The abstract XML can expose only surnames; the full-text XML has the complete author names.
+			$articleXml = search_mvp_load_xml(search_mvp_http_get(
+				"{$baseUrl}/scielo.php?script=sci_arttext&pid={$pid}&lng={$lang}&nrm=iso&tlng={$lang}&debug=xml"
+			));
+			$fullAuthors = $articleXml ? search_mvp_extract_authors($articleXml) : '';
+			if ($fullAuthors !== '') {
+				$authors = $fullAuthors;
+			}
+			$abstractText = search_mvp_extract_text($abstractXml, '//ARTICLE/ABSTRACT');
             $pubYearRaw = search_mvp_extract_text($abstractXml, '//ARTICLE/ISSUEINFO/@YEAR');
             $pubYear = ctype_digit($pubYearRaw) ? (int)$pubYearRaw : null;
 

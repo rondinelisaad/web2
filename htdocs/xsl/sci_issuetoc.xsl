@@ -652,7 +652,10 @@
 			<xsl:with-param name="NAME" select="NAME"/>
 			<xsl:with-param name="SEARCH">
 					<xsl:if test=" $AUTHLINK = 1 ">
-						<xsl:value-of select="SURNAME"/>
+						<xsl:choose>
+							<xsl:when test="@SEARCH!=''"><xsl:value-of select="@SEARCH"/></xsl:when>
+							<xsl:otherwise><xsl:value-of select="concat(NAME, ' ', SURNAME)"/></xsl:otherwise>
+						</xsl:choose>
 					</xsl:if>
 			</xsl:with-param>
 			<xsl:with-param name="LANG" select="$LANG"/>
