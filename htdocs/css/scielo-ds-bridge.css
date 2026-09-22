@@ -9033,6 +9033,12 @@ body.serials-page .serials-footer-logos {
   margin: 0;
 }
 
+/* Data-availability notes may arrive with the heading and body in one paragraph. */
+.arttext-page .arttext-article-card .foot-notes .fn > p > strong:first-child {
+  display: block;
+  margin-bottom: 4px;
+}
+
 .arttext-page .footnote-popover .footnote-back {
   display: none;
 }
