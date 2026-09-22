@@ -547,6 +547,7 @@
 	</xsl:template>
 	<xsl:template match="contrib/xref">
 		<xsl:variable name="rid" select="@rid"/>
+		<xsl:variable name="correspHasEmail" select="@ref-type='corresp' and ancestor::article[1]//author-notes/corresp[@id=$rid]//email"/>
 		<xsl:variable name="doit"><xsl:choose>
 			<xsl:when test="normalize-space(.)=''">
 				<xsl:choose>
@@ -560,7 +561,7 @@
 			</xsl:when>
 			<xsl:otherwise>doit</xsl:otherwise>
 		</xsl:choose></xsl:variable>
-		<xsl:if test="normalize-space($doit)='doit'">
+		<xsl:if test="normalize-space($doit)='doit' and not($correspHasEmail)">
 			<sup>
 				<a href="#{@rid}"><xsl:value-of select="."/>
 					<xsl:if test="normalize-space(.)=''">
