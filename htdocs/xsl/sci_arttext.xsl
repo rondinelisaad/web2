@@ -235,7 +235,7 @@
 				<link rel="stylesheet" type="text/css" href="/css/screen.css"/>
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/bootstrap.css"/>
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/article.css"/>
-				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css?v=arttext-citations-20260910-2"/>
+				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css?v=arttext-footnotes-20260922-1"/>
 				<xsl:apply-templates select="." mode="css"/>
 	            <xsl:if test="//show_readcube_epdf = '1'">
 	                <script src="http://content.readcube.com/scielo/epdf_linker.js" type="text/javascript" async="true"></script>
@@ -424,14 +424,14 @@
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/bootstrap.css"/>
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/article.css"/>
 				<link rel="stylesheet" type="text/css" href="/xsl/pmc/v3.0/xml.css"/>
-				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css?v=arttext-citations-20260910-2"/>
+				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css?v=arttext-footnotes-20260922-1"/>
 				<!--link rel="stylesheet" type="text/css" href="/xsl/pmc/v3.0/css/jpub-preview.css" /-->
 			</xsl:when>
 			<!--xsl:when test="$version='xml'">
             	<link rel="stylesheet" type="text/css" href="/css/screen.css"/>
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/bootstrap.css"/>
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/article.css"/>
-				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css?v=arttext-citations-20260910-2"/>
+				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css?v=arttext-footnotes-20260922-1"/>
                 <link xmlns="" rel="stylesheet" type="text/css" href="/css/pmc/ViewNLM.css"/>
                 <link xmlns="" rel="stylesheet" type="text/css" href="/css/pmc/ViewScielo.css"/>
 
@@ -440,7 +440,7 @@
 				<link rel="stylesheet" type="text/css" href="/css/screen.css"/>
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/bootstrap.css"/>
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/article.css"/>
-				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css?v=arttext-citations-20260910-2"/>
+				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css?v=arttext-footnotes-20260922-1"/>
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
@@ -1022,6 +1022,61 @@
 				});
 			}
 
+			function setupFootnotePopovers() {
+				var references = article.querySelectorAll('a.footnote-ref');
+				var activePopover = null;
+				var activeReference = null;
+
+				function closePopover() {
+					if (activePopover) { activePopover.parentNode.removeChild(activePopover); }
+					if (activeReference) { activeReference.setAttribute('aria-expanded', 'false'); }
+					activePopover = null;
+					activeReference = null;
+				}
+
+				Array.prototype.forEach.call(references, function (reference) {
+					reference.setAttribute('aria-expanded', 'false');
+					reference.addEventListener('click', function (event) {
+						event.preventDefault();
+						closePopover();
+						var id = reference.getAttribute('href').slice(1);
+						var target = document.getElementById(id) || document.getElementsByName(id)[0];
+						var note = target &amp;&amp; target.parentElement &amp;&amp; target.parentElement.classList.contains('fn') ? target.parentElement : target &amp;&amp; target.nextElementSibling;
+						if (!note) { return; }
+
+						var popover = document.createElement('div');
+						popover.className = 'footnote-popover';
+						popover.setAttribute('role', 'dialog');
+						popover.setAttribute('aria-label', 'Nota de rodapé');
+						var content = note.cloneNode(true);
+						Array.prototype.forEach.call(content.querySelectorAll('.footnote-back'), function (back) { back.parentNode.removeChild(back); });
+						popover.appendChild(content);
+						document.body.appendChild(popover);
+
+						var rect = reference.getBoundingClientRect();
+						var left = Math.min(rect.left, window.innerWidth - popover.offsetWidth - 12);
+						left = Math.max(12, left);
+						var top = rect.bottom + 8;
+						if (top + popover.offsetHeight &gt; window.innerHeight - 12) {
+							top = Math.max(12, rect.top - popover.offsetHeight - 8);
+						}
+						popover.style.left = left + 'px';
+						popover.style.top = top + 'px';
+						activePopover = popover;
+						activeReference = reference;
+						reference.setAttribute('aria-expanded', 'true');
+					});
+				});
+
+				document.addEventListener('click', function (event) {
+					if (!activePopover || activePopover.contains(event.target) || event.target.closest('a.footnote-ref')) { return; }
+					closePopover();
+				});
+				document.addEventListener('keydown', function (event) {
+					if (event.key === 'Escape') { closePopover(); }
+				});
+			}
+
 			var body = article.querySelector('#article-body') || article.querySelector('[id$="-body"].body') || article.querySelector('.body');
 			if (body) { body.setAttribute('id', 'article-body'); }
 
@@ -1050,6 +1105,7 @@
 			}
 			normalizeAuthorBlocks();
 			addEmailsFromAffiliations();
+			setupFootnotePopovers();
 			normalizeArticleSectionHeadings();
 			alignBodyTypographyWithAbstract();
 
