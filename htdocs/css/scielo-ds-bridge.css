@@ -8975,6 +8975,36 @@ body.serials-page .serials-footer-logos {
   margin-top: 0 !important;
 }
 
+.arttext-page .arttext-article-card a.footnote-ref {
+  cursor: pointer;
+  margin-left: .12em;
+}
+
+.arttext-page .footnote-popover {
+  position: fixed;
+  z-index: 1100;
+  width: min(420px, calc(100vw - 24px));
+  max-height: min(320px, calc(100vh - 24px));
+  overflow: auto;
+  padding: 12px 14px;
+  border: 1px solid #cfd6df;
+  border-radius: 4px;
+  background: #fff;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, .18);
+  color: #222;
+  font-family: Verdana, Arial, sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.arttext-page .footnote-popover .fn {
+  margin: 0;
+}
+
+.arttext-page .footnote-popover .footnote-back {
+  display: none;
+}
+
 /* Section anchors are navigation targets, not link labels. */
 .arttext-page .arttext-article-card p.sec a,
 .arttext-page .arttext-article-card p.subsec a,

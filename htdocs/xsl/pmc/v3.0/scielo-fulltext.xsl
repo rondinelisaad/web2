@@ -732,9 +732,19 @@
 	</xsl:template>
 	
 	<xsl:template match="xref[@ref-type='fn']">
-		<sup><a href="#{@rid}">
-			<xsl:apply-templates select="*|text()"/>
-		</a></sup>
+		<a name="back_{@rid}"/>
+		<xsl:choose>
+			<xsl:when test="sup">
+				<a class="footnote-ref" href="#{@rid}" aria-label="Nota de rodapé">
+					<xsl:apply-templates select="*|text()"/>
+				</a>
+			</xsl:when>
+			<xsl:otherwise>
+				<sup><a class="footnote-ref" href="#{@rid}" aria-label="Nota de rodapé">
+					<xsl:apply-templates select="*|text()"/>
+				</a></sup>
+			</xsl:otherwise>
+		</xsl:choose>
 	</xsl:template>
 	
 	<xsl:template match="xref[@ref-type='bibr']">
@@ -902,9 +912,10 @@
 		</a>
 	</xsl:template>
 	<xsl:template match="table-wrap//fn" mode="footnote">
-		<a name="{@id}"/>
+		<a id="{@id}" name="{@id}"/>
 		<p>
 			<xsl:apply-templates select="* | text()"/>
+			<xsl:if test="@id and ancestor::article[1]//xref[@rid=current()/@id]"><a class="footnote-back" href="#back_{@id}" title="Voltar ao texto" aria-label="Voltar ao texto">&#8617;</a></xsl:if>
 		</p>
 	</xsl:template>
 	<xsl:template match="table-wrap//fn//label">
@@ -1445,7 +1456,7 @@
 		</div>
 	</xsl:template>
 	<xsl:template match="back/fn-group/fn">
-		<a name="{@id}"/>
+		<a id="{@id}" name="{@id}"/>
 		<div class="fn">
 			<xsl:apply-templates select="title"/>
 		<xsl:choose>
@@ -1468,6 +1479,7 @@
 				<xsl:apply-templates select="@*|*[name()!='label' and name()!='title']|text()"/>
 			</xsl:otherwise>
 		</xsl:choose>
+		<xsl:if test="@id and ancestor::article[1]//xref[@rid=current()/@id]"><a class="footnote-back" href="#back_{@id}" title="Voltar ao texto" aria-label="Voltar ao texto">&#8617;</a></xsl:if>
 		</div>
 	</xsl:template>
 	<xsl:template match="back/fn-group/fn/@fn-type"> </xsl:template>
