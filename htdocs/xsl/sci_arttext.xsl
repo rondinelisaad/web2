@@ -235,7 +235,7 @@
 				<link rel="stylesheet" type="text/css" href="/css/screen.css"/>
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/bootstrap.css"/>
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/article.css"/>
-				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css?v=arttext-footnotes-20260922-1"/>
+				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css?v=arttext-author-notes-20260922-1"/>
 				<xsl:apply-templates select="." mode="css"/>
 	            <xsl:if test="//show_readcube_epdf = '1'">
 	                <script src="http://content.readcube.com/scielo/epdf_linker.js" type="text/javascript" async="true"></script>
@@ -424,14 +424,14 @@
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/bootstrap.css"/>
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/article.css"/>
 				<link rel="stylesheet" type="text/css" href="/xsl/pmc/v3.0/xml.css"/>
-				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css?v=arttext-footnotes-20260922-1"/>
+				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css?v=arttext-author-notes-20260922-1"/>
 				<!--link rel="stylesheet" type="text/css" href="/xsl/pmc/v3.0/css/jpub-preview.css" /-->
 			</xsl:when>
 			<!--xsl:when test="$version='xml'">
             	<link rel="stylesheet" type="text/css" href="/css/screen.css"/>
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/bootstrap.css"/>
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/article.css"/>
-				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css?v=arttext-footnotes-20260922-1"/>
+				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css?v=arttext-author-notes-20260922-1"/>
                 <link xmlns="" rel="stylesheet" type="text/css" href="/css/pmc/ViewNLM.css"/>
                 <link xmlns="" rel="stylesheet" type="text/css" href="/css/pmc/ViewScielo.css"/>
 
@@ -440,7 +440,7 @@
 				<link rel="stylesheet" type="text/css" href="/css/screen.css"/>
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/bootstrap.css"/>
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/article.css"/>
-				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css?v=arttext-footnotes-20260922-1"/>
+				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css?v=arttext-author-notes-20260922-1"/>
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
@@ -1022,6 +1022,88 @@
 				});
 			}
 
+			function formatAuthorNotes() {
+				var notes = article.querySelectorAll('.author-notes > .fn-author');
+				var headingPattern = /^\s*(INFORMAÇÕES SOBRE OS AUTORES|INFORMACIÓN SOBRE LOS AUTORES|AUTHOR INFORMATION|INFORMATIONS SUR LES AUTEURS)\s*/i;
+				var identifierPattern = /(https?:\/\/(?:www\.)?orcid\.org\/[0-9X-]+|[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,})/ig;
+
+				function makeEmailIcon(email) {
+					var link = document.createElement('a');
+					link.className = 'author-email-link author-note-email-icon';
+					link.href = 'mailto:' + email;
+					link.title = 'E-mail do autor';
+					link.setAttribute('aria-label', 'E-mail do autor');
+					link.innerHTML = '&lt;svg class="author-email-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"&gt;&lt;path d="M4 6h16v12H4z"&gt;&lt;/path&gt;&lt;path d="m4 7 8 6 8-6"&gt;&lt;/path&gt;&lt;/svg&gt;';
+					return link;
+				}
+
+				function makeOrcidLink(url) {
+					var wrapper = document.createElement('span');
+					wrapper.className = 'author-note-orcid';
+					var image = document.createElement('img');
+					image.src = '/img/orcid.png';
+					image.alt = 'ORCID';
+					var link = document.createElement('a');
+					link.href = url;
+					link.target = '_blank';
+					link.rel = 'noopener noreferrer';
+					link.textContent = url;
+					wrapper.appendChild(image);
+					wrapper.appendChild(link);
+					return wrapper;
+				}
+
+				function linkIdentifiers(note) {
+					var walker = document.createTreeWalker(note, NodeFilter.SHOW_TEXT, null, false);
+					var textNodes = [];
+					var node;
+					while ((node = walker.nextNode())) {
+						if (!node.parentElement.closest('a, .author-notes-heading')) { textNodes.push(node); }
+					}
+					textNodes.forEach(function (textNode) {
+						var value = textNode.nodeValue;
+						var match;
+						var last = 0;
+						var fragment = document.createDocumentFragment();
+						identifierPattern.lastIndex = 0;
+						while ((match = identifierPattern.exec(value))) {
+							fragment.appendChild(document.createTextNode(value.slice(last, match.index)));
+							if (/^https?:\/\/(?:www\.)?orcid\.org\//i.test(match[0])) {
+								fragment.appendChild(makeOrcidLink(match[0]));
+							} else {
+								fragment.appendChild(makeEmailIcon(match[0]));
+								var emailLink = document.createElement('a');
+								emailLink.className = 'author-note-email';
+								emailLink.href = 'mailto:' + match[0];
+								emailLink.textContent = match[0];
+								fragment.appendChild(emailLink);
+							}
+							last = match.index + match[0].length;
+						}
+						if (last) {
+							fragment.appendChild(document.createTextNode(value.slice(last)));
+							textNode.parentNode.replaceChild(fragment, textNode);
+						}
+					});
+				}
+
+				Array.prototype.forEach.call(notes, function (note, index) {
+					if (index === 0) {
+						var match = note.textContent.match(headingPattern);
+						if (match) {
+							var content = note.textContent.slice(match[0].length).trim();
+							note.textContent = '';
+							var heading = document.createElement('span');
+							heading.className = 'author-notes-heading';
+							heading.textContent = match[1];
+							note.appendChild(heading);
+							if (content) { note.appendChild(document.createTextNode(content)); }
+						}
+					}
+					linkIdentifiers(note);
+				});
+			}
+
 			function setupFootnotePopovers() {
 				var references = article.querySelectorAll('a.footnote-ref');
 				var activePopover = null;
@@ -1105,6 +1187,7 @@
 			}
 			normalizeAuthorBlocks();
 			addEmailsFromAffiliations();
+			formatAuthorNotes();
 			setupFootnotePopovers();
 			normalizeArticleSectionHeadings();
 			alignBodyTypographyWithAbstract();

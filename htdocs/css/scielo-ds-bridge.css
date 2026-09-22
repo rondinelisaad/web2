@@ -8975,6 +8975,38 @@ body.serials-page .serials-footer-logos {
   margin-top: 0 !important;
 }
 
+.arttext-page .author-notes-heading {
+  display: block;
+  margin-bottom: 8px;
+  color: #000;
+  font-size: 15.6px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.arttext-page .author-note-orcid,
+.arttext-page .author-note-email-icon {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  margin-left: 4px;
+}
+
+.arttext-page .author-note-orcid img {
+  width: 16px;
+  height: 16px;
+  margin-right: 4px;
+}
+
+.arttext-page .author-note-email-icon {
+  margin-left: 4px;
+  margin-right: 3px;
+}
+
+.arttext-page .author-note-email {
+  color: #315cad;
+}
+
 .arttext-page .arttext-article-card a.footnote-ref {
   cursor: pointer;
   margin-left: .12em;
