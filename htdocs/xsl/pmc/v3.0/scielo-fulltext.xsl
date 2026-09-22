@@ -1435,7 +1435,7 @@
 	</xsl:template>
 
 	<xsl:template match="author-notes/fn">
-		<xsl:apply-templates select="@* | *|text()"/>
+		<xsl:apply-templates select="@id | *[normalize-space(.)!='uninformed'] | text()[normalize-space(.)!='uninformed']"/>
 	</xsl:template>
 
 	<xsl:template match="corresp/label | author-notes/fn/label">
@@ -1450,6 +1450,12 @@
 			<xsl:apply-templates select="*|text()"/>
 		</p>
 	</xsl:template>
+	<xsl:template match="author-notes//fn/p[strong]">
+		<p class="fn-author">
+			<strong><xsl:apply-templates select="strong[1]/node()"/><xsl:text>:</xsl:text></strong><br/>
+			<xsl:apply-templates select="node()[not(self::strong)]"/>
+		</p>
+	</xsl:template>
 	<xsl:template match="back/fn-group">
 		<div class="foot-notes">
 			<xsl:apply-templates select="@*| *|text()"/>
@@ -1458,7 +1464,7 @@
 	<xsl:template match="back/fn-group/fn">
 		<a id="{@id}" name="{@id}"/>
 		<div class="fn">
-			<xsl:apply-templates select="title"/>
+			<xsl:apply-templates select="title[normalize-space(.)!='uninformed']"/>
 		<xsl:choose>
 			<xsl:when test="count(p)&gt;1">
 				<xsl:choose>
@@ -1467,22 +1473,23 @@
 							<xsl:apply-templates select="label"/>
 						</p>
 						<div class="fn-block">
-							<xsl:apply-templates select="@*|*[name()!='label' and name()!='title']|text()"/>
+							<xsl:apply-templates select="@*[local-name()!='fn-type' and normalize-space(.)!='uninformed']|*[local-name()!='label' and local-name()!='title' and local-name()!='fn-type' and normalize-space(.)!='uninformed']|text()[normalize-space(.)!='uninformed']"/>
 						</div>
 					</xsl:when>
 					<xsl:otherwise>
-						<xsl:apply-templates select="@*|*[name()!='label' and name()!='title']|text()"/>
+						<xsl:apply-templates select="@*[local-name()!='fn-type' and normalize-space(.)!='uninformed']|*[local-name()!='label' and local-name()!='title' and local-name()!='fn-type' and normalize-space(.)!='uninformed']|text()[normalize-space(.)!='uninformed']"/>
 					</xsl:otherwise>
 				</xsl:choose>
 			</xsl:when>
 			<xsl:otherwise>
-				<xsl:apply-templates select="@*|*[name()!='label' and name()!='title']|text()"/>
+				<xsl:apply-templates select="@*[local-name()!='fn-type' and normalize-space(.)!='uninformed']|*[local-name()!='label' and local-name()!='title' and local-name()!='fn-type' and normalize-space(.)!='uninformed']|text()[normalize-space(.)!='uninformed']"/>
 			</xsl:otherwise>
 		</xsl:choose>
 		<xsl:if test="@id and ancestor::article[1]//xref[@rid=current()/@id]"><a class="footnote-back" href="#back_{@id}" title="Voltar ao texto" aria-label="Voltar ao texto">&#8617;</a></xsl:if>
 		</div>
 	</xsl:template>
 	<xsl:template match="back/fn-group/fn/@fn-type"> </xsl:template>
+	<xsl:template match="back/fn-group/fn/*[local-name()='fn-type'] | back/fn-group/fn/@*[local-name()='fn-type'] | back/fn-group/fn/text()[normalize-space(.)='uninformed']"/>
 	<xsl:template match="back/fn-group/fn/label">
 		<xsl:choose>
 			<xsl:when test="number(.)=.">
@@ -1498,10 +1505,22 @@
 	</xsl:template>
 	<xsl:template match="back/fn-group/fn/p">
 		<p>
-			<xsl:if test="count(..//p)=1">
-			<xsl:apply-templates select="../label"/>
-			</xsl:if>
-			<xsl:apply-templates select="*|text()"/>
+			<xsl:choose>
+				<xsl:when test="strong or bold">
+					<strong><xsl:apply-templates select="(strong|bold)[1]/node()"/><xsl:text>:</xsl:text></strong><br/>
+					<xsl:apply-templates select="node()[not(self::strong or self::bold)]"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:if test="count(..//p)=1"><xsl:apply-templates select="../label"/></xsl:if>
+					<xsl:apply-templates select="*|text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</p>
+	</xsl:template>
+	<xsl:template match="back/fn-group/fn/p[strong or bold]">
+		<p>
+			<strong><xsl:apply-templates select="(strong|bold)[1]/node()"/><xsl:text>:</xsl:text></strong><br/>
+			<xsl:apply-templates select="node()[not(self::strong or self::bold)]"/>
 		</p>
 	</xsl:template>
 	
