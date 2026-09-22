@@ -1053,6 +1053,22 @@
 					return wrapper;
 				}
 
+				function normalizeExistingOrcids(note) {
+					Array.prototype.forEach.call(note.querySelectorAll('a[href*="orcid.org"]'), function (anchor) {
+						var url = anchor.href;
+						var visible = note.textContent.trim();
+						var label = anchor.textContent.trim();
+						if (label &amp;&amp; visible.indexOf(label) === 0) {
+							var authorName = visible.slice(label.length).trim();
+							note.textContent = '';
+							if (authorName) { note.appendChild(document.createTextNode(authorName + ' ')); }
+							note.appendChild(makeOrcidLink(url));
+						} else {
+							anchor.parentNode.replaceChild(makeOrcidLink(url), anchor);
+						}
+					});
+				}
+
 				function linkIdentifiers(note) {
 					var walker = document.createTreeWalker(note, NodeFilter.SHOW_TEXT, null, false);
 					var textNodes = [];
@@ -1100,6 +1116,7 @@
 							if (content) { note.appendChild(document.createTextNode(content)); }
 						}
 					}
+					normalizeExistingOrcids(note);
 					linkIdentifiers(note);
 				});
 			}
