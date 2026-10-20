@@ -14,7 +14,7 @@
 				<link rel="STYLESHEET" type="text/css" href="/css/scielo.css"/>
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/bootstrap.css"/>
 				<link rel="stylesheet" type="text/css" href="/design-system/1.0.0/css/article.css"/>
-				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css?v=alpha-20260614-4"/>
+				<link rel="stylesheet" type="text/css" href="/css/scielo-ds-bridge.css?v=alpha-footer-email-20261020-1"/>
 				<xsl:call-template name="EDUCA_GOOGLE_TAG"/>
 			</head>
 			<body class="serials-page" link="#0000ff" vlink="#800080" bgcolor="#ffffff">
@@ -454,7 +454,15 @@
 					<div>Av. Prof. Francisco Morato, 1565 - Jd. Guedala</div>
 					<div>05513-900 S&#227;o Paulo - SP - Brasil</div>
 					<div>Tel: +55 11 3723-3082</div>
-					<div>educ@fcc.org.br</div>
+					<div>
+						<a class="email journal-footer-email serials-footer-email" href="mailto:educ@fcc.org.br">
+							<svg class="journal-footer-email-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+								<rect x="3" y="5" width="18" height="14" rx="2"/>
+								<path d="M3 7l9 6 9-6"/>
+							</svg>
+							<span>educ@fcc.org.br</span>
+						</a>
+					</div>
 					<div class="social">
 						<a class="social-link" aria-label="Instagram" href="https://www.instagram.com/fundacaocarloschagas/" target="_blank" rel="noopener noreferrer"><span class="social-icon social-instagram"></span></a>
 						<a class="social-link" aria-label="LinkedIn" href="https://br.linkedin.com/company/fundacaocarloschagas" target="_blank" rel="noopener noreferrer"><span class="social-icon social-linkedin"></span></a>
