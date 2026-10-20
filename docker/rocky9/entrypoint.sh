@@ -10,6 +10,11 @@ sed -ri 's#^;?[[:space:]]*clear_env[[:space:]]*=.*#clear_env = no#' /etc/php-fpm
 if ! grep -q '^env\[SCIELO_ENABLE_DEBUG\]' /etc/php-fpm.d/www.conf; then
   printf '\nenv[SCIELO_ENABLE_DEBUG] = %s\n' "${SCIELO_ENABLE_DEBUG:-0}" >> /etc/php-fpm.d/www.conf
 fi
+for env_name in REPORT_ERROR_SMTP_HOST REPORT_ERROR_SMTP_PORT REPORT_ERROR_FROM REPORT_ERROR_TO REPORT_ERROR_TURNSTILE_SITE_KEY REPORT_ERROR_TURNSTILE_SECRET; do
+  if ! grep -q "^env\[${env_name}\]" /etc/php-fpm.d/www.conf; then
+    printf 'env[%s] = %s\n' "${env_name}" "${!env_name:-}" >> /etc/php-fpm.d/www.conf
+  fi
+done
 if [[ -n "${SERVER_SCIELO:-}" ]]; then
   SCIELO_SERVER="${SERVER_SCIELO}"
 elif [[ "${HTTPD_PORT}" == "80" ]]; then
