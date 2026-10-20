@@ -155,6 +155,68 @@
     });
   }
 
+  function ensureReportModal() {
+    var existing = document.getElementById('educaReportModal');
+    if (existing) {
+      return existing;
+    }
+
+    var modal = document.createElement('div');
+    modal.id = 'educaReportModal';
+    modal.className = 'educa-report-modal';
+    modal.setAttribute('aria-hidden', 'true');
+    modal.innerHTML =
+      '<div class="educa-report-modal-backdrop" data-educa-report-close="true"></div>' +
+      '<div class="educa-report-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="educaReportModalTitle">' +
+        '<button type="button" class="educa-report-modal-close" aria-label="Fechar" data-educa-report-close="true">&times;</button>' +
+        '<iframe title="Reportar erro" id="educaReportModalFrame"></iframe>' +
+      '</div>';
+    document.body.appendChild(modal);
+    modal.addEventListener('click', function (event) {
+      if (event.target.closest('[data-educa-report-close]')) {
+        closeReportModal();
+      }
+    });
+    var style = document.createElement('style');
+    style.id = 'educaReportModalStyles';
+    style.textContent =
+      '.educa-report-modal{align-items:center;background:rgba(25,32,38,.62);display:none;inset:0;justify-content:center;padding:20px;position:fixed;z-index:10050}' +
+      '.educa-report-modal.is-open{display:flex}' +
+      '.educa-report-modal-dialog{background:#fff;border-radius:8px;box-shadow:0 16px 48px rgba(0,0,0,.28);height:min(780px,calc(100vh - 40px));max-width:820px;position:relative;width:min(820px,100%)}' +
+      '.educa-report-modal iframe{border:0;border-radius:8px;height:100%;width:100%}' +
+      '.educa-report-modal-close{align-items:center;background:#fff;border:1px solid #b8c0c6;border-radius:50%;color:#323f48;cursor:pointer;display:flex;font-size:24px;height:36px;justify-content:center;line-height:1;position:absolute;right:-14px;top:-14px;width:36px;z-index:1}' +
+      '.educa-report-modal-close:focus-visible{outline:3px solid #8c1738;outline-offset:2px}' +
+      'body.educa-report-modal-open{overflow:hidden}' +
+      '@media(max-width:600px){.educa-report-modal{padding:8px}.educa-report-modal-dialog{height:calc(100vh - 16px);width:100%}.educa-report-modal-close{right:8px;top:8px}}';
+    document.head.appendChild(style);
+    return modal;
+  }
+
+  function openReportModal(event) {
+    event.preventDefault();
+    var modal = ensureReportModal();
+    var frame = modal.querySelector('#educaReportModalFrame');
+    var href = event.currentTarget.getAttribute('href');
+    var separator = href.indexOf('?') === -1 ? '?' : '&';
+    frame.src = href + separator + 'embedded=1';
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('educa-report-modal-open');
+    modal.querySelector('.educa-report-modal-close').focus();
+  }
+
+  function closeReportModal() {
+    var modal = document.getElementById('educaReportModal');
+    if (!modal) {
+      return;
+    }
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('educa-report-modal-open');
+    var frame = modal.querySelector('#educaReportModalFrame');
+    frame.src = 'about:blank';
+  }
+
   function enhanceReportLinks() {
     var links = document.querySelectorAll('.serial-template-report, .serials-template-report, .issuetoc-report');
     var params = new URLSearchParams(window.location.search);
@@ -198,9 +260,12 @@
       labels.details,
       ''
     ].join('\n');
-    var href = 'mailto:educ@fcc.org.br?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+    var href = '/report_error.php?pid=' + encodeURIComponent(pid) +
+      '&lang=' + encodeURIComponent(language) +
+      '&url=' + encodeURIComponent(window.location.href);
     Array.prototype.forEach.call(links, function (link) {
       link.setAttribute('href', href);
+      link.addEventListener('click', openReportModal);
     });
   }
 
@@ -356,8 +421,14 @@
     document.addEventListener('keydown', function (event) {
       if (event.key === 'Escape') {
         closePanel();
+        closeReportModal();
         closeShareMenus(null);
         closeDetailsMenus(null);
+      }
+    });
+    window.addEventListener('message', function (event) {
+      if (event.origin === window.location.origin && event.data && event.data.type === 'educa-report-close') {
+        closeReportModal();
       }
     });
   }

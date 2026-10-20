@@ -10,6 +10,12 @@ services:
       HTTPD_PORT: "8090"
       SERVER_SCIELO: "educa.fcc.org.br"
       SCIELO_ENABLE_DEBUG: "1"
+      REPORT_ERROR_SMTP_HOST: "${REPORT_ERROR_SMTP_HOST:-}"
+      REPORT_ERROR_SMTP_PORT: "${REPORT_ERROR_SMTP_PORT:-25}"
+      REPORT_ERROR_FROM: "${REPORT_ERROR_FROM:-educ@fcc.org.br}"
+      REPORT_ERROR_TO: "${REPORT_ERROR_TO:-educ@fcc.org.br}"
+      REPORT_ERROR_TURNSTILE_SITE_KEY: "${REPORT_ERROR_TURNSTILE_SITE_KEY:-}"
+      REPORT_ERROR_TURNSTILE_SECRET: "${REPORT_ERROR_TURNSTILE_SECRET:-}"
     volumes:
       - ./:/var/www/html
     restart: unless-stopped
