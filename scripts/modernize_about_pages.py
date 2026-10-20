@@ -251,6 +251,62 @@ def replace_css_version(prefix):
     )
 
 
+def restrict_editorial_menu(prefix):
+    """Keep only board, author instructions, and contact on those pages."""
+    removable = (
+        r"Submissão de manuscritos|Submission of manuscripts|Manuscript submission|Envío de manuscritos|"
+        r"Site do periódico|Journal website|Sitio de la revista|"
+        r"Sobre o periódico|About the journal|Acerca de la revista|"
+        r"Política editorial|Editorial policy"
+    )
+    menu_pattern = r'<div class="list-group d-print-none mb-5">.*?</div>'
+    menu_count = 0
+
+    def normalize_menu(match):
+        nonlocal menu_count
+        menu_count += 1
+        if menu_count > 1:
+            return ""
+        menu = match.group(0)
+        menu = re.sub(
+            rf'<a class="list-group-item"[^>]*>.*?</svg>\s*(?:{removable})</a>',
+            "",
+            menu,
+            flags=re.S,
+        )
+
+        # Keep only the first occurrence of each destination inside the menu.
+        seen = set()
+
+        def keep_unique(anchor_match):
+            anchor = anchor_match.group(0)
+            href = re.search(r'href=["\']([^"\']+)', anchor, flags=re.I)
+            key = href.group(1) if href else anchor
+            if key in seen:
+                return ""
+            seen.add(key)
+            return anchor
+
+        return re.sub(
+            r'<a class="list-group-item"[^>]*>.*?</a>',
+            keep_unique,
+            menu,
+            flags=re.S,
+        )
+
+    result = re.sub(menu_pattern, normalize_menu, prefix, flags=re.S)
+    return result if menu_count else prefix
+
+
+def restore_journal_menu(prefix, serial_html):
+    """Use the journal's complete, localized menu on an information page."""
+    menu_pattern = r'<div class="list-group d-print-none mb-5">.*?</div>'
+    match = re.search(menu_pattern, serial_html, flags=re.S)
+    if not match:
+        return prefix
+    return re.sub(menu_pattern, match.group(0), prefix, flags=re.S)
+
+
 def localize_existing_english_page(source):
     replacements = (
         ('lang="pt"', 'lang="en"'),
@@ -334,6 +390,7 @@ def split_serial_for_language(serial_html, page_title):
     suffix = serial_html[suffix_start:]
     prefix = replace_title(prefix, page_title)
     prefix = replace_css_version(prefix)
+    prefix = restore_journal_menu(prefix, serial_html)
     prefix = extend_breadcrumb(prefix, page_title)
     return prefix, suffix
 
@@ -346,6 +403,12 @@ def modernize(path):
         refreshed = replace_css_version(source)
         if config["code"] == "en" and not re.search(r'<html[^>]+lang=["\']en["\']', refreshed, flags=re.I):
             refreshed = localize_existing_english_page(refreshed)
+        pid = extract_pid(source) or extract_pid_from_sibling(path)
+        if pid:
+            try:
+                refreshed = restore_journal_menu(refreshed, fetch_serial(pid, config["code"]))
+            except (OSError, RuntimeError, subprocess.SubprocessError):
+                pass
         if refreshed != source:
             path.write_text(refreshed, encoding="utf-8")
             return "refreshed-css", ""
