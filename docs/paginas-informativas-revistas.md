@@ -18,6 +18,20 @@ O operador deve manter apenas o conteudo editorial de:
 criar um quarto arquivo. `Contato` vem do e-mail configurado no rodape e no
 menu do periodico.
 
+Nas paginas informativas, o menu lateral permanece completo, mesmo quando o
+operador ja esta na pagina correspondente. Ele deve exibir:
+
+- `Submissao de manuscritos`;
+- `Site do periodico`;
+- `Sobre o periodico`;
+- `Corpo editorial`;
+- `Instrucoes aos autores`;
+- `Contato`.
+
+`Politica editorial` nao aparece como item separado do menu. Quando esse item
+for solicitado, ele deve apontar para a pagina `paboutj.htm` por meio do item
+`Sobre o periodico`.
+
 ## Criar uma revista nova
 
 1. Confirme que a pagina do periodico responde para o ISSN nos tres idiomas.
@@ -39,6 +53,7 @@ menu do periodico.
    `htdocs/revistas/novarevista/`.
 5. Abra os arquivos, substitua os comentarios `EDITOR:` e remova secoes que
    nao se aplicarem. O conteudo deve ser escrito em seu respectivo idioma.
+   Nao remova os links do menu lateral por estar na pagina correspondente.
 6. Mantenha os `name`/IDs das secoes unicos. Eles sao usados pelas ancoras e
    pelo sumario da pagina.
 7. Valide as URLs em portugues, espanhol e ingles antes de publicar.
@@ -88,7 +103,8 @@ O fluxo recomendado e:
 1. gerar a pasta no ambiente local;
 2. editar os nove arquivos;
 3. publicar a pasta e os logos em homologacao;
-4. conferir as nove URLs, links de ancora, ORCID, e-mail e menu lateral;
+4. conferir as nove URLs, links de ancora, ORCID, e-mail e menu lateral
+   completo nos tres idiomas;
 5. revisar em desktop e celular;
 6. versionar os arquivos em um commit separado por revista;
 7. promover o mesmo commit para producao.
