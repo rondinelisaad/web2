@@ -824,11 +824,7 @@
 
 	<xsl:template name="ARTTEXT_CITATION_LINE">
 		<xsl:variable name="docType">
-			<xsl:choose>
-				<xsl:when test="//ISSUE/ARTICLE/@DOCTYPE='editorial'">Editorial</xsl:when>
-				<xsl:when test="//ISSUE/ARTICLE/@DOCTYPE='review'">Revis&#227;o</xsl:when>
-				<xsl:otherwise>Artigo</xsl:otherwise>
-			</xsl:choose>
+			<xsl:call-template name="ARTTEXT_DOCUMENT_TYPE"/>
 		</xsl:variable>
 		<div class="arttext-citation-line">
 			<span class="arttext-citation-text">
@@ -859,8 +855,45 @@
 		</div>
 	</xsl:template>
 
+	<xsl:template name="ARTTEXT_DOCUMENT_TYPE">
+		<xsl:variable name="lang" select="normalize-space(//CONTROLINFO/LANGUAGE)"/>
+		<xsl:variable name="category" select="translate(normalize-space($original//article-categories/subj-group[@subj-group-type='heading']/subject[1]), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ&#192;&#193;&#194;&#195;&#196;&#199;&#200;&#201;&#202;&#205;&#210;&#211;&#212;&#213;&#214;&#218;&#220;', 'abcdefghijklmnopqrstuvwxyz&#224;&#225;&#226;&#227;&#228;&#231;&#232;&#233;&#234;&#237;&#242;&#243;&#244;&#245;&#246;&#250;&#252;')"/>
+		<xsl:variable name="sourceType">
+			<xsl:choose>
+				<xsl:when test="$original/@article-type"><xsl:value-of select="$original/@article-type"/></xsl:when>
+				<xsl:otherwise><xsl:value-of select="//ISSUE/ARTICLE/@DOCTYPE"/></xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		<xsl:choose>
+			<xsl:when test="contains($category, 'editorial') or $sourceType='editorial'">
+				<xsl:choose><xsl:when test="$lang='en'">Editorial</xsl:when><xsl:when test="$lang='es'">Editorial</xsl:when><xsl:otherwise>Editorial</xsl:otherwise></xsl:choose>
+			</xsl:when>
+			<xsl:when test="contains($category, 'dossi') or contains($category, 'dossier')">
+				<xsl:choose><xsl:when test="$lang='en'">Dossier</xsl:when><xsl:when test="$lang='es'">Dossier</xsl:when><xsl:otherwise>Dossi&#234;</xsl:otherwise></xsl:choose>
+			</xsl:when>
+			<xsl:when test="contains($category, 'entrevista') or contains($category, 'interview') or $sourceType='interview'">
+				<xsl:choose><xsl:when test="$lang='en'">Interview</xsl:when><xsl:when test="$lang='es'">Entrevista</xsl:when><xsl:otherwise>Entrevista</xsl:otherwise></xsl:choose>
+			</xsl:when>
+			<xsl:when test="contains($category, 'apresenta') or contains($category, 'presentation')">
+				<xsl:choose><xsl:when test="$lang='en'">Presentation</xsl:when><xsl:when test="$lang='es'">Presentaci&#243;n</xsl:when><xsl:otherwise>Apresenta&#231;&#227;o</xsl:otherwise></xsl:choose>
+			</xsl:when>
+			<xsl:when test="contains($category, 'resenha') or contains($category, 'book review') or $sourceType='book-review'">
+				<xsl:choose><xsl:when test="$lang='en'">Book review</xsl:when><xsl:when test="$lang='es'">Rese&#241;a</xsl:when><xsl:otherwise>Resenha</xsl:otherwise></xsl:choose>
+			</xsl:when>
+			<xsl:when test="contains($category, 'artigo original') or contains($category, 'original article') or $sourceType='research-article'">
+				<xsl:choose><xsl:when test="$lang='en'">Original article</xsl:when><xsl:when test="$lang='es'">Art&#237;culo original</xsl:when><xsl:otherwise>Artigo original</xsl:otherwise></xsl:choose>
+			</xsl:when>
+			<xsl:when test="$sourceType='review' or $sourceType='review-article'">
+				<xsl:choose><xsl:when test="$lang='en'">Review</xsl:when><xsl:when test="$lang='es'">Revisi&#243;n</xsl:when><xsl:otherwise>Revis&#227;o</xsl:otherwise></xsl:choose>
+			</xsl:when>
+			<xsl:when test="normalize-space($category) != ''"><xsl:value-of select="$category"/></xsl:when>
+			<xsl:otherwise>Artigo</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+
 	<xsl:template name="ARTTEXT_BREADCRUMB">
 		<xsl:variable name="lang" select="normalize-space(//CONTROLINFO/LANGUAGE)"/>
+		<xsl:variable name="docType"><xsl:call-template name="ARTTEXT_DOCUMENT_TYPE"/></xsl:variable>
 		<xsl:variable name="journalPid" select="//ISSN_AS_ID"/>
 		<xsl:variable name="issuePid" select="//CURRENTISSUE/@PID"/>
 		<xsl:variable name="articlePid" select="//ISSUE/ARTICLE/@PID"/>
@@ -881,7 +914,7 @@
 						<xsl:if test="$issuePid">
 							<li class="breadcrumb-item"><a href="/scielo.php?script=sci_issuetoc&amp;pid={$issuePid}&amp;lng={$lang}&amp;nrm=iso"><xsl:value-of select="$summaryLabel"/></a></li>
 						</xsl:if>
-						<li class="breadcrumb-item">Artigo</li>
+						<li class="breadcrumb-item"><xsl:value-of select="$docType"/></li>
 					</ol>
 					<a class="btn btn-sm btn-secondary scielo__btn-with-icon--only serial-share-btn" href="mailto:?subject={//ISSUE/ARTICLE/citation_title}&amp;body=http://{//CONTROLINFO/SCIELO_INFO/SERVER}/scielo.php?script=sci_arttext%26pid={$articlePid}%26lng={$lang}%26nrm=iso%26tlng={//ISSUE/ARTICLE/@TEXTLANG}" aria-label="Compartilhar">
 						<svg class="serial-share-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
