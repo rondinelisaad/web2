@@ -513,7 +513,7 @@ $pageUrl = $scheme . '://' . $host . '/search_mvp.php?' . http_build_query([
     <a href="mailto:educ@fcc.org.br?subject=Reportar%20erro" class="serials-template-report">Reportar erro</a>
     <a href="#main-content" class="serials-template-accessibility" aria-label="Acessibilidade">A</a>
   </div>
-  <script type="text/javascript" src="/js/educa-accessibility.js?v=20260615-details-1"></script>
+  <script type="text/javascript" src="/js/educa-accessibility.js?v=report-context-20261020-1"></script>
   <script>
     (function () {
       var container = document.getElementById('mvpAdvancedFields');

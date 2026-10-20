@@ -110,7 +110,7 @@
 					<xsl:apply-templates select="." mode="footer-journal"/>
 				</div>
 				<xsl:call-template name="ABSTRACT_UTILS"/>
-				<script type="text/javascript" src="/js/educa-accessibility.js?v=20260615-details-1"></script>
+				<script type="text/javascript" src="/js/educa-accessibility.js?v=report-context-20261020-1"></script>
 				<xsl:call-template name="ABSTRACT_READING_SCRIPT"/>
 			</body>
 		</html>
