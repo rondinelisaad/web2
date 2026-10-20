@@ -8792,6 +8792,12 @@ body.serials-page .serials-footer-logos {
   grid-row: 6;
 }
 
+.serials-footer-meta > div:nth-child(6) {
+  grid-column: 1 / -1;
+  grid-row: 7;
+  justify-self: center;
+}
+
 .serials-footer .serials-footer-email {
   display: inline-flex;
   align-items: center;
