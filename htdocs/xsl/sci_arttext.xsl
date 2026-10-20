@@ -347,7 +347,7 @@
 
 				<script language="javascript" src="applications/scielo-org/js/jquery-1.4.2.min.js"/>
 				<script language="javascript" src="applications/scielo-org/js/toolbox.js"/>
-				<script type="text/javascript" src="/js/educa-accessibility.js?v=20260615-details-1"></script>
+				<script type="text/javascript" src="/js/educa-accessibility.js?v=report-context-20261020-1"></script>
 				<xsl:call-template name="ARTTEXT_READING_SCRIPT"/>
 				
 			</body>

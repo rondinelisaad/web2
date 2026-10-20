@@ -181,7 +181,7 @@
 					<a href="#top" class="issuetoc-backtop"><xsl:attribute name="aria-label"><xsl:call-template name="ISSUETOC_UI_TEXT"><xsl:with-param name="key">back_to_top</xsl:with-param></xsl:call-template></xsl:attribute>&#8593;</a>
 				</div>
 			
-			<script type="text/javascript" src="/js/educa-accessibility.js?v=20260615-details-1"></script>
+			<script type="text/javascript" src="/js/educa-accessibility.js?v=report-context-20261020-1"></script>
 			<script type="text/javascript" src="/article.js"/>
 			<script type="text/javascript">
 				(function () {

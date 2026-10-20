@@ -176,7 +176,7 @@
 						<a href="mailto:educ@fcc.org.br?subject=Reportar%20erro" class="serial-template-report"><xsl:call-template name="ISSUES_UI_TEXT"><xsl:with-param name="key">report_error</xsl:with-param></xsl:call-template></a>
 						<a href="#main-content" class="serial-template-accessibility"><xsl:call-template name="ISSUES_UI_TEXT"><xsl:with-param name="key">accessibility</xsl:with-param></xsl:call-template></a>
 					</div>
-					<script type="text/javascript" src="/js/educa-accessibility.js?v=20260615-details-1"></script>
+					<script type="text/javascript" src="/js/educa-accessibility.js?v=report-context-20261020-1"></script>
 				</main>
 				<div class="serial-page issues-footer-shell">
 					<div class="container issues-footer-container">

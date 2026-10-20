@@ -911,6 +911,6 @@ press release do artigo
 			<a href="mailto:educ@fcc.org.br?subject=Reportar%20erro" class="serial-template-report"><xsl:choose><xsl:when test="normalize-space(/SERIAL/CONTROLINFO/LANGUAGE)='en'">Report error</xsl:when><xsl:when test="normalize-space(/SERIAL/CONTROLINFO/LANGUAGE)='es'">Reportar error</xsl:when><xsl:otherwise>Reportar erro</xsl:otherwise></xsl:choose></a>
 			<a href="#main-content" class="serial-template-accessibility"><xsl:choose><xsl:when test="normalize-space(/SERIAL/CONTROLINFO/LANGUAGE)='en'">Accessibility</xsl:when><xsl:when test="normalize-space(/SERIAL/CONTROLINFO/LANGUAGE)='es'">Accesibilidad</xsl:when><xsl:otherwise>Acessibilidade</xsl:otherwise></xsl:choose></a>
 		</div>
-		<script type="text/javascript" src="/js/educa-accessibility.js?v=20260615-details-1"></script>
+		<script type="text/javascript" src="/js/educa-accessibility.js?v=report-context-20261020-1"></script>
 	</xsl:template>
 </xsl:stylesheet>

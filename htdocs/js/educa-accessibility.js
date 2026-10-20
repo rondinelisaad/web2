@@ -155,6 +155,55 @@
     });
   }
 
+  function enhanceReportLinks() {
+    var links = document.querySelectorAll('.serial-template-report, .serials-template-report, .issuetoc-report');
+    var params = new URLSearchParams(window.location.search);
+    var language = (document.documentElement.lang || params.get('lng') || 'pt').toLowerCase().slice(0, 2);
+    var pid = params.get('pid') || '';
+    var labels = {
+      pt: {
+        subject: 'Reportar erro',
+        what: 'O que aconteceu?',
+        where: 'Em qual parte da página?',
+        details: 'Detalhes adicionais:'
+      },
+      en: {
+        subject: 'Report error',
+        what: 'What happened?',
+        where: 'Which part of the page is affected?',
+        details: 'Additional details:'
+      },
+      es: {
+        subject: 'Reportar error',
+        what: '¿Qué ocurrió?',
+        where: '¿Qué parte de la página está afectada?',
+        details: 'Detalles adicionales:'
+      }
+    }[language] || {
+      subject: 'Reportar erro',
+      what: 'O que aconteceu?',
+      where: 'Em qual parte da página?',
+      details: 'Detalhes adicionais:'
+    };
+    var subject = labels.subject + (pid ? ' - ' + pid : '');
+    var body = [
+      'URL: ' + window.location.href,
+      'PID: ' + (pid || 'não identificado'),
+      'Idioma: ' + language,
+      '',
+      labels.what,
+      '',
+      labels.where,
+      '',
+      labels.details,
+      ''
+    ].join('\n');
+    var href = 'mailto:educ@fcc.org.br?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+    Array.prototype.forEach.call(links, function (link) {
+      link.setAttribute('href', href);
+    });
+  }
+
   function removeLegacyEmptyCenteredParagraphs() {
     var paragraphs = document.querySelectorAll('.journal-about-legacy p');
     Array.prototype.forEach.call(paragraphs, function (paragraph) {
@@ -293,6 +342,7 @@
   function init() {
     removeLegacyEmptyCenteredParagraphs();
     enhanceButtons();
+    enhanceReportLinks();
     enhanceShareButtons();
     ensurePanel();
     ensureOverlays();
